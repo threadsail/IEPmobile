@@ -14,7 +14,7 @@ export default function PricingPage() {
           <div className="mb-4">
             <h3 className="text-xl font-semibold">Basic</h3>
             <div className="mt-2">
-              <span className="text-3xl font-bold">$9</span>
+              <span className="text-3xl font-bold">Free</span>
               <span className="text-zinc-600 dark:text-zinc-400">/month</span>
             </div>
             <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
@@ -102,7 +102,7 @@ export default function PricingPage() {
             </div>
             <h3 className="text-xl font-semibold">Pro</h3>
             <div className="mt-2">
-              <span className="text-3xl font-bold">$29</span>
+              <span className="text-3xl font-bold">$19</span>
               <span className="text-zinc-600 dark:text-zinc-400">/month</span>
             </div>
             <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
@@ -201,7 +201,7 @@ export default function PricingPage() {
           <div className="mb-4">
             <h3 className="text-xl font-semibold">Enterprise</h3>
             <div className="mt-2">
-              <span className="text-3xl font-bold">$99</span>
+              <span className="text-3xl font-bold">$39</span>
               <span className="text-zinc-600 dark:text-zinc-400">/month</span>
             </div>
             <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">

@@ -31,18 +31,16 @@ export default function RootLayout({
       >
         <div className="flex min-h-screen flex-col">
           <header className="border-b bg-white/70 backdrop-blur dark:bg-black/40">
-            <div className="mx-auto flex max-w-5xl flex-col items-center px-4 py-4">
-              <div className="mb-4">
-                <Link href="/" className="flex items-center gap-2">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-md">
-                    <span className="text-xl font-bold">T</span>
-                  </div>
-                  <span className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                    threadsail
-                  </span>
-                </Link>
-              </div>
-              <nav className="flex items-center gap-2">
+            <div className="relative mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
+              <Link href="/" className="flex items-center gap-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-md">
+                  <span className="text-xl font-bold">T</span>
+                </div>
+                <span className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+                  threadsail
+                </span>
+              </Link>
+              <nav className="absolute left-1/2 flex -translate-x-1/2 items-center gap-2">
                 <NavigationDropdown
                   label="Solutions"
                   items={[
@@ -66,6 +64,12 @@ export default function RootLayout({
                   ]}
                 />
               </nav>
+              <Link
+                href="/dashboard"
+                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+              >
+                Login
+              </Link>
             </div>
           </header>
 

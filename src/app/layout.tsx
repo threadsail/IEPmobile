@@ -77,7 +77,7 @@ export default function RootLayout({
             {children}
           </main>
 
-          <footer className="border-t text-sm text-zinc-500">
+          <footer className="border-t text-center text-sm text-white">
             <div className="mx-auto max-w-5xl px-4 py-4">
               © 2026 threadsail. Built with Next.js & Cursor.
             </div>

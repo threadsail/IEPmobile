@@ -2,51 +2,47 @@ export default function Home() {
   return (
     <section className="w-full space-y-8">
       <div className="space-y-3">
-        <p className="text-sm font-medium uppercase tracking-[0.2em] text-white">
-          Welcome
-        </p>
         <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-          Next.js App Router starter
+          Browse Devices
         </h1>
-        <p className="max-w-2xl text-base text-white dark:text-zinc-400">
-          This is a minimal homepage built with the App Router, TypeScript, and
-          Tailwind CSS. Use it as a clean starting point for your next project.
+        <p className="max-w-2xl text-base text-zinc-600 dark:text-zinc-400">
+          Find used educational technology from schools and districts. Laptops,
+          Chromebooks, tablets, and more—ready for refurbishment or reuse.
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-lg border bg-white/70 p-4 shadow-sm dark:bg-zinc-900/60">
-          <h2 className="text-sm font-semibold">Edit the homepage</h2>
-          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-            Update the content in{" "}
-            <code className="rounded bg-zinc-950/5 px-1 py-0.5 text-xs font-mono">
-              src/app/page.tsx
-            </code>{" "}
-            to customize this view.
-          </p>
-        </div>
+      <div className="flex flex-wrap gap-4">
+        <input
+          type="search"
+          placeholder="Search devices..."
+          className="rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+          aria-label="Search devices"
+        />
+        <select
+          className="rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+          aria-label="Filter by type"
+        >
+          <option value="">All types</option>
+          <option value="laptop">Laptops</option>
+          <option value="chromebook">Chromebooks</option>
+          <option value="tablet">Tablets</option>
+          <option value="desktop">Desktops</option>
+        </select>
+      </div>
 
-        <div className="rounded-lg border bg-white/70 p-4 shadow-sm dark:bg-zinc-900/60">
-          <h2 className="text-sm font-semibold">Tweak the layout</h2>
-          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-            Global structure lives in{" "}
-            <code className="rounded bg-zinc-950/5 px-1 py-0.5 text-xs font-mono">
-              src/app/layout.tsx
-            </code>
-            , including the header and footer.
-          </p>
-        </div>
-
-        <div className="rounded-lg border bg-white/70 p-4 shadow-sm dark:bg-zinc-900/60">
-          <h2 className="text-sm font-semibold">Style with Tailwind</h2>
-          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-            Use utility classes in your components and global styles in{" "}
-            <code className="rounded bg-zinc-950/5 px-1 py-0.5 text-xs font-mono">
-              src/app/globals.css
-            </code>
-            .
-          </p>
-        </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div
+            key={i}
+            className="rounded-lg border bg-white/70 p-4 shadow-sm dark:bg-zinc-900/60"
+          >
+            <div className="aspect-video rounded bg-zinc-200 dark:bg-zinc-700" />
+            <h3 className="mt-3 font-medium">Device listing {i}</h3>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+              Example device type · Condition and quantity TBD
+            </p>
+          </div>
+        ))}
       </div>
     </section>
   );

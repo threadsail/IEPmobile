@@ -41,31 +41,19 @@ export default function RootLayout({
                 </span>
               </Link>
               <nav className="absolute left-1/2 flex -translate-x-1/2 items-center gap-2">
+              <Link
+                  href="/"
+                  className="flex items-center gap-1 rounded-md px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                >
+                  Browse Devices
+                </Link>
+                <Link
+                  href="/listdevice"
+                  className="flex items-center gap-1 rounded-md px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                >
+                  List a Device
+                </Link>
 
-                <Link
-                  href="/solutions/edurecycling"
-                  className="flex items-center gap-1 rounded-md px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
-                >
-                  EDU Recycling
-                </Link>
-                <Link
-                  href="/solutions/librarycheckout"
-                  className="flex items-center gap-1 rounded-md px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
-                >
-                  Library Checkout
-                </Link>
-                <Link
-                  href="/solutions/studentdevices"
-                  className="flex items-center gap-1 rounded-md px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
-                >
-                  Student Devices
-                </Link>
-                <Link
-                  href="/pricing"
-                  className="flex items-center gap-1 rounded-md px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
-                >
-                  Pricing
-                </Link>
                 <NavigationDropdown
                   label="Info"
                   items={[

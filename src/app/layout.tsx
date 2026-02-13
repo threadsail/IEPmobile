@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Link from "next/link";
 import "./globals.css";
+import NavigationDropdown from "@/components/NavigationDropdown";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,9 +27,68 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
-        {children}
+        <div className="flex min-h-screen flex-col">
+          <header className="border-b bg-white/70 backdrop-blur dark:bg-black/40">
+            <div className="mx-auto flex max-w-5xl flex-col items-center px-4 py-4">
+              <div className="mb-4">
+                <Link href="/" className="flex items-center gap-2">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-md">
+                    <span className="text-xl font-bold">T</span>
+                  </div>
+                  <span className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+                    threadsail.io
+                  </span>
+                </Link>
+              </div>
+              <nav className="flex items-center gap-2">
+                <NavigationDropdown
+                  label="Products"
+                  items={[
+                    { label: "Overview", href: "/products" },
+                    { label: "Features", href: "/products/features" },
+                    { label: "Pricing", href: "/products/pricing" },
+                  ]}
+                />
+                <NavigationDropdown
+                  label="Solutions"
+                  items={[
+                    { label: "Enterprise", href: "/solutions/enterprise" },
+                    { label: "Small Business", href: "/solutions/small-business" },
+                    { label: "Startups", href: "/solutions/startups" },
+                  ]}
+                />
+                <NavigationDropdown
+                  label="Resources"
+                  items={[
+                    { label: "Documentation", href: "/resources/docs" },
+                    { label: "Blog", href: "/resources/blog" },
+                    { label: "Support", href: "/resources/support" },
+                  ]}
+                />
+                <NavigationDropdown
+                  label="Company"
+                  items={[
+                    { label: "About", href: "/company/about" },
+                    { label: "Careers", href: "/company/careers" },
+                    { label: "Contact", href: "/company/contact" },
+                  ]}
+                />
+              </nav>
+            </div>
+          </header>
+
+          <main className="mx-auto flex w-full max-w-5xl flex-1 px-4 py-8">
+            {children}
+          </main>
+
+          <footer className="border-t text-sm text-zinc-500">
+            <div className="mx-auto max-w-5xl px-4 py-4">
+              © 2026 threadsail. Built with Next.js & Cursor.
+            </div>
+          </footer>
+        </div>
       </body>
     </html>
   );

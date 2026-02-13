@@ -44,35 +44,26 @@ export default function RootLayout({
               </div>
               <nav className="flex items-center gap-2">
                 <NavigationDropdown
-                  label="Products"
-                  items={[
-                    { label: "Overview", href: "/products" },
-                    { label: "Features", href: "/products/features" },
-                    { label: "Pricing", href: "/products/pricing" },
-                  ]}
-                />
-                <NavigationDropdown
                   label="Solutions"
                   items={[
-                    { label: "Enterprise", href: "/solutions/enterprise" },
-                    { label: "Small Business", href: "/solutions/small-business" },
-                    { label: "Startups", href: "/solutions/startups" },
+                    { label: "EDU Recycling", href: "/solutions/edurecycling" },
+                    { label: "Library Check Out", href: "/solutions/librarycheckout" },
+                    { label: "Student Devices", href: "/solutions/studentdevices" },
                   ]}
                 />
+                <Link
+                  href="/pricing"
+                  className="flex items-center gap-1 rounded-md px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                >
+                  Pricing
+                </Link>
                 <NavigationDropdown
-                  label="Resources"
+                  label="Support"
                   items={[
-                    { label: "Documentation", href: "/resources/docs" },
-                    { label: "Blog", href: "/resources/blog" },
-                    { label: "Support", href: "/resources/support" },
-                  ]}
-                />
-                <NavigationDropdown
-                  label="Company"
-                  items={[
-                    { label: "About", href: "/company/about" },
-                    { label: "Careers", href: "/company/careers" },
-                    { label: "Contact", href: "/company/contact" },
+                    { label: "About", href: "/support/about" },
+                    { label: "Documentation", href: "/support/docs" },
+                    { label: "Contact", href: "/support/contact" },
+                    { label: "Support", href: "/support/support" },
                   ]}
                 />
               </nav>

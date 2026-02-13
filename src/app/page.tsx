@@ -2,13 +2,13 @@ export default function Home() {
   return (
     <section className="w-full space-y-8">
       <div className="space-y-3">
-        <p className="text-sm font-medium uppercase tracking-[0.2em] text-zinc-500">
+        <p className="text-sm font-medium uppercase tracking-[0.2em] text-white">
           Welcome
         </p>
         <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
           Next.js App Router starter
         </h1>
-        <p className="max-w-2xl text-base text-zinc-600 dark:text-zinc-400">
+        <p className="max-w-2xl text-base text-white dark:text-zinc-400">
           This is a minimal homepage built with the App Router, TypeScript, and
           Tailwind CSS. Use it as a clean starting point for your next project.
         </p>

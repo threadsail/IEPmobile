@@ -38,7 +38,7 @@ export default function RootLayout({
                     <span className="text-xl font-bold">T</span>
                   </div>
                   <span className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                    threadsail.io
+                    threadsail
                   </span>
                 </Link>
               </div>
@@ -58,12 +58,11 @@ export default function RootLayout({
                   Pricing
                 </Link>
                 <NavigationDropdown
-                  label="Support"
+                  label="Info"
                   items={[
-                    { label: "About", href: "/support/about" },
-                    { label: "Documentation", href: "/support/docs" },
-                    { label: "Contact", href: "/support/contact" },
-                    { label: "Support", href: "/support/support" },
+                    { label: "About", href: "/info/about" },
+                    { label: "Contact", href: "/info/contact" },
+                    { label: "Support", href: "/info/support" },
                   ]}
                 />
               </nav>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
+import AuthHeader from "@/components/AuthHeader";
 import NavigationDropdown from "@/components/NavigationDropdown";
 
 const geistSans = Geist({
@@ -41,12 +42,7 @@ export default function RootLayout({
                     threadsail
                   </span>
                 </Link>
-                <Link
-                  href="/dashboard"
-                  className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-                >
-                  Login
-                </Link>
+                <AuthHeader />
               </div>
 
               <nav className="flex items-center justify-center gap-2">

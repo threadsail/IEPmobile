@@ -66,7 +66,7 @@ export default function NavigationDropdown({
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 top-full z-50 mt-1 w-48 rounded-md border bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
+        <div className="absolute left-0 top-full z-[100] mt-1 w-48 rounded-md border bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
           <div className="py-1">
             {items.map((item, index) => (
               <Link

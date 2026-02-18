@@ -3,10 +3,14 @@ import Link from "next/link";
 import { signOut } from "@/app/actions/auth";
 
 export default async function AuthHeader() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getUser();
+    user = data?.user ?? null;
+  } catch {
+    // Supabase unreachable or misconfigured; show sign-in so app still works
+  }
 
   if (user) {
     return (

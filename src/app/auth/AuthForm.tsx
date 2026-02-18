@@ -65,9 +65,22 @@ export default function AuthForm() {
         router.refresh();
       }
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Something went wrong.";
-      setMessage({ type: "error", text: message });
+      let text = "Something went wrong.";
+      if (err instanceof Error) {
+        const msg = err.message.toLowerCase();
+        if (
+          msg.includes("network") ||
+          msg.includes("fetch") ||
+          msg.includes("failed to fetch") ||
+          msg.includes("internal")
+        ) {
+          text =
+            "Connection error. Check your internet and that Supabase is reachable, then try again.";
+        } else {
+          text = err.message;
+        }
+      }
+      setMessage({ type: "error", text });
     } finally {
       setLoading(false);
     }
@@ -109,7 +122,8 @@ export default function AuthForm() {
 
         {callbackError && (
           <p className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-300">
-            Authentication error. Please try again.
+            Sign-in link expired or there was a connection problem. Try signing
+            in again with your email and password.
           </p>
         )}
 

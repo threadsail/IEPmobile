@@ -14,13 +14,16 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #020617; /* slate-950 */
-    --foreground: #e5e7eb; /* zinc-200 */
+    --background: #0f0f12; /* soft dark base */
+    --foreground: #f4f4f5; /* zinc-100, comfortable reading */
+    --surface: #18181b; /* zinc-900, cards/panels */
+    --muted: #a1a1aa; /* zinc-400, secondary text */
+    --border: #27272a; /* zinc-800, subtle borders */
   }
 }
 
 body {
-  /* Subtle neutral background instead of bright blue */
+  /* Light: subtle neutral gradient */
   background: radial-gradient(
     circle at top,
     #f9fafb 0%,
@@ -31,4 +34,15 @@ body {
   font-family: var(--font-geist-sans), system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
   min-height: 100vh;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: radial-gradient(
+      ellipse 120% 80% at 50% -20%,
+      #1c1c21 0%,
+      #0f0f12 50%,
+      #0a0a0c 100%
+    );
+  }
 }

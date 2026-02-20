@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Link from "next/link";
 import "./globals.css";
-import AuthHeader from "@/components/AuthHeader";
-import NavigationDropdown from "@/components/NavigationDropdown";
+import AppHeader from "@/components/AppHeader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,45 +29,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className="flex min-h-screen flex-col">
-          <header className="relative z-50 border-b bg-white/70 backdrop-blur dark:bg-black/40">
-            <div className="mx-auto flex max-w-5xl flex-col gap-3 px-4 py-4">
-              <div className="flex items-center justify-between">
-                <Link href="/" className="flex items-center gap-2">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-md">
-                    <span className="text-xl font-bold">T</span>
-                  </div>
-                  <span className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                    threadsail
-                  </span>
-                </Link>
-                <AuthHeader />
-              </div>
-
-              <nav className="flex items-center justify-center gap-2">
-                <Link
-                  href="/browse"
-                  className="flex items-center gap-1 rounded-md px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
-                >
-                  Browse Devices
-                </Link>
-                <Link
-                  href="/listdevice"
-                  className="flex items-center gap-1 rounded-md px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
-                >
-                  List a Device
-                </Link>
-
-                <NavigationDropdown
-                  label="Info"
-                  items={[
-                    { label: "About", href: "/info/about" },
-                    { label: "Contact", href: "/info/contact" },
-                    { label: "Support", href: "/info/support" },
-                  ]}
-                />
-              </nav>
-            </div>
-          </header>
+          <AppHeader />
 
           <main className="mx-auto flex w-full max-w-5xl flex-1 px-4 py-8">
             {children}
@@ -77,7 +37,7 @@ export default function RootLayout({
 
           <footer className="border-t bg-white/80 text-center text-sm text-zinc-500 backdrop-blur dark:bg-black/40 dark:text-zinc-400">
             <div className="mx-auto max-w-5xl px-4 py-4">
-              © 2026 threadsail. Built with Next.js & Cursor.
+            © 2026 IEPmobile @ threadsail
             </div>
           </footer>
         </div>

@@ -10,28 +10,26 @@ export default function Home() {
         <div className="absolute left-0 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-500/15 blur-3xl" />
         <div className="relative mx-auto max-w-3xl text-center">
           <p className="text-sm font-medium uppercase tracking-widest text-blue-300">
-            EdTech marketplace
+            Default Home Page
           </p>
           <h1 className="mt-4 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
-            Where used school devices find new classrooms
+            Default Home Page
           </h1>
           <p className="mt-6 text-lg leading-relaxed text-slate-300 sm:text-xl">
-            Threadsail connects K–12 districts with buyers who refurbish and
-            reuse. List surplus laptops, Chromebooks, and tablets—or browse and
-            buy at scale.
+            Default Home Page
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Link
-              href="/browse"
+              href="/"
               className="inline-flex items-center justify-center rounded-xl bg-white px-6 py-3.5 text-base font-semibold text-slate-900 shadow-lg transition hover:bg-slate-100"
             >
-              Browse devices
+              Link 1
             </Link>
             <Link
-              href="/listdevice"
+              href="/"
               className="inline-flex items-center justify-center rounded-xl border border-white/30 bg-white/10 px-6 py-3.5 text-base font-semibold text-white backdrop-blur transition hover:bg-white/20"
             >
-              List a device
+              Link 2
             </Link>
           </div>
         </div>
@@ -46,11 +44,10 @@ export default function Home() {
             </svg>
           </div>
           <h2 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-            Buy in bulk
+            Default Value Prop 1
           </h2>
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-            Source laptops, Chromebooks, and tablets from verified schools and
-            districts—ready for refurbishment or deployment.
+            Default Value Prop 1
           </p>
         </div>
         <div className="rounded-xl border border-zinc-200/80 bg-white/80 p-6 shadow-sm dark:border-zinc-700/50 dark:bg-zinc-900/50">
@@ -60,11 +57,10 @@ export default function Home() {
             </svg>
           </div>
           <h2 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-            Sell surplus
+            Default Value Prop 2
           </h2>
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-            Offload retired devices to vetted buyers. Clear inventory, recover
-            value, and support circular use of ed tech.
+            Default Value Prop 2
           </p>
         </div>
         <div className="rounded-xl border border-zinc-200/80 bg-white/80 p-6 shadow-sm dark:border-zinc-700/50 dark:bg-zinc-900/50 sm:col-span-2 lg:col-span-1">
@@ -74,11 +70,10 @@ export default function Home() {
             </svg>
           </div>
           <h2 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-            Better for the planet
+            Default Value Prop 3
           </h2>
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-            Extend device life and reduce e-waste. Every device reused is one less
-            in a landfill.
+            Default Value Prop 3
           </p>
         </div>
       </section>
@@ -86,21 +81,20 @@ export default function Home() {
       {/* Social proof / CTA strip */}
       <section className="mt-16 rounded-2xl border border-zinc-200/80 bg-zinc-100/80 px-8 py-12 text-center dark:border-zinc-700/50 dark:bg-zinc-800/50">
         <p className="text-sm font-medium uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
-          Ready to get started?
+          Default CTA
         </p>
         <h2 className="mt-2 text-2xl font-bold text-zinc-900 dark:text-zinc-100 sm:text-3xl">
-          Find or list devices in minutes
+          Default CTA
         </h2>
         <p className="mx-auto mt-3 max-w-xl text-zinc-600 dark:text-zinc-400">
-          Join schools and buyers already using Threadsail to move ed tech where
-          it’s needed.
+          Default CTA
         </p>
         <div className="mt-8">
           <Link
-            href="/browse"
+            href="/"
             className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-6 py-3.5 text-base font-semibold text-white shadow-md transition hover:bg-blue-700"
           >
-            Browse devices
+            Link 1
           </Link>
         </div>
       </section>

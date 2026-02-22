@@ -81,7 +81,7 @@ export default function PricingPage() {
           <ul className="mb-6 space-y-3">
             <li className="flex items-start gap-2">
               <CheckIcon />
-              <span className="text-sm">Single User</span>
+              <span className="text-sm">One Teacher and Aide</span>
             </li>
             <li className="flex items-start gap-2">
               <CheckIcon />
@@ -93,7 +93,7 @@ export default function PricingPage() {
             </li>
             <li className="flex items-start gap-2">
               <CheckIcon />
-              <span className="text-sm">Up to 500 entries</span>
+              <span className="text-sm">Up to 5 Data points per student</span>
             </li>
             <li className="flex items-start gap-2">
               <CheckIcon />
@@ -130,7 +130,7 @@ export default function PricingPage() {
           <ul className="mb-6 space-y-3">
             <li className="flex items-start gap-2">
               <CheckIcon />
-              <span className="text-sm">Up to 5 users</span>
+              <span className="text-sm">Two Teachers and 6 Aides</span>
             </li>
             <li className="flex items-start gap-2">
               <CheckIcon />
@@ -142,7 +142,7 @@ export default function PricingPage() {
             </li>
             <li className="flex items-start gap-2">
               <CheckIcon />
-              <span className="text-sm">Up to 2000 entries</span>
+              <span className="text-sm">Up to 10 Data points per student</span>
             </li>
             <li className="flex items-start gap-2">
               <CheckIcon />
@@ -178,7 +178,7 @@ export default function PricingPage() {
           <ul className="mb-6 space-y-3">
             <li className="flex items-start gap-2">
               <CheckIcon />
-              <span className="text-sm">Unlimited users</span>
+              <span className="text-sm">Unlimited Teachers and Aides</span>
             </li>
             <li className="flex items-start gap-2">
               <CheckIcon />
@@ -190,7 +190,7 @@ export default function PricingPage() {
             </li>
             <li className="flex items-start gap-2">
               <CheckIcon />
-              <span className="text-sm">Unlimited entries</span>
+              <span className="text-sm">Unlimited Data points per student</span>
             </li>
             <li className="flex items-start gap-2">
               <CheckIcon />

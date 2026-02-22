@@ -1,3 +1,5 @@
+import ScheduleView from "./ScheduleView";
+
 export default function SchedulePage() {
   return (
     <div className="w-full space-y-6">
@@ -5,11 +7,7 @@ export default function SchedulePage() {
         <h1 className="text-2xl font-semibold tracking-tight text-black">Schedule</h1>
       </section>
 
-      <div className="w-full">
-        <p className="text-zinc-600 dark:text-zinc-400">
-          Schedule content coming soon.
-        </p>
-      </div>
+      <ScheduleView />
     </div>
   );
 }

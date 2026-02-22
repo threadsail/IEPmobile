@@ -71,7 +71,7 @@ export default function FooterNav() {
             href={href}
             className={`flex size-12 flex-shrink-0 flex-col items-center justify-center gap-0.5 rounded-lg text-[10px] font-medium transition-[color,background-color,width,height,font-size] duration-200 ease-out md:size-16 md:text-xs ${
               active
-                ? "bg-blue-600/90 text-white hover:bg-blue-600 dark:bg-blue-500/90 dark:hover:bg-blue-500"
+                ? "bg-gradient-to-br from-blue-400 to-blue-600 text-white hover:bg-blue-600 dark:bg-blue-600/90 dark:hover:bg-blue-600"
                 : "text-zinc-700 hover:bg-white/20 hover:text-blue-600 dark:text-zinc-300 dark:hover:bg-black/20 dark:hover:text-blue-500"
             }`}
           >

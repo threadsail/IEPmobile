@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Aloja";
+  src: url("/fonts/Aloja.woff2") format("woff2");
+  font-display: swap;
+}
+
 :root {
   /* Light theme: modern white/grey surface */
   --background: #f4f4f5; /* zinc-100 */
@@ -10,6 +16,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-aloja: "Aloja", cursive;
 }
 
 @media (prefers-color-scheme: dark) {

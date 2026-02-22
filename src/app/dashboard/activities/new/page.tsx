@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AddActivityForm from "./AddActivityForm";
 
 export default function NewActivityPage() {
   return (
@@ -9,13 +10,13 @@ export default function NewActivityPage() {
         </h1>
       </section>
 
-      <p className="text-zinc-600 dark:text-zinc-400">
-        Add activity form coming soon. Wire this page to create rows in your
-        activities table.
-      </p>
+      <div className="rounded-lg border border-zinc-200/80 bg-white/70 p-6 shadow-sm dark:border-zinc-700/50 dark:bg-zinc-900/60">
+        <AddActivityForm />
+      </div>
+
       <Link
         href="/dashboard/activities"
-        className="text-sm font-medium text-purple-600 hover:underline dark:text-purple-400"
+        className="inline-block text-sm font-medium text-purple-600 hover:underline dark:text-purple-400"
       >
         ← Back to activities
       </Link>

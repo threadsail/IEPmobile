@@ -54,6 +54,14 @@ export default function ScheduleView() {
   const weekDates = useMemo(() => getWeekDates(anchor), [anchor]);
   const timeSlots = useMemo(() => getTimeSlots(), []);
 
+  const fourDayWindow = useMemo(() => {
+    const todayKey = toDateKey(new Date());
+    const todayIndex = weekDates.findIndex((d) => toDateKey(d) === todayKey);
+    const idx = todayIndex >= 0 ? todayIndex : 0;
+    const start = Math.max(0, Math.min(idx - 1, 3));
+    return { start, end: start + 4 };
+  }, [weekDates]);
+
   const fiveDayWindow = useMemo(() => {
     const todayKey = toDateKey(new Date());
     const todayIndex = weekDates.findIndex((d) => toDateKey(d) === todayKey);
@@ -103,13 +111,22 @@ export default function ScheduleView() {
           {weekDates.map((d, i) => {
           const key = toDateKey(d);
           const isSelected = key === selectedKey;
+          const inFourDay = i >= fourDayWindow.start && i < fourDayWindow.end;
           const inFiveDay = i >= fiveDayWindow.start && i < fiveDayWindow.end;
+          const visibilityClass =
+            inFourDay && inFiveDay
+              ? "flex flex-col"
+              : inFourDay
+                ? "flex flex-col md:hidden lg:flex lg:flex-col"
+                : inFiveDay
+                  ? "hidden md:flex md:flex-col lg:flex lg:flex-col"
+                  : "hidden lg:flex lg:flex-col";
           return (
             <button
               key={key}
               type="button"
               onClick={() => setSelectedKey(key)}
-              className={`flex min-w-[2.5rem] flex-shrink-0 flex-col items-center rounded-lg border-2 px-2 py-1.5 transition-[color,background-color,border-color,width,height,font-size,padding] duration-200 ease-out sm:min-w-[2.75rem] sm:rounded-xl sm:px-2.5 sm:py-2 md:min-w-[4rem] md:px-3 md:py-2 ${!inFiveDay ? "hidden sm:flex" : ""} ${
+              className={`min-w-[2.5rem] flex-shrink-0 flex-col items-center rounded-lg border-2 px-2 py-1.5 transition-[color,background-color,border-color,width,height,font-size,padding] duration-200 ease-out sm:min-w-[2.75rem] sm:rounded-xl sm:px-2.5 sm:py-2 md:min-w-[4rem] md:px-3 md:py-2 ${visibilityClass} ${
                 isSelected
                   ? "border-teal-500 bg-teal-500/20 text-teal-800 dark:border-teal-400 dark:bg-teal-400/20 dark:text-teal-100"
                   : "border-zinc-200/80 bg-white/70 text-zinc-700 hover:border-teal-300 hover:bg-teal-50/50 dark:border-zinc-700/50 dark:bg-zinc-800/60 dark:text-zinc-300 dark:hover:border-teal-700 dark:hover:bg-teal-900/30"

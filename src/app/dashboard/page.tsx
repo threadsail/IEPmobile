@@ -50,7 +50,7 @@ export default async function DashboardPage() {
           href="/dashboard/students"
           className="flex flex-col items-center justify-center rounded-lg border border-zinc-200/80 bg-white/70 p-6 text-center shadow-sm transition-colors hover:border-blue-200 hover:bg-white dark:border-zinc-700/50 dark:bg-zinc-900/60 dark:hover:border-blue-800 dark:hover:bg-zinc-900/80"
         >
-          <span className="text-3xl font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
+          <span className="bg-gradient-to-br from-pink-500 to-pink-700 bg-clip-text text-5xl font-bold tabular-nums text-transparent dark:from-pink-400 dark:to-pink-600">
             {studentCount}
           </span>
           <h2 className="mt-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">Students</h2>
@@ -60,7 +60,7 @@ export default async function DashboardPage() {
           href="/dashboard/data"
           className="flex flex-col items-center justify-center rounded-lg border border-zinc-200/80 bg-white/70 p-6 text-center shadow-sm transition-colors hover:border-blue-200 hover:bg-white dark:border-zinc-700/50 dark:bg-zinc-900/60 dark:hover:border-blue-800 dark:hover:bg-zinc-900/80"
         >
-          <span className="text-3xl font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
+          <span className="bg-gradient-to-br from-orange-500 to-amber-600 bg-clip-text text-5xl font-bold tabular-nums text-transparent dark:from-orange-400 dark:to-amber-500">
             {toDoReviewCount}
           </span>
           <h2 className="mt-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">To-Do</h2>

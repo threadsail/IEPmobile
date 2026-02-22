@@ -35,22 +35,14 @@ export default async function AppHeader() {
 
           <div className="order-3 flex shrink-0 items-center gap-2 md:order-3">
             {user ? (
-              <>
-                <Link
-                  href="/dashboard"
-                  className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+              <form action={signOut}>
+                <button
+                  type="submit"
+                  className="rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
                 >
-                  Dashboard
-                </Link>
-                <form action={signOut}>
-                  <button
-                    type="submit"
-                    className="rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
-                  >
-                    Sign out
-                  </button>
-                </form>
-              </>
+                  Sign out
+                </button>
+              </form>
             ) : (
               <Link
                 href="/auth"
@@ -63,22 +55,7 @@ export default async function AppHeader() {
         </div>
 
         <nav className="order-2 flex min-w-0 flex-1 flex-wrap items-center justify-center gap-1 md:order-2">
-          {user ? (
-            <>
-              <Link href="/dashboard/schedule" className={linkClass}>
-                Schedule
-              </Link>
-              <Link href="/dashboard/data" className={linkClass}>
-                Data
-              </Link>
-              <Link href="/dashboard/activities" className={linkClass}>
-                Activities
-              </Link>
-              <Link href="/dashboard/students" className={linkClass}>
-                Students
-              </Link>
-            </>
-          ) : (
+          {!user && (
             <>
               <NavigationDropdown
                 label="Features"
@@ -103,6 +80,7 @@ export default async function AppHeader() {
             </>
           )}
         </nav>
+        {user && <div className="order-2 md:flex-1" aria-hidden />}
       </div>
     </header>
   );

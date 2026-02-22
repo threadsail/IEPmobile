@@ -42,7 +42,7 @@ export default async function DashboardPage() {
       </section>
 
       {/* Current date */}
-      <p className="text-center text-base text-zinc-600 dark:text-zinc-400 md:text-lg">{currentDate}</p>
+      <p className="text-center text-base text-zinc-600 dark:text-zinc-400 md:text-2xl">{currentDate}</p>
 
       {/* Two sections side by side */}
       <div className="grid grid-cols-2 gap-4">

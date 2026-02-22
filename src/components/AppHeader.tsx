@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import Image from "next/image";
 import Link from "next/link";
 import { signOut } from "@/app/actions/auth";
 import NavigationDropdown from "@/components/NavigationDropdown";
@@ -19,14 +20,12 @@ export default async function AppHeader() {
   return (
     <header className="sticky top-0 z-50 border-b bg-white/80 shadow-[0_1px_3px_0_rgba(0,0,0,0.08)] backdrop-blur-md dark:bg-black/50 dark:shadow-[0_1px_3px_0_rgba(0,0,0,0.2)]">
       <div className="mx-auto flex max-w-5xl flex-row items-center justify-between gap-4 px-4 py-2">
-        <Link href="/" className="order-1 flex shrink-0 items-center gap-1.5 md:order-1">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-sm">
-              <span className="text-lg font-bold">I</span>
-            </div>
+        <Link href="/" className="order-1 flex shrink-0 items-center md:order-1">
+            <Image src="/pencil-logo.png" alt="" width={48} height={48} className="-mr-0.5 h-12 w-12 shrink-0 object-contain" />
             <span className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
               IEP
             </span>
-            <span className="font-[family-name:var(--font-aloja)] text-xs font-bold tracking-tight text-zinc-400 dark:text-zinc-50">
+            <span className="ml-1.5 font-[family-name:var(--font-aloja)] text-xs font-bold tracking-tight text-zinc-400 dark:text-zinc-50">
               mobile
             </span>
         </Link>

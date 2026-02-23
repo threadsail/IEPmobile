@@ -1,15 +1,14 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/utils/supabase/server";
+import { getCurrentUser } from "@/utils/auth";
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
-  if (!data?.user) {
+  if (!user) {
     redirect("/auth");
   }
 

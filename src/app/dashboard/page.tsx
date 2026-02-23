@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { createClient } from "@/utils/supabase/server";
 import { getProfile } from "./profile/get-profile";
+import { getCurrentUser } from "@/utils/auth";
 
 function getDisplayName(
   profile: { first_name: string | null; last_name: string | null; username: string | null } | null,
@@ -15,11 +15,8 @@ function getDisplayName(
 }
 
 export default async function DashboardPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  const profile = user ? await getProfile(supabase, user.id) : null;
+  const user = await getCurrentUser();
+  const profile = user ? await getProfile(user.id) : null;
   const displayName = getDisplayName(profile, user?.email);
 
   const currentDate = new Date().toLocaleDateString(undefined, {
@@ -63,7 +60,7 @@ export default async function DashboardPage() {
           <span className="bg-gradient-to-br from-orange-500 to-amber-600 bg-clip-text text-5xl font-bold tabular-nums text-transparent dark:from-orange-400 dark:to-amber-500">
             {toDoReviewCount}
           </span>
-          <h2 className="mt-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">To-Do</h2>
+          <h2 className="mt-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">Data Review</h2>
         </Link>
       </div>
 
@@ -101,30 +98,6 @@ export default async function DashboardPage() {
               </div>
             ));
           })()}
-        </div>
-      </section>
-
-      {/* Compact: Profile, Subscription, Settings */}
-      <section className="rounded-lg border border-zinc-200/80 bg-white/70 px-4 py-3 shadow-sm dark:border-zinc-700/50 dark:bg-zinc-900/60">
-        <div className="flex flex-wrap items-center justify-center gap-4">
-          <Link
-            href="/dashboard/profile"
-            className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
-          >
-            Profile
-          </Link>
-          <Link
-            href="/pricing"
-            className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
-          >
-            Subscription
-          </Link>
-          <Link
-            href="/dashboard/settings"
-            className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
-          >
-            Settings
-          </Link>
         </div>
       </section>
     </div>

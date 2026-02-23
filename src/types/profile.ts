@@ -14,4 +14,8 @@ export type Profile = {
   role: string | null;
   first_name: string | null;
   last_name: string | null;
+  /** Current pricing plan. From admin.profiles.subscription_plan. */
+  subscription_plan: "starter" | "basic" | "pro" | null;
+  /** Billing interval for basic/pro. From admin.profiles.subscription_interval. */
+  subscription_interval: "monthly" | "annual" | null;
 };

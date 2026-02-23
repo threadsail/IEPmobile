@@ -1,15 +1,8 @@
-import { createClient } from "@/utils/supabase/server";
+import { getCurrentUser } from "@/utils/auth";
 import FooterNav from "./FooterNav";
 
 export default async function LoggedInFooter() {
-  let user = null;
-  try {
-    const supabase = await createClient();
-    const { data } = await supabase.auth.getUser();
-    user = data?.user ?? null;
-  } catch {
-    return null;
-  }
+  const user = await getCurrentUser();
 
   if (!user) return null;
 

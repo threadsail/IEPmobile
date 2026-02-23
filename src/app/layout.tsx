@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import AppHeader from "@/components/AppHeader";
 import LoggedInFooter from "@/components/LoggedInFooter";
+import SiteFooter from "@/components/SiteFooter";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,11 +39,7 @@ export default function RootLayout({
 
           <LoggedInFooter />
 
-          <footer className="border-t bg-white/80 text-center text-sm text-zinc-500 shadow-[0_-1px_3px_0_rgba(0,0,0,0.1)] backdrop-blur dark:bg-black/40 dark:shadow-[0_-1px_3px_0_rgba(0,0,0,0.2)] dark:text-zinc-400">
-            <div className="mx-auto max-w-5xl px-4 py-4">
-            © 2026 IEPmobile @ threadsail.io
-            </div>
-          </footer>
+          <SiteFooter />
         </div>
       </body>
     </html>

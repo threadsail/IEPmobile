@@ -3,35 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Profile } from "@/types/profile";
 import { createClient } from "@/utils/supabase/server";
 
-/**
- * Fetches role, first_name, last_name from the admin schema (admin.profiles).
- * Returns null if the schema/table doesn't exist yet or no row exists.
- */
-export async function getAdminProfile(
-  supabase: SupabaseClient,
-  userId: string
-): Promise<{
-  role: string | null;
-  first_name: string | null;
-  last_name: string | null;
-} | null> {
-  const { data, error } = await supabase
-    .schema("admin")
-    .from("profiles")
-    .select("role, first_name, last_name")
-    .eq("id", userId)
-    .maybeSingle();
-
-  if (error) return null;
-  if (!data) return null;
-  return {
-    role: data.role ?? null,
-    first_name: data.first_name ?? null,
-    last_name: data.last_name ?? null,
-  };
-}
-
-/** Fetches subscription_plan. Returns null if column or row missing. */
+/** Fetches subscription_plan from admin.profiles. Returns null if column or row missing. */
 async function getSubscriptionPlan(
   supabase: SupabaseClient,
   userId: string
@@ -69,13 +41,12 @@ async function getProfileWithClient(
   supabase: SupabaseClient,
   userId: string
 ): Promise<Profile | null> {
-  const [publicResult, adminResult, planResult, intervalResult] = await Promise.all([
+  const [publicResult, planResult, intervalResult] = await Promise.all([
     supabase
       .from("profiles")
-      .select("id, username, created_at, updated_at")
+      .select("id, username, created_at, updated_at, first_name, last_name, full_name, role")
       .eq("id", userId)
       .maybeSingle(),
-    getAdminProfile(supabase, userId),
     getSubscriptionPlan(supabase, userId),
     getSubscriptionInterval(supabase, userId),
   ]);
@@ -92,23 +63,22 @@ async function getProfileWithClient(
     username: null,
     created_at: null,
     updated_at: null,
+    first_name: null,
+    last_name: null,
+    full_name: null,
+    role: null,
   };
 
-  const admin = adminResult;
-
   return {
-    ...(base as Omit<Profile, "role" | "first_name" | "last_name" | "subscription_plan" | "subscription_interval">),
-    role: admin?.role ?? null,
-    first_name: admin?.first_name ?? null,
-    last_name: admin?.last_name ?? null,
+    ...(base as Omit<Profile, "subscription_plan" | "subscription_interval">),
     subscription_plan: planResult ?? null,
     subscription_interval: intervalResult ?? null,
   } as Profile;
 }
 
 /**
- * Cached per-request by userId. Fetches from public.profiles and admin.profiles in parallel.
- * Use this in server components when you only have the user id.
+ * Cached per-request by userId. Fetches profile (id, username, first_name, last_name, full_name, role, created_at, updated_at) from public.profiles,
+ * and subscription_plan/subscription_interval from admin.profiles.
  */
 export const getProfile = cache(async (userId: string): Promise<Profile | null> => {
   const supabase = await createClient();
@@ -117,7 +87,7 @@ export const getProfile = cache(async (userId: string): Promise<Profile | null> 
 
 /**
  * Use when you already have a Supabase client (e.g. in a route handler).
- * Does not use request cache; runs public + admin fetches in parallel.
+ * Does not use request cache.
  */
 export async function getProfileWithSupabase(
   supabase: SupabaseClient,

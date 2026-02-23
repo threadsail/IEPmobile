@@ -155,14 +155,14 @@ export default function Home() {
           Ready to simplify schedules, activities, and data?
         </h2>
         <p className="mx-auto mt-3 max-w-xl text-zinc-600 dark:text-zinc-400">
-          Sign in or create an account to set up daily schedules, assign activities, and track progress for every student.
+          Create an account to set up daily schedules, assign activities, and track progress for every student.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
           <Link
-            href="/auth"
+            href="/auth?mode=signup"
             className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-6 py-3.5 text-base font-semibold text-white shadow-md transition hover:bg-blue-700"
           >
-            Sign in or sign up
+            Sign up
           </Link>
           <Link
             href="/dashboard/students"

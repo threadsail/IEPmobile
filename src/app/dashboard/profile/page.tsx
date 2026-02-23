@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getProfile } from "./get-profile";
 import { getCurrentUser } from "@/utils/auth";
 import type { Profile } from "@/types/profile";
+import EditNameForm from "./EditNameForm";
 
 function formatDate(iso: string | null): string {
   if (!iso) return "—";
@@ -22,9 +23,15 @@ function ProfileInfoList({
   email: string | undefined;
   profile: Profile | null;
 }) {
+  const fullName =
+    profile?.full_name?.trim() ||
+    [profile?.first_name, profile?.last_name].filter(Boolean).join(" ").trim() ||
+    "Not set";
+
   const rows: { label: string; value: string }[] = [
     { label: "Email", value: email ?? "—" },
     { label: "Username", value: profile?.username ?? "Not set" },
+    { label: "Full name", value: fullName },
     { label: "First name", value: profile?.first_name ?? "Not set" },
     { label: "Last name", value: profile?.last_name ?? "Not set" },
     { label: "Role", value: profile?.role ?? "Not set" },
@@ -168,6 +175,10 @@ export default async function ProfilePage() {
         <div className="mt-4">
           <ProfileInfoList email={user?.email} profile={profile} />
         </div>
+        <EditNameForm
+          firstName={profile?.first_name ?? null}
+          lastName={profile?.last_name ?? null}
+        />
         <div className="mt-6 flex flex-wrap gap-4 border-t border-zinc-200 pt-6 dark:border-zinc-700">
           <Link
             href="/dashboard/settings"

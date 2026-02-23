@@ -5,10 +5,10 @@ export default function SettingsPage() {
     <div className="w-full space-y-6">
       <div>
         <Link
-          href="/dashboard"
+          href="/dashboard/profile"
           className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
         >
-          ← Back to dashboard
+          ← Back
         </Link>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">Settings</h1>
         <p className="mt-1 text-zinc-600 dark:text-zinc-400">

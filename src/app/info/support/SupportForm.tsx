@@ -1,6 +1,6 @@
 "use client";
 
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import { submitSupportForm } from "./actions";
 
 const inputClass =
@@ -8,7 +8,7 @@ const inputClass =
 const labelClass = "mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300";
 
 export default function SupportForm() {
-  const [state, formAction] = useFormState(submitSupportForm, { error: null });
+  const [state, formAction] = useActionState(submitSupportForm, { error: null });
 
   if (state?.success) {
     return (

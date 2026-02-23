@@ -18,6 +18,7 @@ export default async function DashboardPage() {
   const user = await getCurrentUser();
   const profile = user ? await getProfile(user.id) : null;
   const displayName = getDisplayName(profile, user?.email);
+  const welcomeName = profile?.first_name?.trim() || displayName;
 
   const currentDate = new Date().toLocaleDateString(undefined, {
     weekday: "long",
@@ -35,7 +36,7 @@ export default async function DashboardPage() {
       {/* Welcome color section — flush with header, rounded bottom only */}
       <section className="-mt-8 rounded-b-xl bg-gradient-to-br from-blue-400/90 to-blue-600/90 px-6 py-4 text-center shadow-lg dark:from-blue-700/90 dark:to-blue-800/90">
         <h1 className="text-lg font-semibold tracking-tight text-black">Welcome</h1>
-        <p className="mt-1 text-2xl font-medium text-black">{displayName}</p>
+        <p className="mt-1 text-2xl font-medium text-black">{welcomeName}</p>
       </section>
 
       {/* Current date */}
@@ -65,19 +66,19 @@ export default async function DashboardPage() {
       </div>
 
       {/* Today's schedule */}
-      <section className="rounded-lg border border-zinc-200/80 bg-white/70 p-6 shadow-sm dark:border-zinc-700/50 dark:bg-zinc-900/60">
+      <section className="rounded-lg border border-zinc-200/80 bg-white/70 p-3 shadow-sm dark:border-zinc-700/50 dark:bg-zinc-900/60 sm:p-4 md:p-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+          <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 sm:text-lg">
             Today&apos;s schedule
           </h2>
           <Link
             href="/dashboard/schedule"
-            className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
+            className="text-xs font-medium text-blue-600 hover:underline dark:text-blue-400 sm:text-sm"
           >
             View schedule →
           </Link>
         </div>
-        <div className="mt-4 overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-700">
+        <div className="mt-2 overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-700 sm:mt-4">
           {(() => {
             const slots: string[] = [];
             for (let h = 7; h <= 16; h++) {
@@ -89,12 +90,12 @@ export default async function DashboardPage() {
             return slots.map((time) => (
               <div
                 key={time}
-                className="flex min-h-[2.5rem] items-stretch border-b border-zinc-100 last:border-b-0 dark:border-zinc-700/80"
+                className="flex min-h-[1.75rem] items-stretch border-b border-zinc-100 last:border-b-0 dark:border-zinc-700/80 sm:min-h-[2rem] md:min-h-[2.5rem]"
               >
-                <div className="w-20 shrink-0 border-r border-zinc-200 bg-zinc-50/80 px-2 py-1.5 text-right text-xs font-medium tabular-nums text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-400">
+                <div className="w-14 shrink-0 border-r border-zinc-200 bg-zinc-50/80 px-1.5 py-1 text-right text-[10px] font-medium tabular-nums text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-400 sm:w-16 sm:px-2 sm:py-1.5 sm:text-xs md:w-20">
                   {time}
                 </div>
-                <div className="min-h-[2.5rem] flex-1 px-2 py-1.5 text-sm text-zinc-500 dark:text-zinc-400" />
+                <div className="min-h-[1.75rem] flex-1 px-1.5 py-1 text-[10px] text-zinc-500 dark:text-zinc-400 sm:min-h-[2rem] sm:px-2 sm:py-1.5 sm:text-xs md:min-h-[2.5rem] md:text-sm" />
               </div>
             ));
           })()}

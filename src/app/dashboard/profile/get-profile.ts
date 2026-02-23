@@ -20,9 +20,10 @@ export async function getAdminProfile(
     .from("profiles")
     .select("role, first_name, last_name")
     .eq("id", userId)
-    .single();
+    .maybeSingle();
 
-  if (error || !data) return null;
+  if (error) return null;
+  if (!data) return null;
   return {
     role: data.role ?? null,
     first_name: data.first_name ?? null,
@@ -40,7 +41,7 @@ async function getSubscriptionPlan(
     .from("profiles")
     .select("subscription_plan")
     .eq("id", userId)
-    .single();
+    .maybeSingle();
 
   if (error || !data?.subscription_plan) return null;
   const plan = data.subscription_plan;
@@ -57,7 +58,7 @@ async function getSubscriptionInterval(
     .from("profiles")
     .select("subscription_interval")
     .eq("id", userId)
-    .single();
+    .maybeSingle();
 
   if (error || !data?.subscription_interval) return null;
   const interval = data.subscription_interval;
@@ -73,18 +74,30 @@ async function getProfileWithClient(
       .from("profiles")
       .select("id, username, created_at, updated_at")
       .eq("id", userId)
-      .single(),
+      .maybeSingle(),
     getAdminProfile(supabase, userId),
     getSubscriptionPlan(supabase, userId),
     getSubscriptionInterval(supabase, userId),
   ]);
 
-  if (publicResult.error || !publicResult.data) return null;
   const data = publicResult.data;
+  const publicError = publicResult.error;
+
+  if (publicError) {
+    return null;
+  }
+
+  const base = data ?? {
+    id: userId,
+    username: null,
+    created_at: null,
+    updated_at: null,
+  };
+
   const admin = adminResult;
 
   return {
-    ...(data as Omit<Profile, "role" | "first_name" | "last_name" | "subscription_plan" | "subscription_interval">),
+    ...(base as Omit<Profile, "role" | "first_name" | "last_name" | "subscription_plan" | "subscription_interval">),
     role: admin?.role ?? null,
     first_name: admin?.first_name ?? null,
     last_name: admin?.last_name ?? null,

@@ -1,6 +1,5 @@
 /**
- * Shape for activity rows from a future Supabase table (e.g. public.activities).
- * Add or change columns here when you create the table.
+ * Shape for activity rows from public.activities.
  */
 export type Activity = {
   id: string;
@@ -11,7 +10,11 @@ export type Activity = {
   icon: string | null;
   /** Optional color key for styling (e.g. "purple", "teal") */
   color: string | null;
-  /** For sort by popularity; null until the DB has it */
+  /** "create" | "youtube" */
+  activity_type: string;
+  /** Set when activity_type is "youtube" */
+  youtube_url: string | null;
+  /** For sort by popularity */
   usage_count: number | null;
   created_at: string | null;
   updated_at: string | null;

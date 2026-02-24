@@ -2,27 +2,14 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Student } from "@/types/student";
 
 /**
- * Fetches students for the current user (teacher).
- * Wire to your students table when ready, e.g.:
- *
- *   const { data, error } = await supabase
- *     .from("students")
- *     .select("id, user_id, name, note, created_at, updated_at")
- *     .eq("user_id", userId)
- *     .order("name");
+ * Fetches students for the current user via RPC (reads from admin.students).
  */
 export async function getStudents(
   supabase: SupabaseClient,
-  userId: string
+  _userId: string
 ): Promise<Student[]> {
-  // Uncomment when your students table exists:
-  // const { data, error } = await supabase
-  //   .from("students")
-  //   .select("id, user_id, name, note, created_at, updated_at")
-  //   .eq("user_id", userId)
-  //   .order("name");
-  // if (error) return [];
-  // return (data ?? []) as Student[];
+  const { data, error } = await supabase.rpc("get_my_students");
 
-  return [];
+  if (error) return [];
+  return (data ?? []) as Student[];
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import { addStudent } from "./actions";
 
 const inputClass =
@@ -9,7 +9,7 @@ const inputClass =
 const labelClass = "mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300";
 
 export default function AddStudentForm() {
-  const [state, formAction] = useFormState(addStudent, { error: null });
+  const [state, formAction] = useActionState(addStudent, { error: null });
 
   return (
     <form action={formAction} className="space-y-4">
@@ -23,16 +23,30 @@ export default function AddStudentForm() {
       ) : null}
 
       <div>
-        <label htmlFor="student-name" className={labelClass}>
-          Name <span className="text-red-500">*</span>
+        <label htmlFor="student-first-name" className={labelClass}>
+          First name <span className="text-red-500">*</span>
         </label>
         <input
-          id="student-name"
-          name="name"
+          id="student-first-name"
+          name="first_name"
           type="text"
           required
           maxLength={200}
-          placeholder="e.g. Alex Smith"
+          placeholder="e.g. Alex"
+          className={inputClass}
+        />
+      </div>
+
+      <div>
+        <label htmlFor="student-last-name" className={labelClass}>
+          Last name
+        </label>
+        <input
+          id="student-last-name"
+          name="last_name"
+          type="text"
+          maxLength={200}
+          placeholder="e.g. Smith"
           className={inputClass}
         />
       </div>

@@ -38,14 +38,18 @@ export default function ThemeToggle() {
     localStorage.setItem(STORAGE_KEY, next ? "dark" : "light");
   }
 
-  const isDark = dark ?? getSystemDark();
+  // Avoid hydration mismatch: server and client must render the same until mounted.
+  // Before mount we show a single icon (sun); after mount we show the actual theme icon.
+  const mounted = dark !== null;
+  const isDark = mounted ? dark : false;
 
   return (
     <button
       type="button"
       onClick={toggle}
       className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-zinc-300 bg-zinc-100 text-zinc-600 transition-colors hover:bg-zinc-200 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={mounted ? (isDark ? "Switch to light mode" : "Switch to dark mode") : "Theme"}
+      suppressHydrationWarning
     >
       {isDark ? (
         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>

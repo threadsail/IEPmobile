@@ -32,21 +32,18 @@ export async function createActivity(
       return { error: "You must be signed in to add an activity." };
     }
 
-    const row: Record<string, unknown> = {
-      user_id: user.id,
-      name,
-      description,
-      activity_type: activityType,
-      usage_count: 0,
-    };
-    if (activityType === "youtube" && youtubeUrl) {
-      row.youtube_url = youtubeUrl;
-    }
-
-    const { error } = await supabase.from("activities").insert(row);
+    const { data: id, error } = await supabase.rpc("create_activity", {
+      p_name: name,
+      p_description: description || null,
+      p_activity_type: activityType,
+      p_youtube_url: activityType === "youtube" ? youtubeUrl : null,
+    });
 
     if (error) {
       return { error: error.message };
+    }
+    if (id == null) {
+      return { error: "Failed to create activity." };
     }
   } catch (err) {
     const message = err instanceof Error ? err.message : "Something went wrong.";

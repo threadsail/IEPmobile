@@ -39,8 +39,13 @@ export default async function DashboardPage() {
         <p className="mt-1 text-2xl font-medium text-black">{welcomeName}</p>
       </section>
 
-      {/* Current date */}
-      <p className="text-center text-base text-zinc-600 dark:text-zinc-400 md:text-2xl">{currentDate}</p>
+      {/* Current date — suppressHydrationWarning: server TZ/locale may differ from client */}
+      <p
+        className="text-center text-base text-zinc-600 dark:text-zinc-400 md:text-2xl"
+        suppressHydrationWarning
+      >
+        {currentDate}
+      </p>
 
       {/* Two sections side by side */}
       <div className="grid grid-cols-2 gap-4">

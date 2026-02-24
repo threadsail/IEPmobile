@@ -10,9 +10,10 @@ export async function addStudent(
   _prev: AddStudentState,
   formData: FormData
 ): Promise<AddStudentState> {
-  const name = (formData.get("name") as string)?.trim();
-  if (!name) {
-    return { error: "Name is required." };
+  const firstName = (formData.get("first_name") as string)?.trim();
+  const lastName = (formData.get("last_name") as string)?.trim() || null;
+  if (!firstName && !lastName) {
+    return { error: "First name or last name is required." };
   }
 
   const note = (formData.get("note") as string)?.trim() || null;
@@ -26,14 +27,17 @@ export async function addStudent(
       return { error: "You must be signed in to add a student." };
     }
 
-    const { error } = await supabase.from("students").insert({
-      user_id: user.id,
-      name,
-      note,
+    const { data: id, error } = await supabase.rpc("add_student", {
+      p_first_name: firstName || null,
+      p_last_name: lastName || null,
+      p_note: note || null,
     });
 
     if (error) {
       return { error: error.message };
+    }
+    if (id == null) {
+      return { error: "Failed to add student." };
     }
   } catch (err) {
     const message = err instanceof Error ? err.message : "Something went wrong.";

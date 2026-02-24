@@ -77,6 +77,10 @@ export default function ActivitiesList({ activities }: { activities: Activity[] 
               <span className="mb-2 text-2xl md:text-3xl" aria-hidden>
                 {activity.icon}
               </span>
+            ) : activity.activity_type === "youtube" ? (
+              <span className="mb-2 text-2xl md:text-3xl" aria-hidden>
+                ▶
+              </span>
             ) : null}
             <h2 className="text-center text-sm font-semibold text-zinc-900 line-clamp-2 dark:text-zinc-100 md:text-base">
               {activity.name}
@@ -85,6 +89,16 @@ export default function ActivitiesList({ activities }: { activities: Activity[] 
               <p className="mt-1 text-center text-xs text-zinc-500 line-clamp-2 dark:text-zinc-400">
                 {activity.description}
               </p>
+            ) : null}
+            {activity.youtube_url ? (
+              <a
+                href={activity.youtube_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 text-xs text-purple-600 underline dark:text-purple-400"
+              >
+                Watch
+              </a>
             ) : null}
           </article>
         ))}

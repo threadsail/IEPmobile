@@ -1,6 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 import { getPendingAppliedData } from "./get-pending-applied-data";
+import { getStudents } from "@/app/dashboard/students/get-students";
 import ApprovalSection from "./ApprovalSection";
+import CurrentDataSection from "./CurrentDataSection";
 
 export default async function DataPage() {
   const supabase = await createClient();
@@ -8,6 +10,7 @@ export default async function DataPage() {
     data: { user },
   } = await supabase.auth.getUser();
   const pending = user ? await getPendingAppliedData(supabase, user.id) : [];
+  const students = user ? await getStudents(supabase, user.id) : [];
 
   return (
     <div className="w-full space-y-6">
@@ -24,6 +27,18 @@ export default async function DataPage() {
         </p>
         <div className="mt-4">
           <ApprovalSection items={pending} />
+        </div>
+      </section>
+
+      <section className="rounded-lg border border-zinc-200/80 bg-white/70 p-6 shadow-sm dark:border-zinc-700/50 dark:bg-zinc-900/60">
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+          Current data for all students
+        </h2>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+          Latest or approved data per student.
+        </p>
+        <div className="mt-4">
+          <CurrentDataSection students={students} />
         </div>
       </section>
     </div>

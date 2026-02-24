@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { useFormState } from "react-dom";
+import { useActionState, useState } from "react";
 import { createActivity } from "../actions";
 
 const inputClass =
@@ -13,7 +12,7 @@ type ActivityMode = "create" | "youtube";
 
 export default function AddActivityForm() {
   const [mode, setMode] = useState<ActivityMode>("create");
-  const [state, formAction] = useFormState(createActivity, { error: null });
+  const [state, formAction] = useActionState(createActivity, { error: null });
 
   return (
     <div className="space-y-5">

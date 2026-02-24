@@ -41,14 +41,15 @@ async function getProfileWithClient(
   supabase: SupabaseClient,
   userId: string
 ): Promise<Profile | null> {
-  const [publicResult, planResult, intervalResult] = await Promise.all([
+  const [publicResult, planResult, intervalResult, orgNameResult] = await Promise.all([
     supabase
       .from("profiles")
-      .select("id, username, created_at, updated_at, first_name, last_name, full_name, role")
+      .select("id, username, created_at, first_name, last_name, full_name, role, organization_id")
       .eq("id", userId)
       .maybeSingle(),
     getSubscriptionPlan(supabase, userId),
     getSubscriptionInterval(supabase, userId),
+    supabase.rpc("get_my_organization_name").then(({ data, error }) => (error ? null : (data as string | null) ?? null)),
   ]);
 
   const data = publicResult.data;
@@ -67,10 +68,21 @@ async function getProfileWithClient(
     last_name: null,
     full_name: null,
     role: null,
+    organization_id: null,
   };
 
+  const organization_id = (base as { organization_id?: string | null }).organization_id ?? null;
+  const organization_name = orgNameResult;
+
+  const created_at = (base as { created_at?: string | null }).created_at ?? null;
+  const updated_at = (base as { updated_at?: string | null }).updated_at ?? null;
+
   return {
-    ...(base as Omit<Profile, "subscription_plan" | "subscription_interval">),
+    ...(base as Omit<Profile, "subscription_plan" | "subscription_interval" | "organization_name">),
+    created_at,
+    updated_at,
+    organization_id,
+    organization_name,
     subscription_plan: planResult ?? null,
     subscription_interval: intervalResult ?? null,
   } as Profile;

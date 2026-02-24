@@ -17,6 +17,7 @@ export default function AuthForm() {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [organizationName, setOrganizationName] = useState("");
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{
@@ -26,6 +27,11 @@ export default function AuthForm() {
 
   const isSignUp = mode === "signup";
   const callbackError = searchParams.get("error");
+  const redirectBase =
+    typeof window !== "undefined"
+      ? window.location.origin
+      : process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const signUpRedirectUrl = `${redirectBase}/auth/callback?next=/dashboard`;
 
   async function handleOAuth(provider: "google" | "azure") {
     setMessage(null);
@@ -35,7 +41,7 @@ export default function AuthForm() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+          redirectTo: signUpRedirectUrl,
         },
       });
       if (error) throw error;
@@ -62,10 +68,11 @@ export default function AuthForm() {
           options: {
             data: {
               username: username.trim() || undefined,
-              first_name: firstName.trim() || undefined,
-              last_name: lastName.trim() || undefined,
+              first_name: firstName.trim(),
+              last_name: lastName.trim(),
+              organization_name: organizationName.trim(),
             },
-            emailRedirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+            emailRedirectTo: signUpRedirectUrl,
           },
         });
         if (error) throw error;
@@ -236,6 +243,7 @@ export default function AuthForm() {
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   placeholder="First name"
+                  required
                   className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-zinc-900 placeholder-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-400"
                 />
               </div>
@@ -254,6 +262,25 @@ export default function AuthForm() {
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   placeholder="Last name"
+                  className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-zinc-900 placeholder-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-400"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="organization-name"
+                  className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                >
+                  Organization name
+                </label>
+                <input
+                  id="organization-name"
+                  name="organization_name"
+                  type="text"
+                  autoComplete="organization"
+                  value={organizationName}
+                  onChange={(e) => setOrganizationName(e.target.value)}
+                  placeholder="School or organization name"
+                  required
                   className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-zinc-900 placeholder-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-400"
                 />
               </div>

@@ -1,6 +1,6 @@
 -- Fix "Database error saving new user": update handle_new_user so new profile rows
 -- include first_name, last_name, full_name from signup metadata and set role to an
--- allowed value. Allowed roles: teacher, aide, admin. New signups get 'teacher'.
+-- allowed value. Allowed roles: Teacher, Aide, Admin. New signups get 'Teacher'.
 -- Run in Supabase SQL Editor.
 
 create or replace function public.handle_new_user()
@@ -21,7 +21,7 @@ begin
     fname,
     lname,
     ffull,
-    'teacher'
+    'Teacher'
   );
   return new;
 end;

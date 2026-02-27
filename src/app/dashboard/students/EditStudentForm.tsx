@@ -2,15 +2,17 @@
 
 import Link from "next/link";
 import { useActionState, useState } from "react";
-import { addStudent } from "./actions";
+import type { Student } from "@/types/student";
+import { updateStudent } from "./actions";
 
 const inputClass =
   "w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 placeholder-zinc-500 focus:border-pink-500 focus:outline-none focus:ring-1 focus:ring-pink-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-400 dark:focus:border-pink-400 dark:focus:ring-pink-400";
 const labelClass = "mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300";
 
-export default function AddStudentForm() {
-  const [state, formAction] = useActionState(addStudent, { error: null });
-  const [goalFields, setGoalFields] = useState<string[]>([""]);
+export default function EditStudentForm({ student }: { student: Student }) {
+  const [state, formAction] = useActionState(updateStudent, { error: null });
+  const initialGoals = student.goals?.length ? student.goals : [""];
+  const [goalFields, setGoalFields] = useState<string[]>(initialGoals);
 
   function addGoalField() {
     setGoalFields((prev) => [...prev, ""]);
@@ -22,6 +24,8 @@ export default function AddStudentForm() {
 
   return (
     <form action={formAction} className="space-y-4">
+      <input type="hidden" name="id" value={student.id} />
+
       {state?.error ? (
         <div
           role="alert"
@@ -32,73 +36,78 @@ export default function AddStudentForm() {
       ) : null}
 
       <div>
-        <label htmlFor="student-first-name" className={labelClass}>
+        <label htmlFor="edit-first-name" className={labelClass}>
           First name <span className="text-red-500">*</span>
         </label>
         <input
-          id="student-first-name"
+          id="edit-first-name"
           name="first_name"
           type="text"
           required
           maxLength={200}
           placeholder="e.g. Alex"
           className={inputClass}
+          defaultValue={student.first_name ?? ""}
         />
       </div>
 
       <div>
-        <label htmlFor="student-last-name" className={labelClass}>
+        <label htmlFor="edit-last-name" className={labelClass}>
           Last name
         </label>
         <input
-          id="student-last-name"
+          id="edit-last-name"
           name="last_name"
           type="text"
           maxLength={200}
           placeholder="e.g. Smith"
           className={inputClass}
+          defaultValue={student.last_name ?? ""}
         />
       </div>
 
       <div>
-        <label htmlFor="student-grade" className={labelClass}>
+        <label htmlFor="edit-grade" className={labelClass}>
           Grade
         </label>
         <input
-          id="student-grade"
+          id="edit-grade"
           name="grade"
           type="text"
           maxLength={50}
           placeholder="e.g. 3rd"
           className={inputClass}
+          defaultValue={student.grade ?? ""}
         />
       </div>
 
       <div>
-        <label htmlFor="student-classroom" className={labelClass}>
+        <label htmlFor="edit-classroom" className={labelClass}>
           Classroom
         </label>
         <input
-          id="student-classroom"
+          id="edit-classroom"
           name="classroom"
           type="text"
           maxLength={100}
           placeholder="e.g. Room 12"
           className={inputClass}
+          defaultValue={student.classroom ?? ""}
         />
       </div>
 
       <div>
-        <label htmlFor="student-note" className={labelClass}>
+        <label htmlFor="edit-note" className={labelClass}>
           Note
         </label>
         <input
-          id="student-note"
+          id="edit-note"
           name="note"
           type="text"
           maxLength={500}
           placeholder="Optional note"
           className={inputClass}
+          defaultValue={student.note ?? ""}
         />
       </div>
 
@@ -114,7 +123,7 @@ export default function AddStudentForm() {
           </button>
         </div>
         <div className="space-y-2">
-          {goalFields.map((_, i) => (
+          {goalFields.map((value, i) => (
             <div key={i} className="flex gap-2">
               <input
                 name="goals"
@@ -122,7 +131,7 @@ export default function AddStudentForm() {
                 maxLength={500}
                 placeholder={`IEP goal ${i + 1}`}
                 className={`${inputClass} flex-1`}
-                defaultValue=""
+                defaultValue={value}
               />
               {i > 0 ? (
                 <button
@@ -144,10 +153,10 @@ export default function AddStudentForm() {
           type="submit"
           className="rounded-lg bg-pink-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-pink-700 dark:bg-pink-500 dark:hover:bg-pink-600"
         >
-          Add student
+          Save changes
         </button>
         <Link
-          href="/dashboard/students"
+          href={`/dashboard/students/${student.id}`}
           className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
         >
           Cancel

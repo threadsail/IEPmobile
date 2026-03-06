@@ -18,6 +18,7 @@ export async function createActivity(
   const activityType = (formData.get("activity_type") as string) || "create";
   const description = (formData.get("description") as string)?.trim() || null;
   const youtubeUrl = (formData.get("youtube_url") as string)?.trim() || null;
+  const imageUrl = (formData.get("image_url") as string)?.trim() || null;
 
   if (activityType === "youtube" && !youtubeUrl) {
     return { error: "YouTube URL is required for YouTube activities." };
@@ -37,6 +38,7 @@ export async function createActivity(
       p_description: description || null,
       p_activity_type: activityType,
       p_youtube_url: activityType === "youtube" ? youtubeUrl : null,
+      p_image_url: imageUrl || null,
     });
 
     if (error) {

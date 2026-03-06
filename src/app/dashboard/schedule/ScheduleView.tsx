@@ -696,6 +696,15 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
                 </svg>
               </button>
             </div>
+            {activityPopup.image_url && (
+              <div className="mt-3 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
+                <img
+                  src={activityPopup.image_url}
+                  alt=""
+                  className="h-48 w-full object-cover"
+                />
+              </div>
+            )}
             {activityPopup.description && (
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{activityPopup.description}</p>
             )}

@@ -98,6 +98,19 @@ export default function AddActivityForm() {
           />
         </div>
 
+        <div>
+          <label htmlFor="image_url" className={labelClass}>
+            Image URL
+          </label>
+          <input
+            id="image_url"
+            name="image_url"
+            type="url"
+            placeholder="https://example.com/image.jpg"
+            className={inputClass}
+          />
+        </div>
+
         <div className="flex flex-wrap items-center gap-3 pt-2">
           <button
             type="submit"

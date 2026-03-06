@@ -13,6 +13,7 @@ create table if not exists admin.activities (
   usage_count integer not null default 0,
   icon text,
   color text,
+  image_url text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
@@ -31,7 +32,7 @@ as $$
 begin
   return query
   select a.id, a.user_id, a.name, a.description, a.activity_type, a.youtube_url,
-         a.usage_count, a.icon, a.color, a.created_at, a.updated_at
+         a.usage_count, a.icon, a.color, a.image_url, a.created_at, a.updated_at
   from admin.activities a
   where a.user_id = auth.uid()
   order by a.name;
@@ -45,7 +46,8 @@ create or replace function public.create_activity(
   p_name text,
   p_description text default null,
   p_activity_type text default 'create',
-  p_youtube_url text default null
+  p_youtube_url text default null,
+  p_image_url text default null
 )
 returns uuid
 language plpgsql
@@ -57,14 +59,15 @@ declare
 begin
   if auth.uid() is null then return null; end if;
   if nullif(trim(p_name), '') is null then return null; end if;
-  insert into admin.activities (user_id, name, description, activity_type, youtube_url, usage_count)
+  insert into admin.activities (user_id, name, description, activity_type, youtube_url, usage_count, image_url)
   values (
     auth.uid(),
     trim(p_name),
     nullif(trim(coalesce(p_description, '')), ''),
     case when p_activity_type = 'youtube' then 'youtube' else 'create' end,
     nullif(trim(coalesce(p_youtube_url, '')), ''),
-    0
+    0,
+    nullif(trim(coalesce(p_image_url, '')), '')
   )
   returning id into new_id;
   return new_id;

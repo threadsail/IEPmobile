@@ -10,6 +10,8 @@ export type Activity = {
   icon: string | null;
   /** Optional color key for styling (e.g. "purple", "teal") */
   color: string | null;
+  /** Optional image URL for the activity card */
+  image_url: string | null;
   /** "create" | "youtube" */
   activity_type: string;
   /** Set when activity_type is "youtube" */

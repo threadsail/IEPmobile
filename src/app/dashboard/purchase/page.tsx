@@ -70,8 +70,12 @@ export default async function PurchasePage({
   const { plan: currentPlan, interval: currentInterval } = planFromProfile(profile);
 
   const { plan, interval } = await searchParams;
-  const planId = plan && ["starter", "basic", "pro"].includes(plan) ? plan : null;
-  const intervalId = interval && ["monthly", "annual"].includes(interval) ? interval : null;
+  const validPlanIds = ["starter", "basic", "pro"] as const;
+  const planId: PlanId | null =
+    plan && (validPlanIds as readonly string[]).includes(plan) ? (plan as PlanId) : null;
+  const validIntervals = ["monthly", "annual"] as const;
+  const intervalId: "monthly" | "annual" | null =
+    interval && (validIntervals as readonly string[]).includes(interval) ? (interval as "monthly" | "annual") : null;
   const planLabel = planId ? PLAN_LABELS[planId] : "a plan";
   const intervalLabel = intervalId === "annual" ? "Annual" : intervalId === "monthly" ? "Monthly" : null;
   const titleSuffix = planId && planId !== "starter" && intervalLabel ? ` (${intervalLabel})` : "";

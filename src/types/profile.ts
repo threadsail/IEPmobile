@@ -19,4 +19,12 @@ export type Profile = {
   subscription_plan: "starter" | "basic" | "pro" | null;
   /** From admin.profiles */
   subscription_interval: "monthly" | "annual" | null;
+  /** Start of current paid period (purchase/renewal date); set when payment marked paid, update on renewal. */
+  subscription_period_start: string | null;
+  /** End of current paid billing period (renewal date); set when Stripe payment is marked paid. */
+  subscription_period_end: string | null;
+  /** Requested plan at period end when user downgrades. */
+  downgrade_to_plan: "starter" | "basic" | "pro" | null;
+  /** Requested interval at period end when user downgrades. */
+  downgrade_to_interval: "monthly" | "annual" | null;
 };

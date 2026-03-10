@@ -20,4 +20,8 @@ export type Activity = {
   usage_count: number | null;
   created_at: string | null;
   updated_at: string | null;
+  /** From activity_upvotes; default 1 for creator */
+  upvote_count?: number;
+  /** Whether the current user has upvoted */
+  has_upvoted?: boolean;
 };

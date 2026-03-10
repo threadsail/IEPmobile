@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import type { Activity } from "@/types/activity";
+import type { ActivityFilter } from "./get-activities";
+import { toggleActivityUpvote } from "./actions";
 
 type SortOption = "popularity" | "recent";
 
@@ -55,12 +57,40 @@ function sortActivities(activities: Activity[], sort: SortOption): Activity[] {
   return copy;
 }
 
-export default function ActivitiesList({ activities }: { activities: Activity[] }) {
+type Props = { activities: Activity[]; currentFilter: ActivityFilter };
+
+export default function ActivitiesList({ activities, currentFilter }: Props) {
   const [sort, setSort] = useState<SortOption>("recent");
+  const [isPending, startTransition] = useTransition();
   const sorted = useMemo(() => sortActivities(activities, sort), [activities, sort]);
 
   return (
     <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+          Show:
+        </span>
+        <Link
+          href="/dashboard/activities?filter=org"
+          className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
+            currentFilter === "org"
+              ? "border-purple-500 bg-purple-500/20 text-purple-700 dark:border-purple-400 dark:bg-purple-400/20 dark:text-purple-300"
+              : "border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+          }`}
+        >
+          My organization
+        </Link>
+        <Link
+          href="/dashboard/activities?filter=mine"
+          className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
+            currentFilter === "mine"
+              ? "border-purple-500 bg-purple-500/20 text-purple-700 dark:border-purple-400 dark:bg-purple-400/20 dark:text-purple-300"
+              : "border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+          }`}
+        >
+          Only mine
+        </Link>
+      </div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
@@ -167,16 +197,39 @@ export default function ActivitiesList({ activities }: { activities: Activity[] 
                   {activity.description}
                 </p>
               ) : null}
-              {activity.youtube_url ? (
-                <a
-                  href={activity.youtube_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-2 text-xs text-purple-600 underline dark:text-purple-400"
+              <div className="mt-2 flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    startTransition(async () => {
+                      await toggleActivityUpvote(activity.id);
+                    });
+                  }}
+                  disabled={isPending}
+                  className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs font-medium transition-colors disabled:opacity-50 ${
+                    activity.has_upvoted
+                      ? "border-blue-500 bg-blue-500/20 text-blue-700 dark:border-blue-400 dark:bg-blue-400/20 dark:text-blue-300"
+                      : "border-zinc-300 bg-white text-zinc-600 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
+                  }`}
+                  aria-pressed={activity.has_upvoted}
+                  aria-label={activity.has_upvoted ? "Remove upvote" : "Upvote"}
                 >
-                  Watch
-                </a>
-              ) : null}
+                  <svg className="h-3.5 w-3.5" fill={activity.has_upvoted ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                  </svg>
+                  <span>{activity.upvote_count ?? 0}</span>
+                </button>
+                {activity.youtube_url ? (
+                  <a
+                    href={activity.youtube_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-purple-600 underline dark:text-purple-400"
+                  >
+                    Watch
+                  </a>
+                ) : null}
+              </div>
             </div>
           </article>
           );

@@ -27,11 +27,12 @@ export default function AuthForm() {
 
   const isSignUp = mode === "signup";
   const callbackError = searchParams.get("error");
+  const nextPath = searchParams.get("next") ?? "/dashboard";
   const redirectBase =
     typeof window !== "undefined"
       ? window.location.origin
       : process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-  const signUpRedirectUrl = `${redirectBase}/auth/callback?next=/dashboard`;
+  const signUpRedirectUrl = `${redirectBase}/auth/callback?next=${encodeURIComponent(nextPath)}`;
 
   async function handleOAuth(provider: "google" | "azure") {
     setMessage(null);
@@ -84,7 +85,7 @@ export default function AuthForm() {
           return;
         }
         if (data.session) {
-          router.push("/dashboard");
+          router.push(nextPath);
           router.refresh();
           return;
         }
@@ -94,7 +95,7 @@ export default function AuthForm() {
           password,
         });
         if (error) throw error;
-        router.push("/dashboard");
+        router.push(nextPath);
         router.refresh();
       }
     } catch (err: unknown) {

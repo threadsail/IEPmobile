@@ -25,7 +25,12 @@ export default async function SchedulePage() {
   const activities = user ? await getActivities(supabase) : [];
   const anchor = new Date();
   const { from, to } = getWeekRange(anchor);
-  const entries = user ? await getScheduleEntries(supabase, from, to) : [];
+  let entries: Awaited<ReturnType<typeof getScheduleEntries>> = [];
+  try {
+    entries = user ? await getScheduleEntries(supabase, from, to) : [];
+  } catch {
+    entries = [];
+  }
   const canDeleteSchedule =
     profile?.role === "Teacher" || profile?.role === "Admin";
 
@@ -36,8 +41,8 @@ export default async function SchedulePage() {
       </section>
 
       <ScheduleView
-        initialEntries={entries}
-        activities={activities}
+        initialEntries={Array.isArray(entries) ? entries : []}
+        activities={Array.isArray(activities) ? activities : []}
         canDeleteSchedule={canDeleteSchedule}
       />
     </div>

@@ -3,52 +3,36 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Profile } from "@/types/profile";
 import { createClient } from "@/utils/supabase/server";
 
-/** Fetches subscription_plan from admin.profiles. Returns null if column or row missing. */
-async function getSubscriptionPlan(
+type SubscriptionRow = {
+  subscription_plan?: string | null;
+  subscription_interval?: string | null;
+  subscription_period_start?: string | null;
+  subscription_period_end?: string | null;
+  downgrade_to_plan?: string | null;
+  downgrade_to_interval?: string | null;
+};
+
+/** Fetches subscription fields via RPC (avoids direct admin schema access so "current plan" updates). */
+async function getSubscriptionRow(
   supabase: SupabaseClient,
-  userId: string
-): Promise<"starter" | "basic" | "pro" | null> {
-  const { data, error } = await supabase
-    .schema("admin")
-    .from("profiles")
-    .select("subscription_plan")
-    .eq("id", userId)
-    .maybeSingle();
-
-  if (error || !data?.subscription_plan) return null;
-  const plan = data.subscription_plan;
-  return plan === "starter" || plan === "basic" || plan === "pro" ? plan : null;
-}
-
-/** Fetches subscription_interval. Returns null if column or row missing. */
-async function getSubscriptionInterval(
-  supabase: SupabaseClient,
-  userId: string
-): Promise<"monthly" | "annual" | null> {
-  const { data, error } = await supabase
-    .schema("admin")
-    .from("profiles")
-    .select("subscription_interval")
-    .eq("id", userId)
-    .maybeSingle();
-
-  if (error || !data?.subscription_interval) return null;
-  const interval = data.subscription_interval;
-  return interval === "monthly" || interval === "annual" ? interval : null;
+  _userId: string
+): Promise<SubscriptionRow | null> {
+  const { data, error } = await supabase.rpc("get_my_subscription");
+  if (error || data == null) return null;
+  return data as SubscriptionRow;
 }
 
 async function getProfileWithClient(
   supabase: SupabaseClient,
   userId: string
 ): Promise<Profile | null> {
-  const [publicResult, planResult, intervalResult, orgNameResult] = await Promise.all([
+  const [publicResult, subRow, orgNameResult] = await Promise.all([
     supabase
       .from("profiles")
       .select("id, username, created_at, first_name, last_name, full_name, role, organization_id")
       .eq("id", userId)
       .maybeSingle(),
-    getSubscriptionPlan(supabase, userId),
-    getSubscriptionInterval(supabase, userId),
+    getSubscriptionRow(supabase, userId),
     supabase.rpc("get_my_organization_name").then(({ data, error }) => (error ? null : (data as string | null) ?? null)),
   ]);
 
@@ -77,14 +61,31 @@ async function getProfileWithClient(
   const created_at = (base as { created_at?: string | null }).created_at ?? null;
   const updated_at = (base as { updated_at?: string | null }).updated_at ?? null;
 
+  const plan = subRow?.subscription_plan;
+  const subscription_plan =
+    plan === "starter" || plan === "basic" || plan === "pro" ? plan : null;
+  const interval = subRow?.subscription_interval;
+  const subscription_interval =
+    interval === "monthly" || interval === "annual" ? interval : null;
+  const downgradePlan = subRow?.downgrade_to_plan;
+  const downgrade_to_plan =
+    downgradePlan === "starter" || downgradePlan === "basic" || downgradePlan === "pro" ? downgradePlan : null;
+  const downgradeInterval = subRow?.downgrade_to_interval;
+  const downgrade_to_interval =
+    downgradeInterval === "monthly" || downgradeInterval === "annual" ? downgradeInterval : null;
+
   return {
-    ...(base as Omit<Profile, "subscription_plan" | "subscription_interval" | "organization_name">),
+    ...(base as Omit<Profile, "subscription_plan" | "subscription_interval" | "organization_name" | "subscription_period_start" | "subscription_period_end" | "downgrade_to_plan" | "downgrade_to_interval">),
     created_at,
     updated_at,
     organization_id,
     organization_name,
-    subscription_plan: planResult ?? null,
-    subscription_interval: intervalResult ?? null,
+    subscription_plan,
+    subscription_interval,
+    subscription_period_start: subRow?.subscription_period_start ?? null,
+    subscription_period_end: subRow?.subscription_period_end ?? null,
+    downgrade_to_plan,
+    downgrade_to_interval,
   } as Profile;
 }
 

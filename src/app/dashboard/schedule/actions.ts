@@ -1,7 +1,6 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { revalidatePath } from "next/cache";
 import { getScheduleEntries } from "./get-schedule-entries";
 
 export type CreateScheduleEntryState = { error: string | null };
@@ -56,7 +55,7 @@ export async function createScheduleEntry(
     return { error: message };
   }
 
-  revalidatePath("/dashboard/schedule");
+  // Schedule entries are refetched client-side; no need to revalidate the route here.
   return { error: null };
 }
 
@@ -108,7 +107,7 @@ export async function updateScheduleEntry(
     const message = err instanceof Error ? err.message : "Something went wrong.";
     return { error: message };
   }
-  revalidatePath("/dashboard/schedule");
+  // Schedule entries are refetched client-side; no need to revalidate the route here.
   return { error: null };
 }
 
@@ -135,7 +134,7 @@ export async function deleteScheduleEntry(entryId: string): Promise<{ error: str
     const message = err instanceof Error ? err.message : "Something went wrong.";
     return { error: message };
   }
-  revalidatePath("/dashboard/schedule");
+  // Schedule entries are refetched client-side; no need to revalidate the route here.
   return { error: null };
 }
 

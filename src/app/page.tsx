@@ -58,7 +58,7 @@ export default function Home() {
             Build and manage daily schedules by class or student. Keep routines consistent and visible so everyone knows what’s next—and stay aligned with IEP service minutes.
           </p>
           <Link
-            href="/dashboard/schedule"
+            href="/features/schedule"
             className="mt-4 inline-block text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
           >
             Schedules →
@@ -87,7 +87,7 @@ export default function Home() {
             Assign and track activities tied to IEP goals. See who’s working on what, when it’s due, and completion status—all in one place for you and your team.
           </p>
           <Link
-            href="/dashboard/activities"
+            href="/features/activities"
             className="mt-4 inline-block text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
           >
             Activities →
@@ -116,7 +116,7 @@ export default function Home() {
             Track progress and outcomes for each student. Log data against goals, view trends over time, and pull what you need for progress reports and compliance.
           </p>
           <Link
-            href="/dashboard/data"
+            href="/features/data"
             className="mt-4 inline-block text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
           >
             Data & reports →
@@ -165,7 +165,7 @@ export default function Home() {
             Sign up
           </Link>
           <Link
-            href="/dashboard/students"
+            href="/features/students"
             className="inline-flex items-center justify-center rounded-xl border border-zinc-300 bg-white px-6 py-3.5 text-base font-semibold text-zinc-700 transition hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
           >
             View students

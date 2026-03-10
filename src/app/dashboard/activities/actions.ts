@@ -1,8 +1,8 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export type CreateActivityState = { error: string | null };
 
@@ -52,6 +52,25 @@ export async function createActivity(
     return { error: message };
   }
 
-  revalidatePath("/dashboard/activities");
   redirect("/dashboard/activities");
+}
+
+export async function toggleActivityUpvote(activityId: string): Promise<{ error: string | null }> {
+  if (!activityId?.trim()) return { error: "Activity ID is required." };
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return { error: "You must be signed in to upvote." };
+    const { error } = await supabase.rpc("toggle_activity_upvote", {
+      p_activity_id: activityId,
+    });
+    if (error) return { error: error.message };
+    revalidatePath("/dashboard/activities");
+    return { error: null };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Something went wrong.";
+    return { error: message };
+  }
 }

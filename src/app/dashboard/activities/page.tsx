@@ -1,10 +1,14 @@
 import { createClient } from "@/utils/supabase/server";
-import { getActivities } from "./get-activities";
+import { getActivities, type ActivityFilter } from "./get-activities";
 import ActivitiesList from "./ActivitiesList";
 
-export default async function ActivitiesPage() {
+type Props = { searchParams: Promise<{ filter?: string }> };
+
+export default async function ActivitiesPage({ searchParams }: Props) {
   const supabase = await createClient();
-  const activities = await getActivities(supabase);
+  const params = await searchParams;
+  const filter = (params.filter === "mine" ? "mine" : "org") as ActivityFilter;
+  const activities = await getActivities(supabase, filter);
 
   return (
     <div className="w-full space-y-6">
@@ -14,7 +18,7 @@ export default async function ActivitiesPage() {
         </h1>
       </section>
 
-      <ActivitiesList activities={activities} />
+      <ActivitiesList activities={activities} currentFilter={filter} />
 
       {activities.length === 0 ? (
         <p className="text-center text-zinc-500 dark:text-zinc-400">

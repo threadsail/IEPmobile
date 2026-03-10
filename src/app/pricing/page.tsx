@@ -5,12 +5,13 @@ import type { Profile } from "@/types/profile";
 
 type PlanId = "starter" | "basic" | "pro";
 
-/** Logged-in users default to starter; only basic/pro from DB count as purchased. */
+/** Logged-in users: starter/basic/pro from DB; null or missing (new accounts) defaults to Basic. */
 function planFromProfile(profile: Profile | null, isLoggedIn: boolean): PlanId | null {
   if (!isLoggedIn) return null;
   const plan = profile?.subscription_plan;
-  if (plan === "basic" || plan === "pro") return plan;
-  return "starter";
+  if (plan === "pro" || plan === "basic") return plan;
+  if (plan === "starter") return "starter";
+  return "basic";
 }
 
 /** User's billing interval for basic/pro; null or missing treated as monthly. */

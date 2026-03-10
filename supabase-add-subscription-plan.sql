@@ -1,9 +1,9 @@
 -- Run in Supabase SQL Editor to add subscription_plan and subscription_interval to admin.profiles.
--- subscription_plan: 'starter', 'basic', 'pro'. Default 'starter'.
+-- subscription_plan: 'starter', 'basic', 'pro'. Default 'basic' for new signups.
 -- subscription_interval: 'monthly', 'annual'. Default 'monthly' for paid plans.
 
 alter table admin.profiles
-  add column if not exists subscription_plan text default 'starter';
+  add column if not exists subscription_plan text default 'basic';
 
 alter table admin.profiles
   add column if not exists subscription_interval text default 'monthly';

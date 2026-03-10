@@ -18,6 +18,8 @@ function formatDate(iso: string | null): string {
 }
 
 const rowClass = "flex flex-col gap-0.5 py-4 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between sm:py-3";
+const displayRowClass =
+  "flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white/60 py-2.5 px-3 dark:bg-black/20";
 const dtClass = "text-sm font-medium text-zinc-500 dark:text-zinc-400";
 const ddClass = "text-sm text-zinc-900 dark:text-zinc-100";
 const inputClass =
@@ -35,6 +37,7 @@ export default function ProfileInformation({ email, profile, userCreatedAt }: Pr
   const router = useRouter();
   const [state, formAction] = useActionState(updateProfile, {});
   const [editing, setEditing] = useState(false);
+  const canEdit = profile?.role !== "Aide";
 
   useEffect(() => {
     if (state?.success) {
@@ -48,16 +51,16 @@ export default function ProfileInformation({ email, profile, userCreatedAt }: Pr
 
   if (!profile) {
     return (
-      <dl className="divide-y divide-zinc-200 dark:divide-zinc-700">
-        <div className={rowClass}>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className={displayRowClass}>
           <dt className={dtClass}>Email</dt>
           <dd className={ddClass}>{email ?? "—"}</dd>
         </div>
-      </dl>
+      </div>
     );
   }
 
-  if (editing) {
+  if (editing && canEdit) {
     return (
       <form action={formAction} className="divide-y divide-zinc-200 dark:divide-zinc-700">
         {state?.error ? (
@@ -177,53 +180,55 @@ export default function ProfileInformation({ email, profile, userCreatedAt }: Pr
 
   return (
     <>
-      <dl className="divide-y divide-zinc-200 dark:divide-zinc-700">
-        <div className={rowClass}>
+      <dl className="space-y-3">
+        <div className={displayRowClass}>
           <dt className={dtClass}>Email</dt>
           <dd className={ddClass}>{email ?? "—"}</dd>
         </div>
-        <div className={rowClass}>
+        <div className={displayRowClass}>
           <dt className={dtClass}>Username</dt>
           <dd className={ddClass}>{profile.username ?? "Not set"}</dd>
         </div>
-        <div className={rowClass}>
-          <dt className={dtClass}>Full name</dt>
+        <div className={displayRowClass}>
+          <dt className={dtClass}>Name</dt>
           <dd className={ddClass}>{fullName}</dd>
         </div>
-        <div className={rowClass}>
-          <dt className={dtClass}>First name</dt>
-          <dd className={ddClass}>{profile.first_name ?? "Not set"}</dd>
-        </div>
-        <div className={rowClass}>
-          <dt className={dtClass}>Last name</dt>
-          <dd className={ddClass}>{profile.last_name ?? "Not set"}</dd>
-        </div>
-        <div className={rowClass}>
+        <div className={displayRowClass}>
           <dt className={dtClass}>Role</dt>
-          <dd className={ddClass}>{profile.role ?? "Not set"}</dd>
+          <dd className={ddClass}>
+            {profile.role ? (
+              <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/40 dark:text-blue-200">
+                {profile.role}
+              </span>
+            ) : (
+              "Not set"
+            )}
+          </dd>
         </div>
-        <div className={rowClass}>
+        <div className={displayRowClass}>
           <dt className={dtClass}>Organization</dt>
           <dd className={ddClass}>{profile.organization_name ?? "Not set"}</dd>
         </div>
-        <div className={rowClass}>
+        <div className={displayRowClass}>
           <dt className={dtClass}>Profile created</dt>
           <dd className={ddClass}>{formatDate(profile.created_at ?? userCreatedAt ?? null)}</dd>
         </div>
-        <div className={rowClass}>
+        <div className={displayRowClass}>
           <dt className={dtClass}>Last updated</dt>
           <dd className={ddClass}>{formatDate(profile.updated_at ?? null)}</dd>
         </div>
       </dl>
-      <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-zinc-200 pt-4 dark:border-zinc-700">
-        <button
-          type="button"
-          onClick={() => setEditing(true)}
-          className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
-        >
-          Edit
-        </button>
-      </div>
+      {canEdit && (
+        <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-zinc-200 pt-4 dark:border-zinc-700">
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+          >
+            Edit
+          </button>
+        </div>
+      )}
     </>
   );
 }

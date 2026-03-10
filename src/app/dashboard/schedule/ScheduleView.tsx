@@ -159,7 +159,7 @@ type ScheduleViewProps = {
 export default function ScheduleView({ initialEntries, activities, canDeleteSchedule = false }: ScheduleViewProps) {
   const [anchor, setAnchor] = useState(() => new Date());
   const [selectedKey, setSelectedKey] = useState<string>(() => toDateKey(new Date()));
-  const [entries, setEntries] = useState<ScheduleEntry[]>(initialEntries);
+  const [entries, setEntries] = useState<ScheduleEntry[]>(() => Array.isArray(initialEntries) ? initialEntries : []);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<ScheduleEntry | null>(null);
   const [confirmDeleteEntryId, setConfirmDeleteEntryId] = useState<string | null>(null);
@@ -181,17 +181,28 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
   const weekRange = useMemo(() => getWeekRange(anchor), [anchor]);
 
   const refetchEntries = useCallback(async () => {
-    const { entries: next } = await fetchScheduleEntries(weekRange.from, weekRange.to);
-    setEntries(next);
+    try {
+      const result = await fetchScheduleEntries(weekRange.from, weekRange.to);
+      const next = result?.entries;
+      setEntries(Array.isArray(next) ? next : []);
+    } catch {
+      setEntries((prev) => (Array.isArray(prev) ? prev : []));
+    }
   }, [weekRange.from, weekRange.to]);
+
+  const refetchEntriesRef = useRef(refetchEntries);
+  refetchEntriesRef.current = refetchEntries;
+
+  const anchorRef = useRef(anchor);
+  const isFirstMount = useRef(true);
 
   useEffect(() => {
     if (modalOpen && prevErrorRef.current !== null && state?.error === null) {
       setModalOpen(false);
-      refetchEntries();
+      refetchEntriesRef.current();
     }
     prevErrorRef.current = state?.error ?? null;
-  }, [state, modalOpen, refetchEntries]);
+  }, [state, modalOpen]);
 
   const updateSubmittedRef = useRef(false);
 
@@ -205,18 +216,26 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
   useEffect(() => {
     if (editingEntry && updateSubmittedRef.current && updateState?.error === null) {
       setEditingEntry(null);
-      refetchEntries();
+      refetchEntriesRef.current();
       updateSubmittedRef.current = false;
     }
     prevUpdateErrorRef.current = updateState?.error ?? null;
-  }, [updateState, editingEntry, refetchEntries]);
+  }, [updateState, editingEntry]);
 
   useEffect(() => {
-    refetchEntries();
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      anchorRef.current = anchor;
+      return;
+    }
+    if (anchorRef.current.getTime() !== anchor.getTime()) {
+      anchorRef.current = anchor;
+      refetchEntriesRef.current();
+    }
   }, [anchor, refetchEntries]);
 
   const entriesForSelectedDay = useMemo(
-    () => entries.filter((e) => e.schedule_date === selectedKey),
+    () => (Array.isArray(entries) ? entries : []).filter((e) => e.schedule_date === selectedKey),
     [entries, selectedKey]
   );
 

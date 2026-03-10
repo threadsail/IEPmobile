@@ -120,9 +120,10 @@ export default function PricingPlans({ currentPlan, currentInterval = null }: Pr
         ) : (
           <Link
             href={
-              currentPlan !== null
-                ? `/dashboard/purchase?plan=${id}${id !== "starter" ? `&interval=${intervalIsAnnual ? "annual" : "monthly"}` : ""}`
-                : "/auth"
+              (() => {
+                const selectPath = `/pricing/select?plan=${id}${id !== "starter" ? `&interval=${intervalIsAnnual ? "annual" : "monthly"}` : ""}`;
+                return currentPlan !== null ? selectPath : `/auth?next=${encodeURIComponent(selectPath)}`;
+              })()
             }
             className="block w-full rounded-md bg-blue-600 px-4 py-2 text-center text-sm font-medium text-white transition-colors hover:bg-blue-700"
           >

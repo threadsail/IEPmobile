@@ -4,12 +4,23 @@ import { NextResponse, type NextRequest } from "next/server";
 export async function updateSession(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
+
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", request.nextUrl.pathname);
+
+  const withForwardedHeaders = () =>
+    NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
+
   if (!url || !key) {
-    return NextResponse.next({ request });
+    return withForwardedHeaders();
   }
 
   try {
-    let supabaseResponse = NextResponse.next({ request });
+    let supabaseResponse = withForwardedHeaders();
 
     const supabase = createServerClient(url, key, {
       cookies: {
@@ -20,7 +31,7 @@ export async function updateSession(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
-          supabaseResponse = NextResponse.next({ request });
+          supabaseResponse = withForwardedHeaders();
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           );
@@ -32,6 +43,6 @@ export async function updateSession(request: NextRequest) {
 
     return supabaseResponse;
   } catch {
-    return NextResponse.next({ request });
+    return withForwardedHeaders();
   }
 }

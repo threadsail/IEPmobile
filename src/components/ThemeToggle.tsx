@@ -21,7 +21,12 @@ function applyTheme(dark: boolean) {
   else root.classList.remove("dark");
 }
 
-export default function ThemeToggle() {
+type ThemeToggleProps = {
+  /** Replaces default button classes (size, border, shape). */
+  buttonClassName?: string;
+};
+
+export default function ThemeToggle({ buttonClassName }: ThemeToggleProps) {
   const [dark, setDark] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -43,11 +48,14 @@ export default function ThemeToggle() {
   const mounted = dark !== null;
   const isDark = mounted ? dark : false;
 
+  const defaultBtn =
+    "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-zinc-300 bg-zinc-100 text-zinc-600 transition-colors hover:bg-zinc-200 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700";
+
   return (
     <button
       type="button"
       onClick={toggle}
-      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-zinc-300 bg-zinc-100 text-zinc-600 transition-colors hover:bg-zinc-200 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
+      className={buttonClassName ?? defaultBtn}
       aria-label={mounted ? (isDark ? "Switch to light mode" : "Switch to dark mode") : "Theme"}
       suppressHydrationWarning
     >

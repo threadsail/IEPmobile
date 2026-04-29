@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import AppHeader from "@/components/AppHeader";
-import LoggedInFooter from "@/components/LoggedInFooter";
-import SiteFooter from "@/components/SiteFooter";
+import AppShell from "@/components/AppShell";
 
 export const metadata: Metadata = {
   title: "IEP mobile",
@@ -28,17 +26,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <div className="flex min-h-screen flex-col">
-          <AppHeader />
-
-          <main className="mx-auto flex w-full max-w-5xl flex-1 px-4 py-8 pb-20">
-            {children}
-          </main>
-
-          <LoggedInFooter />
-
-          <SiteFooter />
-        </div>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

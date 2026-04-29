@@ -1,6 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
+import {
+  dashboardHeroCorporateXl,
+  dashboardHeroSubtitleCorporateXl,
+  dashboardHeroTitleCorporateXl,
+  dashboardPageStack,
+  dashboardSectionCard,
+} from "@/data/dashboard-desktop-section";
 import { getStudents } from "../../get-students";
 import { studentDisplayName, type Student } from "@/types/student";
 import EditStudentForm from "../../EditStudentForm";
@@ -37,21 +44,29 @@ export default async function EditStudentPage({ params }: Params) {
   const name = studentDisplayName(student);
 
   return (
-    <div className="w-full space-y-6">
-      <section className="-mt-8 rounded-b-xl bg-gradient-to-br from-pink-400/90 to-pink-600/90 px-6 py-4 text-center shadow-lg dark:from-pink-700/90 dark:to-pink-800/90">
-        <h1 className="text-2xl font-semibold tracking-tight text-black">
+    <div className={dashboardPageStack}>
+      <section
+        className={`-mt-8 rounded-b-xl bg-gradient-to-br from-pink-400/90 to-pink-600/90 px-6 py-4 text-center shadow-lg dark:from-pink-700/90 dark:to-pink-800/90 ${dashboardHeroCorporateXl}`}
+      >
+        <h1
+          className={`text-2xl font-semibold tracking-tight text-black ${dashboardHeroTitleCorporateXl}`}
+        >
           Edit student
         </h1>
-        <p className="mt-1 text-lg font-medium text-black">{name}</p>
+        <p
+          className={`mt-1 text-lg font-medium text-black xl:mt-1 ${dashboardHeroSubtitleCorporateXl}`}
+        >
+          {name}
+        </p>
       </section>
 
-      <div className="rounded-lg border border-zinc-200/80 bg-white/70 p-6 shadow-sm dark:border-zinc-700/50 dark:bg-zinc-900/60">
+      <div className={dashboardSectionCard}>
         <EditStudentForm student={student} />
       </div>
 
       <Link
         href={`/dashboard/students/${id}`}
-        className="inline-block text-sm font-medium text-pink-600 hover:underline dark:text-pink-400"
+        className="inline-block text-sm font-medium text-pink-600 hover:underline dark:text-pink-400 xl:text-zinc-600 xl:hover:text-zinc-900 dark:xl:text-zinc-400 dark:xl:hover:text-zinc-200"
       >
         ← Back to student details
       </Link>

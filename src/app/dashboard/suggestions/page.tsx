@@ -3,6 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 import { getCurrentUser } from "@/utils/auth";
 import { redirect } from "next/navigation";
 import { getProfile } from "@/app/dashboard/profile/get-profile";
+import { dashboardStackSpacing } from "@/data/dashboard-desktop-section";
 import { getSuggestionsWithMeta } from "./get-suggestions";
 import SuggestionForm from "./SuggestionForm";
 import SuggestionList from "./SuggestionList";
@@ -19,7 +20,9 @@ export default async function SuggestionsPage() {
   const isSuperadmin = profile?.role === "Superadmin";
 
   return (
-    <div className="mx-auto w-full max-w-2xl space-y-8 px-2 lg:max-w-4xl">
+    <div
+      className={`mx-auto w-full max-w-2xl px-2 lg:max-w-4xl ${dashboardStackSpacing}`}
+    >
       <div>
         <Link
           href="/dashboard/profile"
@@ -30,16 +33,16 @@ export default async function SuggestionsPage() {
           </svg>
           Back to profile
         </Link>
-        <h1 className="mt-4 text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+        <h1 className="mt-4 text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 xl:text-xl xl:font-semibold">
           Suggestions
         </h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400 xl:text-xs">
           Share ideas and upvote suggestions from the community.
         </p>
       </div>
 
-      <section className="rounded-xl border border-yellow-200/80 bg-gradient-to-br from-yellow-50/90 to-amber-50/80 p-6 shadow-md dark:border-yellow-800/40 dark:from-yellow-950/40 dark:to-amber-950/30">
-        <h2 className="text-lg font-semibold text-yellow-900 dark:text-yellow-100">
+      <section className="rounded-xl border border-yellow-200/80 bg-gradient-to-br from-yellow-50/90 to-amber-50/80 p-6 shadow-md dark:border-yellow-800/40 dark:from-yellow-950/40 dark:to-amber-950/30 xl:rounded-lg xl:border-zinc-200 xl:bg-white xl:p-4 xl:shadow-none dark:xl:border-zinc-800 dark:xl:bg-zinc-950">
+        <h2 className="text-lg font-semibold text-yellow-900 dark:text-yellow-100 xl:text-base xl:text-zinc-900 dark:xl:text-zinc-100">
           Post a suggestion
         </h2>
         <div className="mt-4">
@@ -48,7 +51,7 @@ export default async function SuggestionsPage() {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 xl:text-base">
           All suggestions
         </h2>
         <div className="mt-4">

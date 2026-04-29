@@ -1,4 +1,9 @@
 import { createClient } from "@/utils/supabase/server";
+import {
+  dashboardHeroCorporateXl,
+  dashboardHeroTitleCorporateXl,
+  dashboardPageStack,
+} from "@/data/dashboard-desktop-section";
 import { getActivities, type ActivityFilter } from "./get-activities";
 import ActivitiesList from "./ActivitiesList";
 
@@ -11,9 +16,13 @@ export default async function ActivitiesPage({ searchParams }: Props) {
   const activities = await getActivities(supabase, filter);
 
   return (
-    <div className="w-full space-y-6">
-      <section className="-mt-8 rounded-b-xl bg-gradient-to-br from-purple-400/90 to-purple-600/90 px-6 py-4 text-center shadow-lg dark:from-purple-700/90 dark:to-purple-800/90">
-        <h1 className="text-2xl font-semibold tracking-tight text-black">
+    <div className={dashboardPageStack}>
+      <section
+        className={`-mt-8 rounded-b-xl bg-gradient-to-br from-purple-400/90 to-purple-600/90 px-6 py-4 text-center shadow-lg dark:from-purple-700/90 dark:to-purple-800/90 ${dashboardHeroCorporateXl}`}
+      >
+        <h1
+          className={`text-2xl font-semibold tracking-tight text-black ${dashboardHeroTitleCorporateXl}`}
+        >
           Activities
         </h1>
       </section>

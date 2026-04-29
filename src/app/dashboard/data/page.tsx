@@ -1,4 +1,10 @@
 import { createClient } from "@/utils/supabase/server";
+import {
+  dashboardHeroCorporateXl,
+  dashboardHeroTitleCorporateXl,
+  dashboardPageStack,
+  dashboardSectionCard,
+} from "@/data/dashboard-desktop-section";
 import { getPendingAppliedData } from "./get-pending-applied-data";
 import { getStudents } from "@/app/dashboard/students/get-students";
 import ApprovalSection from "./ApprovalSection";
@@ -13,13 +19,19 @@ export default async function DataPage() {
   const students = user ? await getStudents(supabase, user.id) : [];
 
   return (
-    <div className="w-full space-y-6">
-      <section className="-mt-8 rounded-b-xl bg-gradient-to-br from-orange-300/90 to-orange-500/90 px-6 py-4 text-center shadow-lg dark:from-orange-600/90 dark:to-orange-800/90">
-        <h1 className="text-2xl font-semibold tracking-tight text-black">Data</h1>
+    <div className={dashboardPageStack}>
+      <section
+        className={`-mt-8 rounded-b-xl bg-gradient-to-br from-orange-300/90 to-orange-500/90 px-6 py-4 text-center shadow-lg dark:from-orange-600/90 dark:to-orange-800/90 ${dashboardHeroCorporateXl}`}
+      >
+        <h1
+          className={`text-2xl font-semibold tracking-tight text-black ${dashboardHeroTitleCorporateXl}`}
+        >
+          Data
+        </h1>
       </section>
 
-      <section className="rounded-lg border border-zinc-200/80 bg-white/70 p-6 shadow-sm dark:border-zinc-700/50 dark:bg-zinc-900/60">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+      <section className={dashboardSectionCard}>
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 xl:text-base">
           Approve applied student data
         </h2>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
@@ -30,8 +42,8 @@ export default async function DataPage() {
         </div>
       </section>
 
-      <section className="rounded-lg border border-zinc-200/80 bg-white/70 p-6 shadow-sm dark:border-zinc-700/50 dark:bg-zinc-900/60">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+      <section className={dashboardSectionCard}>
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 xl:text-base">
           Student IEP data
         </h2>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">

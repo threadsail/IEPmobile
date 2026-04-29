@@ -74,7 +74,7 @@ export default function ActivitiesList({ activities, currentFilter }: Props) {
           href="/dashboard/activities?filter=org"
           className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
             currentFilter === "org"
-              ? "border-purple-500 bg-purple-500/20 text-purple-700 dark:border-purple-400 dark:bg-purple-400/20 dark:text-purple-300"
+              ? "border-purple-500 bg-purple-500/20 text-purple-700 dark:border-purple-400 dark:bg-purple-400/20 dark:text-purple-300 xl:border-zinc-800 xl:bg-zinc-100 xl:text-zinc-900 dark:xl:border-zinc-600 dark:xl:bg-zinc-800 dark:xl:text-zinc-100"
               : "border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
           }`}
         >
@@ -84,7 +84,7 @@ export default function ActivitiesList({ activities, currentFilter }: Props) {
           href="/dashboard/activities?filter=mine"
           className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
             currentFilter === "mine"
-              ? "border-purple-500 bg-purple-500/20 text-purple-700 dark:border-purple-400 dark:bg-purple-400/20 dark:text-purple-300"
+              ? "border-purple-500 bg-purple-500/20 text-purple-700 dark:border-purple-400 dark:bg-purple-400/20 dark:text-purple-300 xl:border-zinc-800 xl:bg-zinc-100 xl:text-zinc-900 dark:xl:border-zinc-600 dark:xl:bg-zinc-800 dark:xl:text-zinc-100"
               : "border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
           }`}
         >
@@ -101,7 +101,7 @@ export default function ActivitiesList({ activities, currentFilter }: Props) {
             onClick={() => setSort("popularity")}
             className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
               sort === "popularity"
-                ? "border-purple-500 bg-purple-500/20 text-purple-700 dark:border-purple-400 dark:bg-purple-400/20 dark:text-purple-300"
+                ? "border-purple-500 bg-purple-500/20 text-purple-700 dark:border-purple-400 dark:bg-purple-400/20 dark:text-purple-300 xl:border-zinc-800 xl:bg-zinc-100 xl:text-zinc-900 dark:xl:border-zinc-600 dark:xl:bg-zinc-800 dark:xl:text-zinc-100"
                 : "border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
             }`}
           >
@@ -112,7 +112,7 @@ export default function ActivitiesList({ activities, currentFilter }: Props) {
             onClick={() => setSort("recent")}
             className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
               sort === "recent"
-                ? "border-purple-500 bg-purple-500/20 text-purple-700 dark:border-purple-400 dark:bg-purple-400/20 dark:text-purple-300"
+                ? "border-purple-500 bg-purple-500/20 text-purple-700 dark:border-purple-400 dark:bg-purple-400/20 dark:text-purple-300 xl:border-zinc-800 xl:bg-zinc-100 xl:text-zinc-900 dark:xl:border-zinc-600 dark:xl:bg-zinc-800 dark:xl:text-zinc-100"
                 : "border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
             }`}
           >
@@ -121,7 +121,7 @@ export default function ActivitiesList({ activities, currentFilter }: Props) {
         </div>
         <Link
           href="/dashboard/activities/new"
-          className="inline-flex items-center gap-1.5 rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 xl:bg-zinc-800 xl:hover:bg-zinc-900 dark:xl:bg-zinc-700 dark:xl:hover:bg-zinc-600"
         >
           <span aria-hidden>+</span>
           Add activity
@@ -134,7 +134,7 @@ export default function ActivitiesList({ activities, currentFilter }: Props) {
           return (
           <article
             key={activity.id}
-            className="flex aspect-square flex-col overflow-hidden rounded-xl border border-zinc-200/80 bg-white/70 shadow-sm transition-colors hover:border-purple-200 hover:bg-white dark:border-zinc-700/50 dark:bg-zinc-900/60 dark:hover:border-purple-800 dark:hover:bg-zinc-900/80"
+            className="flex aspect-square flex-col overflow-hidden rounded-xl border border-zinc-200/80 bg-white/70 shadow-sm transition-colors hover:border-purple-200 hover:bg-white dark:border-zinc-700/50 dark:bg-zinc-900/60 dark:hover:border-purple-800 dark:hover:bg-zinc-900/80 xl:rounded-lg xl:shadow-none xl:hover:border-zinc-300 dark:xl:hover:border-zinc-600"
           >
             <div className="relative aspect-video w-full shrink-0 bg-zinc-100 dark:bg-zinc-800">
               {thumbnailUrl ? (
@@ -159,14 +159,14 @@ export default function ActivitiesList({ activities, currentFilter }: Props) {
                 </>
               ) : (
                 <div
-                  className="flex h-full w-full items-center justify-center bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900/40 dark:to-purple-800/40"
+                  className="flex h-full w-full items-center justify-center bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900/40 dark:to-purple-800/40 xl:from-zinc-100 xl:to-zinc-200 dark:xl:from-zinc-800 dark:xl:to-zinc-900"
                   aria-hidden
                 >
                   {activity.icon ? (
                     <span className="text-4xl md:text-5xl">{activity.icon}</span>
                   ) : activity.activity_type === "youtube" ? (
                     <svg
-                      className="h-12 w-12 text-purple-600 dark:text-purple-400"
+                      className="h-12 w-12 text-purple-600 dark:text-purple-400 xl:text-zinc-500 dark:xl:text-zinc-400"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                       aria-hidden
@@ -175,7 +175,7 @@ export default function ActivitiesList({ activities, currentFilter }: Props) {
                     </svg>
                   ) : (
                     <svg
-                      className="h-12 w-12 text-purple-600 dark:text-purple-400"
+                      className="h-12 w-12 text-purple-600 dark:text-purple-400 xl:text-zinc-500 dark:xl:text-zinc-400"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -208,7 +208,7 @@ export default function ActivitiesList({ activities, currentFilter }: Props) {
                   disabled={isPending}
                   className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs font-medium transition-colors disabled:opacity-50 ${
                     activity.has_upvoted
-                      ? "border-blue-500 bg-blue-500/20 text-blue-700 dark:border-blue-400 dark:bg-blue-400/20 dark:text-blue-300"
+                      ? "border-blue-500 bg-blue-500/20 text-blue-700 dark:border-blue-400 dark:bg-blue-400/20 dark:text-blue-300 xl:border-zinc-600 xl:bg-zinc-200 xl:text-zinc-800 dark:xl:border-zinc-500 dark:xl:bg-zinc-700 dark:xl:text-zinc-200"
                       : "border-zinc-300 bg-white text-zinc-600 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
                   }`}
                   aria-pressed={activity.has_upvoted}
@@ -224,7 +224,7 @@ export default function ActivitiesList({ activities, currentFilter }: Props) {
                     href={activity.youtube_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-purple-600 underline dark:text-purple-400"
+                    className="text-xs text-purple-600 underline dark:text-purple-400 xl:text-zinc-600 dark:xl:text-zinc-400"
                   >
                     Watch
                   </a>

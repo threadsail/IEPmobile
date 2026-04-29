@@ -7,6 +7,7 @@ import { createClient } from "@/utils/supabase/server";
 import { getStudents } from "@/app/dashboard/students/get-students";
 import { getTotalOrgDataEntriesCount } from "./get-org-data-entries-count";
 import TestApplySubscriptionButton from "../purchase/TestApplySubscriptionButton";
+import ManageBillingButton from "./ManageBillingButton";
 
 const PLAN_LABELS: Record<string, string> = {
   starter: "Starter",
@@ -50,7 +51,13 @@ function getRenewalDate(profile: Profile | null): string | null {
   }
 }
 
-function SubscriptionSection({ profile }: { profile: Profile | null }) {
+function SubscriptionSection({
+  profile,
+  isDev,
+}: {
+  profile: Profile | null;
+  isDev: boolean;
+}) {
   const raw = profile?.subscription_plan;
   const plan = raw === "starter" || raw === "basic" || raw === "pro" ? raw : "basic";
   const interval = profile?.subscription_interval;
@@ -150,14 +157,22 @@ function SubscriptionSection({ profile }: { profile: Profile | null }) {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
               </svg>
             </Link>
-            <div className="flex flex-wrap gap-2">
-              <TestApplySubscriptionButton plan="starter" interval={null} />
-              <TestApplySubscriptionButton plan="basic" interval="monthly" />
-              <TestApplySubscriptionButton plan="basic" interval="annual" />
-              <TestApplySubscriptionButton plan="pro" interval="monthly" />
-              <TestApplySubscriptionButton plan="pro" interval="annual" />
-            </div>
+            {profile?.stripe_customer_id ? <ManageBillingButton /> : null}
           </div>
+          {isDev && (
+            <div className="mt-4 border-t border-dashed border-violet-200/60 pt-4 dark:border-violet-700/40">
+              <p className="mb-2 text-xs font-medium text-violet-600/80 dark:text-violet-400/80">
+                Development only — test plans without Stripe
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <TestApplySubscriptionButton plan="starter" interval={null} />
+                <TestApplySubscriptionButton plan="basic" interval="monthly" />
+                <TestApplySubscriptionButton plan="basic" interval="annual" />
+                <TestApplySubscriptionButton plan="pro" interval="monthly" />
+                <TestApplySubscriptionButton plan="pro" interval="annual" />
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -373,6 +388,7 @@ export default async function ProfilePage() {
   const profile = user ? await getProfile(user.id) : null;
   const role = profile?.role ?? null;
   const isTeacherOrAdmin = role === "Teacher" || role === "Admin";
+  const isDev = process.env.NODE_ENV === "development";
 
   let studentCount = 0;
   let dataEntriesCount = 0;
@@ -433,7 +449,7 @@ export default async function ProfilePage() {
           </div>
         </div>
 
-        <SubscriptionSection profile={profile} />
+        <SubscriptionSection profile={profile} isDev={isDev} />
 
         {isTeacherOrAdmin && (
           <div className="lg:col-span-2">

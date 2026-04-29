@@ -31,18 +31,16 @@ export default function AboutPage() {
           About the creators
         </h2>
         <div className="grid gap-10 sm:grid-cols-2">
-          {/* Creator 1 */}
+          {/* Elizabeth – left */}
           <div className="flex flex-col overflow-hidden rounded-xl border border-zinc-200/80 bg-white/80 shadow-sm dark:border-zinc-700/50 dark:bg-zinc-900/50">
-            <div className="relative aspect-square w-full bg-zinc-100 dark:bg-zinc-800">
-              <img
-                src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&q=80"
-                alt=""
-                className="h-full w-full object-cover object-center"
-              />
+            <div className="relative flex aspect-square w-full items-center justify-center bg-zinc-100 dark:bg-zinc-800">
+              <svg className="h-1/2 w-1/2 text-zinc-400 dark:text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+              </svg>
             </div>
             <div className="flex flex-col p-6">
               <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-                Creator One
+                Elizabeth
               </h3>
               <ul className="mt-3 list-inside list-disc space-y-1 text-sm text-zinc-600 dark:text-zinc-400">
                 <li>Credential or degree one</li>
@@ -53,18 +51,16 @@ export default function AboutPage() {
             </div>
           </div>
 
-          {/* Creator 2 */}
+          {/* Jordan – right */}
           <div className="flex flex-col overflow-hidden rounded-xl border border-zinc-200/80 bg-white/80 shadow-sm dark:border-zinc-700/50 dark:bg-zinc-900/50">
-            <div className="relative aspect-square w-full bg-zinc-100 dark:bg-zinc-800">
-              <img
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&q=80"
-                alt=""
-                className="h-full w-full object-cover object-center"
-              />
+            <div className="relative flex aspect-square w-full items-center justify-center bg-zinc-100 dark:bg-zinc-800">
+              <svg className="h-1/2 w-1/2 text-zinc-400 dark:text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+              </svg>
             </div>
             <div className="flex flex-col p-6">
               <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-                Creator Two
+                Jordan
               </h3>
               <ul className="mt-3 list-inside list-disc space-y-1 text-sm text-zinc-600 dark:text-zinc-400">
                 <li>Credential or degree one</li>

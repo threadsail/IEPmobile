@@ -27,4 +27,8 @@ export type Profile = {
   downgrade_to_plan: "starter" | "basic" | "pro" | null;
   /** Requested interval at period end when user downgrades. */
   downgrade_to_interval: "monthly" | "annual" | null;
+  /** Stripe Customer id when the user has checked out at least once. */
+  stripe_customer_id: string | null;
+  /** Active Stripe Subscription id when on a paid plan via Stripe. */
+  stripe_subscription_id: string | null;
 };

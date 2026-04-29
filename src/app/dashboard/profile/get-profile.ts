@@ -10,6 +10,8 @@ type SubscriptionRow = {
   subscription_period_end?: string | null;
   downgrade_to_plan?: string | null;
   downgrade_to_interval?: string | null;
+  stripe_customer_id?: string | null;
+  stripe_subscription_id?: string | null;
 };
 
 /** Fetches subscription fields via RPC (avoids direct admin schema access so "current plan" updates). */
@@ -75,7 +77,7 @@ async function getProfileWithClient(
     downgradeInterval === "monthly" || downgradeInterval === "annual" ? downgradeInterval : null;
 
   return {
-    ...(base as Omit<Profile, "subscription_plan" | "subscription_interval" | "organization_name" | "subscription_period_start" | "subscription_period_end" | "downgrade_to_plan" | "downgrade_to_interval">),
+    ...(base as Omit<Profile, "subscription_plan" | "subscription_interval" | "organization_name" | "subscription_period_start" | "subscription_period_end" | "downgrade_to_plan" | "downgrade_to_interval" | "stripe_customer_id" | "stripe_subscription_id">),
     created_at,
     updated_at,
     organization_id,
@@ -86,6 +88,8 @@ async function getProfileWithClient(
     subscription_period_end: subRow?.subscription_period_end ?? null,
     downgrade_to_plan,
     downgrade_to_interval,
+    stripe_customer_id: subRow?.stripe_customer_id ?? null,
+    stripe_subscription_id: subRow?.stripe_subscription_id ?? null,
   } as Profile;
 }
 

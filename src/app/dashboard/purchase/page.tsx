@@ -2,7 +2,14 @@ import Link from "next/link";
 import { getCurrentUser } from "@/utils/auth";
 import { getProfile } from "@/app/dashboard/profile/get-profile";
 import TestApplySubscriptionButton from "./TestApplySubscriptionButton";
+import StripeCheckoutButton from "./StripeCheckoutButton";
 import { PLANS } from "@/components/PricingPlans";
+import {
+  stripeConfigured,
+  stripePriceConfiguredFor,
+  type PaidPlanId,
+  type BillingInterval,
+} from "@/lib/stripe";
 
 const PLAN_LABELS: Record<string, string> = {
   starter: "Starter",
@@ -80,6 +87,22 @@ export default async function PurchasePage({
   const intervalLabel = intervalId === "annual" ? "Annual" : intervalId === "monthly" ? "Monthly" : null;
   const titleSuffix = planId && planId !== "starter" && intervalLabel ? ` (${intervalLabel})` : "";
 
+  const hasStripeSecret = stripeConfigured();
+  const paidPlanId =
+    planId === "basic" || planId === "pro" ? (planId as PaidPlanId) : null;
+  const hasStripePrice =
+    paidPlanId &&
+    (intervalId === "monthly" || intervalId === "annual") &&
+    stripePriceConfiguredFor(paidPlanId, intervalId as BillingInterval);
+  const checkoutEnvReady = Boolean(hasStripeSecret && hasStripePrice);
+  const isDev = process.env.NODE_ENV === "development";
+  const canStripeCheckout =
+    Boolean(user) &&
+    checkoutEnvReady &&
+    planId &&
+    planId !== "starter" &&
+    (intervalId === "monthly" || intervalId === "annual");
+
   let estimatedUpgradeCharge: number | null = null;
   if (
     user &&
@@ -123,7 +146,8 @@ export default async function PurchasePage({
           Purchase {planLabel}{titleSuffix}
         </h1>
         <p className="mt-1 text-zinc-600 dark:text-zinc-400">
-          Complete your subscription for the {planLabel}{titleSuffix} plan. Checkout and payment will be available here.
+          Complete your subscription for the {planLabel}{titleSuffix} plan. Use Stripe checkout below when billing is
+          configured.
         </p>
       </div>
 
@@ -152,9 +176,21 @@ export default async function PurchasePage({
           Checkout
         </h2>
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-          {planId
-            ? `You selected the ${planLabel}${intervalLabel ? ` ${intervalLabel.toLowerCase()}` : ""} plan. Integrate your payment provider (e.g. Stripe) to add billing and subscription management.`
-            : "Select a plan on the pricing page to continue."}
+          {!planId && "Select a plan on the pricing page to continue."}
+          {planId === "starter" &&
+            "Starter is free — no payment required. You can switch to a paid plan anytime from pricing."}
+          {planId &&
+            planId !== "starter" &&
+            !intervalId &&
+            "Choose monthly or annual billing on the pricing page, then return here."}
+          {planId &&
+            planId !== "starter" &&
+            intervalId &&
+            (checkoutEnvReady
+              ? `You selected the ${planLabel}${intervalLabel ? ` ${intervalLabel.toLowerCase()}` : ""} plan. Continue to Stripe to enter payment details.`
+              : !hasStripeSecret
+                ? `You selected the ${planLabel}${intervalLabel ? ` ${intervalLabel.toLowerCase()}` : ""} plan. Add STRIPE_SECRET_KEY to your server environment (Stripe Dashboard → Developers → API keys). For local dev, put it in .env.local and restart next dev.`
+                : `You selected the ${planLabel}${intervalLabel ? ` ${intervalLabel.toLowerCase()}` : ""} plan. Set the matching Stripe Price id in the environment — for this selection use STRIPE_PRICE_${planId === "pro" ? "PRO" : "BASIC"}_${intervalId === "annual" ? "ANNUAL" : "MONTHLY"} (value from Dashboard → Products → your price → Price ID). Restart the server after saving.`)}
         </p>
         {estimatedUpgradeCharge !== null && (
           <p className="mt-2 text-sm font-medium text-emerald-700 dark:text-emerald-300">
@@ -164,11 +200,17 @@ export default async function PurchasePage({
             </span>
           </p>
         )}
-        {planId && (
-          <TestApplySubscriptionButton
-            plan={planId}
-            interval={planId !== "starter" ? intervalId : null}
-          />
+        {canStripeCheckout && planId && (planId === "basic" || planId === "pro") && intervalId && (
+          <StripeCheckoutButton plan={planId} interval={intervalId} disabled={!user} />
+        )}
+        {isDev && planId && (
+          <div className="mt-6 border-t border-dashed border-zinc-200 pt-4 dark:border-zinc-700">
+            <p className="text-xs font-medium text-zinc-500 dark:text-zinc-500">Development only</p>
+            <TestApplySubscriptionButton
+              plan={planId}
+              interval={planId !== "starter" ? intervalId : null}
+            />
+          </div>
         )}
         {!planId && (
           <Link

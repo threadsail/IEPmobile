@@ -36,7 +36,7 @@ export default function Home() {
       </section>
 
       {/* Value props: Daily schedules, Assigned activities, Data tracking */}
-      <section className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      <section className="mt-16 grid gap-8 sm:grid-cols-2 md:grid-cols-3">
         <div className="flex flex-col overflow-hidden rounded-xl border border-zinc-200/80 bg-white/80 shadow-sm dark:border-zinc-700/50 dark:bg-zinc-900/50">
           <div className="relative aspect-video w-full bg-zinc-100 dark:bg-zinc-800">
             <img
@@ -95,7 +95,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="flex flex-col overflow-hidden rounded-xl border border-zinc-200/80 bg-white/80 shadow-sm dark:border-zinc-700/50 dark:bg-zinc-900/50 sm:col-span-2 lg:col-span-1">
+        <div className="flex flex-col overflow-hidden rounded-xl border border-zinc-200/80 bg-white/80 shadow-sm dark:border-zinc-700/50 dark:bg-zinc-900/50 sm:col-span-2 md:col-span-1">
           <div className="relative aspect-video w-full bg-zinc-100 dark:bg-zinc-800">
             <img
               src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80"
@@ -130,7 +130,7 @@ export default function Home() {
         <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
           Built for IEP teams
         </h2>
-        <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-4 grid gap-3 sm:grid-cols-2 md:grid-cols-3">
           <li className="flex items-start gap-3 text-sm text-zinc-600 dark:text-zinc-400">
             <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400">1</span>
             <span>Organize daily schedules by classroom or individual student.</span>

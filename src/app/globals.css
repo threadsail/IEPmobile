@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/* Explicit scan roots (brace globs in @source can be flaky; dirs are reliable in dev + prod). */
+@source "../app";
+@source "../components";
+@source "../data";
+@source "../utils";
+@source "../constants";
+@source "../lib";
+
 /* Class-based dark mode so header toggle can switch theme */
 @custom-variant dark (&:where(.dark, .dark *));
 

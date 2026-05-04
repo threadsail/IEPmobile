@@ -1,24 +1,24 @@
 /**
- * Tailwind fragments for dashboard pages on xl+ (desktop workspace).
+ * Tailwind fragments for dashboard pages on md+ (desktop workspace, ≥768px).
  * Profile and marketing routes intentionally do not use these.
  */
 
-/** On xl: remove colored hero band (no gradient / no tinted strip). */
+/** On lg+: remove colored hero band (no gradient / no tinted strip). */
 export const dashboardHeroCorporateXl =
-  "xl:mt-0 xl:-mt-0 xl:mb-0 xl:rounded-none xl:border-0 xl:border-b-0 xl:bg-transparent xl:px-0 xl:py-0 xl:pb-4 xl:text-center xl:shadow-none xl:[background-image:none] dark:xl:bg-transparent dark:xl:border-transparent";
+  "md:mt-0 md:-mt-0 md:mb-0 md:rounded-none md:border-0 md:border-b-0 md:bg-transparent md:px-0 md:py-0 md:pb-4 md:text-center md:shadow-none md:[background-image:none] dark:md:bg-transparent dark:md:border-transparent";
 
-/** Main page title on xl (centered, larger). */
+/** Main page title on lg+ (centered, larger). */
 export const dashboardHeroTitleCorporateXl =
-  "xl:text-center xl:text-3xl xl:font-semibold xl:tracking-tight xl:text-zinc-900 dark:xl:text-zinc-100";
+  "md:text-center md:text-3xl md:font-semibold md:tracking-tight md:text-zinc-900 dark:md:text-zinc-100";
 
-/** Secondary line under the title on xl (e.g. user or student name). */
+/** Secondary line under the title on lg+ (e.g. user or student name). */
 export const dashboardHeroSubtitleCorporateXl =
-  "xl:text-center xl:text-base xl:font-medium xl:text-zinc-600 dark:xl:text-zinc-400";
+  "md:text-center md:text-base md:font-medium md:text-zinc-600 dark:md:text-zinc-400";
 
 /** Vertical rhythm for dashboard workspace pages (not profile). */
-export const dashboardStackSpacing = "space-y-6 xl:space-y-4";
+export const dashboardStackSpacing = "space-y-6 md:space-y-4";
 
 export const dashboardPageStack = `w-full ${dashboardStackSpacing}`;
 
 export const dashboardSectionCard =
-  "rounded-lg border border-zinc-200/80 bg-white/70 p-6 shadow-sm dark:border-zinc-700/50 dark:bg-zinc-900/60 xl:p-4 xl:shadow-none xl:bg-white dark:xl:bg-zinc-950";
+  "rounded-lg border border-zinc-200/80 bg-white/70 p-6 shadow-sm dark:border-zinc-700/50 dark:bg-zinc-900/60 md:p-4 md:shadow-none md:bg-white dark:md:bg-zinc-950";

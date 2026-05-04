@@ -13,30 +13,10 @@ const sidebarToggleClass =
   "flex h-9 w-full shrink-0 items-center justify-center rounded-md border border-zinc-300 bg-zinc-100 text-zinc-600 transition-colors hover:bg-zinc-200 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700";
 
 export default function AppHeader({ user }: { user: User | null }) {
-  const desktopBrand = (
-    <>
-      <Image
-        src="/pencil-logo.png"
-        alt=""
-        width={64}
-        height={64}
-        className="h-14 w-14 shrink-0 object-contain"
-      />
-      <div className="flex min-w-0 flex-col leading-[0.95]">
-        <span className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-          IEP
-        </span>
-        <span className="-mt-0.5 font-[family-name:var(--font-aloja)] text-xs font-bold tracking-wide text-zinc-500 dark:text-zinc-400">
-          DESKTOP
-        </span>
-      </div>
-    </>
-  );
-
   return (
     <>
       <header
-        className={`sticky top-0 z-50 border-b border-zinc-200/90 bg-white/90 shadow-[0_1px_3px_0_rgba(0,0,0,0.06)] backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/90 dark:shadow-[0_1px_3px_0_rgba(0,0,0,0.25)]${user ? " xl:hidden" : ""}`}
+        className={`sticky top-0 z-50 border-b border-zinc-200/90 bg-white/90 shadow-[0_1px_3px_0_rgba(0,0,0,0.06)] backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/90 dark:shadow-[0_1px_3px_0_rgba(0,0,0,0.25)]${user ? " md:hidden" : ""}`}
       >
         <div className="mx-auto flex max-w-5xl flex-row items-center justify-between gap-4 px-4 py-2">
           {user ? (
@@ -148,19 +128,33 @@ export default function AppHeader({ user }: { user: User | null }) {
 
       {user ? (
         <aside
-          className="hidden h-screen w-56 shrink-0 flex-col border-r border-zinc-200/90 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 xl:flex"
+          className="hidden h-screen w-52 shrink-0 flex-col border-r border-zinc-200/90 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 md:flex"
           aria-label="Main navigation"
         >
-          <div className="border-b border-zinc-200/90 p-4 dark:border-zinc-800">
+          <div className="border-b border-zinc-200/90 p-3 dark:border-zinc-800">
             <Link
               href="/dashboard"
-              className="flex items-center gap-3 rounded-md outline-none ring-zinc-400 focus-visible:ring-2"
+              className="flex items-center gap-2 rounded-md outline-none ring-zinc-400 focus-visible:ring-2"
             >
-              {desktopBrand}
+              <Image
+                src="/pencil-logo.png"
+                alt=""
+                width={64}
+                height={64}
+                className="h-11 w-11 shrink-0 object-contain"
+              />
+              <div className="flex min-w-0 flex-col leading-[0.95]">
+                <span className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+                  IEP
+                </span>
+                <span className="-mt-0.5 font-[family-name:var(--font-aloja)] text-[10px] font-bold tracking-wide text-zinc-500 dark:text-zinc-400">
+                  DESKTOP
+                </span>
+              </div>
             </Link>
           </div>
 
-          <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-2 py-3">
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-1.5 py-3">
             <div className="flex min-h-0 flex-1 flex-col items-center overflow-y-auto">
               <DesktopSidebarNav loggedIn />
             </div>

@@ -1,14 +1,21 @@
 "use client";
 
 import { useActionState } from "react";
+import { storedGoalListLabel } from "@/utils/iep-goal-serde";
 import { archiveStudentGoal } from "./actions";
+import type { StudentGoalActionReturnTo } from "./student-goal-action-return-to";
 
 type Props = {
   studentId: string;
   goals: string[];
+  returnToAfterGoalAction?: StudentGoalActionReturnTo;
 };
 
-export default function StudentGoalsArchiveForm({ studentId, goals }: Props) {
+export default function StudentGoalsArchiveForm({
+  studentId,
+  goals,
+  returnToAfterGoalAction,
+}: Props) {
   const [state, formAction] = useActionState(archiveStudentGoal, { error: null });
 
   return (
@@ -29,8 +36,11 @@ export default function StudentGoalsArchiveForm({ studentId, goals }: Props) {
         >
           <input type="hidden" name="id" value={studentId} />
           <input type="hidden" name="archive_index" value={index} />
+          {returnToAfterGoalAction ? (
+            <input type="hidden" name="return_to" value={returnToAfterGoalAction} />
+          ) : null}
           <span className="flex-1 text-sm text-zinc-700 dark:text-zinc-300">
-            {goal}
+            {storedGoalListLabel(goal, index)}
           </span>
           <button
             type="submit"

@@ -3,6 +3,7 @@ import { getProfile } from "./get-profile";
 import { getCurrentUser } from "@/utils/auth";
 import type { Profile } from "@/types/profile";
 import ProfileInformation from "./ProfileInformation";
+import { fullNameFromUserMetadata } from "@/utils/account-display-name";
 import { createClient } from "@/utils/supabase/server";
 import { getStudents } from "@/app/dashboard/students/get-students";
 import { getTotalOrgDataEntriesCount } from "./get-org-data-entries-count";
@@ -403,7 +404,7 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-2 lg:max-w-6xl">
+    <div className="mx-auto w-full max-w-2xl px-2 md:max-w-6xl">
       {/* Header */}
       <section className="mb-8 flex w-full items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 via-indigo-500 to-violet-600 py-6 shadow-md">
         <h1 className="text-3xl font-bold tracking-tight text-white">
@@ -411,7 +412,7 @@ export default async function ProfilePage() {
         </h1>
       </section>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
         {/* Profile information card */}
         <div className="rounded-xl border border-blue-200/80 bg-gradient-to-br from-blue-50/90 to-indigo-50/80 p-6 shadow-md dark:border-blue-800/40 dark:from-blue-950/40 dark:to-indigo-950/30">
           <div className="flex items-center gap-3">
@@ -434,6 +435,9 @@ export default async function ProfilePage() {
               email={user?.email}
               profile={profile}
               userCreatedAt={user?.created_at}
+              oauthFullNameHint={fullNameFromUserMetadata(
+                user?.user_metadata as Record<string, unknown> | undefined
+              )}
             />
           </div>
           <div className="mt-6 flex flex-wrap gap-4 border-t border-blue-200/60 pt-5 dark:border-blue-700/40">
@@ -452,7 +456,7 @@ export default async function ProfilePage() {
         <SubscriptionSection profile={profile} isDev={isDev} />
 
         {isTeacherOrAdmin && (
-          <div className="lg:col-span-2">
+          <div className="md:col-span-2">
             <FeaturesUsageSection profile={profile} studentCount={studentCount} dataEntriesCount={dataEntriesCount} />
           </div>
         )}
@@ -460,7 +464,7 @@ export default async function ProfilePage() {
         <SupportSection />
         <ContactSection />
 
-        <div className="lg:col-span-2">
+        <div className="md:col-span-2">
           <SuggestionsSection />
         </div>
       </div>

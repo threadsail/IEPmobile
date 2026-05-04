@@ -157,11 +157,19 @@ export function isDashboardNavActive(pathname: string, href: string): boolean {
 }
 
 const desktopActiveBorder: Record<TabColor, string> = {
-  blue: "border-l-blue-600 dark:border-l-blue-500",
-  teal: "border-l-teal-600 dark:border-l-teal-500",
-  orange: "border-l-orange-600 dark:border-l-orange-500",
-  purple: "border-l-purple-600 dark:border-l-purple-500",
-  pink: "border-l-pink-600 dark:border-l-pink-500",
+  blue: "border-l-blue-600 dark:border-l-blue-400",
+  teal: "border-l-teal-600 dark:border-l-teal-400",
+  orange: "border-l-orange-600 dark:border-l-orange-400",
+  purple: "border-l-purple-600 dark:border-l-purple-400",
+  pink: "border-l-pink-600 dark:border-l-pink-400",
+};
+
+const desktopInactiveBorder: Record<TabColor, string> = {
+  blue: "border-l-blue-500/45 dark:border-l-blue-400/40",
+  teal: "border-l-teal-500/45 dark:border-l-teal-400/40",
+  orange: "border-l-orange-500/45 dark:border-l-orange-400/40",
+  purple: "border-l-purple-500/45 dark:border-l-purple-400/40",
+  pink: "border-l-pink-500/45 dark:border-l-pink-400/40",
 };
 
 export function desktopNavItemClass(
@@ -169,9 +177,9 @@ export function desktopNavItemClass(
   color: TabColor,
 ): string {
   const base =
-    "flex w-full items-center justify-center gap-2 rounded-sm border-l-4 border-r-0 px-3 py-2 text-center text-sm font-medium transition-colors";
+    "flex w-full items-center justify-center gap-1.5 rounded-sm border-l-[10px] border-r-0 px-2 py-2 text-center text-sm font-medium transition-colors";
   if (active) {
     return `${base} ${desktopActiveBorder[color]} bg-zinc-200/80 text-zinc-900 dark:bg-zinc-800/80 dark:text-zinc-50`;
   }
-  return `${base} border-l-transparent text-zinc-600 hover:bg-zinc-100/90 dark:text-zinc-400 dark:hover:bg-zinc-800/60`;
+  return `${base} ${desktopInactiveBorder[color]} text-zinc-600 hover:bg-zinc-100/90 dark:text-zinc-400 dark:hover:bg-zinc-800/60`;
 }

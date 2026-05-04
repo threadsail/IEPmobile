@@ -26,7 +26,7 @@ export default function NewStudentPage() {
 
       <Link
         href="/dashboard/students"
-        className="inline-block text-sm font-medium text-pink-600 hover:underline dark:text-pink-400 xl:text-zinc-600 xl:hover:text-zinc-900 dark:xl:text-zinc-400 dark:xl:hover:text-zinc-200"
+        className="inline-block text-sm font-medium text-pink-600 hover:underline dark:text-pink-400 md:text-zinc-600 md:hover:text-zinc-900 dark:md:text-zinc-400 dark:md:hover:text-zinc-200"
       >
         ← Back to students
       </Link>

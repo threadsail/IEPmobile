@@ -31,7 +31,7 @@ export default async function DataPage() {
       </section>
 
       <section className={dashboardSectionCard}>
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 xl:text-base">
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 md:text-base">
           Approve applied student data
         </h2>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
@@ -43,11 +43,12 @@ export default async function DataPage() {
       </section>
 
       <section className={dashboardSectionCard}>
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 xl:text-base">
-          Student IEP data
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 md:text-base">
+          Log student progress
         </h2>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          Grade, classroom, note, and IEP goals per student.
+          Click a student to add a dated observation or data note. Edit IEP goals from the Students
+          tab.
         </p>
         <div className="mt-4">
           <CurrentDataSection students={students} />

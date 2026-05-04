@@ -1,5 +1,14 @@
+import { OAUTH_NEXT_COOKIE } from "@/constants/oauth-post-login";
 import { createClient } from "@/utils/supabase/server";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+
+function clearOauthNextCookie(response: NextResponse) {
+  response.cookies.set(OAUTH_NEXT_COOKIE, "", {
+    path: "/",
+    maxAge: 0,
+  });
+}
 
 /** Only same-origin relative paths (e.g. `/dashboard`) — not full URLs. */
 function safeNextPath(next: string | null, requestUrl: URL): string {
@@ -23,22 +32,39 @@ export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const { searchParams } = requestUrl;
   const code = searchParams.get("code");
-  const next = safeNextPath(searchParams.get("next"), requestUrl);
+
+  const cookieStore = await cookies();
+  const fromCookie = cookieStore.get(OAUTH_NEXT_COOKIE)?.value;
+  let decodedCookie: string | null = null;
+  if (fromCookie) {
+    try {
+      decodedCookie = decodeURIComponent(fromCookie);
+    } catch {
+      decodedCookie = null;
+    }
+  }
+  const nextRaw = searchParams.get("next") ?? decodedCookie;
+  const next = safeNextPath(nextRaw, requestUrl);
 
   if (code) {
     try {
       const supabase = await createClient();
       const { error } = await supabase.auth.exchangeCodeForSession(code);
       if (!error) {
-        return NextResponse.redirect(new URL(next, requestUrl));
+        const res = NextResponse.redirect(new URL(next, requestUrl));
+        clearOauthNextCookie(res);
+        return res;
       }
     } catch {
-      // Network or server error during code exchange
-      return NextResponse.redirect(
+      const res = NextResponse.redirect(
         new URL("/auth?error=callback", requestUrl)
       );
+      clearOauthNextCookie(res);
+      return res;
     }
   }
 
-  return NextResponse.redirect(new URL("/auth?error=callback", requestUrl));
+  const res = NextResponse.redirect(new URL("/auth?error=callback", requestUrl));
+  clearOauthNextCookie(res);
+  return res;
 }

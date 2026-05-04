@@ -42,3 +42,25 @@ export async function getStudents(
     archived_goals: normalizeGoals(row.archived_goals),
   })) as Student[];
 }
+
+/** Archived student roster (same goal columns; includes archived_at). */
+export async function getArchivedStudents(
+  supabase: SupabaseClient,
+  _userId: string
+): Promise<Student[]> {
+  const { data, error } = await supabase.rpc("get_my_archived_students");
+
+  if (error) return [];
+  const rows = (data ?? []) as Record<string, unknown>[];
+  return rows.map((row) => ({
+    ...row,
+    goals: normalizeGoals(row.goals),
+    archived_goals: normalizeGoals(row.archived_goals),
+    archived_at:
+      row.archived_at == null
+        ? null
+        : typeof row.archived_at === "string"
+          ? row.archived_at
+          : String(row.archived_at),
+  })) as Student[];
+}

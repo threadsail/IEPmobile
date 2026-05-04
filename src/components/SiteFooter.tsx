@@ -15,10 +15,10 @@ export default function SiteFooter({ hideOnDesktop = false }: Props) {
   return (
     <footer
       className={`border-t border-zinc-200/50 bg-white/60 py-2 text-center text-xs text-zinc-500 backdrop-blur-sm dark:border-zinc-700/30 dark:bg-zinc-900/60 dark:text-zinc-400 ${
-        hideOnDesktop ? "xl:hidden" : ""
+        hideOnDesktop ? "md:hidden" : ""
       } ${
         isHome
-          ? "fixed bottom-0 left-0 right-0 z-30 xl:relative xl:z-auto xl:border-zinc-200/50"
+          ? "fixed bottom-0 left-0 right-0 z-30 md:relative md:z-auto md:border-zinc-200/50"
           : ""
       }`}
     >

@@ -54,7 +54,7 @@ export default async function EditStudentPage({ params }: Params) {
           Edit student
         </h1>
         <p
-          className={`mt-1 text-lg font-medium text-black xl:mt-1 ${dashboardHeroSubtitleCorporateXl}`}
+          className={`mt-1 text-lg font-medium text-black md:mt-1 ${dashboardHeroSubtitleCorporateXl}`}
         >
           {name}
         </p>
@@ -66,7 +66,7 @@ export default async function EditStudentPage({ params }: Params) {
 
       <Link
         href={`/dashboard/students/${id}`}
-        className="inline-block text-sm font-medium text-pink-600 hover:underline dark:text-pink-400 xl:text-zinc-600 xl:hover:text-zinc-900 dark:xl:text-zinc-400 dark:xl:hover:text-zinc-200"
+        className="inline-block text-sm font-medium text-pink-600 hover:underline dark:text-pink-400 md:text-zinc-600 md:hover:text-zinc-900 dark:md:text-zinc-400 dark:md:hover:text-zinc-200"
       >
         ← Back to student details
       </Link>

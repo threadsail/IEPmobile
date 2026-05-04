@@ -1,11 +1,26 @@
 "use client";
 
+import { OAUTH_NEXT_COOKIE } from "@/constants/oauth-post-login";
 import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 type Mode = "signin" | "signup";
+
+function stashOAuthNextPath(path: string) {
+  if (typeof document === "undefined") return;
+  const secure = window.location.protocol === "https:";
+  document.cookie = [
+    `${OAUTH_NEXT_COOKIE}=${encodeURIComponent(path)}`,
+    "Path=/",
+    "Max-Age=600",
+    "SameSite=Lax",
+    secure ? "Secure" : "",
+  ]
+    .filter(Boolean)
+    .join("; ");
+}
 
 export default function AuthForm() {
   const router = useRouter();
@@ -33,17 +48,19 @@ export default function AuthForm() {
       ? window.location.origin
       : process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   const redirectBase = rawRedirectBase.replace(/\/$/, "");
+  const oauthCallbackUrl = `${redirectBase}/auth/callback`;
   const signUpRedirectUrl = `${redirectBase}/auth/callback?next=${encodeURIComponent(nextPath)}`;
 
   async function handleOAuth(provider: "google" | "azure") {
     setMessage(null);
     setLoading(true);
+    stashOAuthNextPath(nextPath);
     const supabase = createClient();
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: signUpRedirectUrl,
+          redirectTo: oauthCallbackUrl,
           // Do not set `scopes` for Google here — Supabase Auth already requests the
           // right OIDC scopes; overriding can trigger Google’s “request is invalid”.
         },

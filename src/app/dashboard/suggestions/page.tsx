@@ -21,7 +21,7 @@ export default async function SuggestionsPage() {
 
   return (
     <div
-      className={`mx-auto w-full max-w-2xl px-2 lg:max-w-4xl ${dashboardStackSpacing}`}
+      className={`mx-auto w-full max-w-2xl px-2 md:max-w-4xl ${dashboardStackSpacing}`}
     >
       <div>
         <Link
@@ -33,16 +33,16 @@ export default async function SuggestionsPage() {
           </svg>
           Back to profile
         </Link>
-        <h1 className="mt-4 text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 xl:text-xl xl:font-semibold">
+        <h1 className="mt-4 text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 md:text-xl md:font-semibold">
           Suggestions
         </h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400 xl:text-xs">
+        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400 md:text-xs">
           Share ideas and upvote suggestions from the community.
         </p>
       </div>
 
-      <section className="rounded-xl border border-yellow-200/80 bg-gradient-to-br from-yellow-50/90 to-amber-50/80 p-6 shadow-md dark:border-yellow-800/40 dark:from-yellow-950/40 dark:to-amber-950/30 xl:rounded-lg xl:border-zinc-200 xl:bg-white xl:p-4 xl:shadow-none dark:xl:border-zinc-800 dark:xl:bg-zinc-950">
-        <h2 className="text-lg font-semibold text-yellow-900 dark:text-yellow-100 xl:text-base xl:text-zinc-900 dark:xl:text-zinc-100">
+      <section className="rounded-xl border border-yellow-200/80 bg-gradient-to-br from-yellow-50/90 to-amber-50/80 p-6 shadow-md dark:border-yellow-800/40 dark:from-yellow-950/40 dark:to-amber-950/30 md:rounded-lg md:border-zinc-200 md:bg-white md:p-4 md:shadow-none dark:md:border-zinc-800 dark:md:bg-zinc-950">
+        <h2 className="text-lg font-semibold text-yellow-900 dark:text-yellow-100 md:text-base md:text-zinc-900 dark:md:text-zinc-100">
           Post a suggestion
         </h2>
         <div className="mt-4">
@@ -51,7 +51,7 @@ export default async function SuggestionsPage() {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 xl:text-base">
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 md:text-base">
           All suggestions
         </h2>
         <div className="mt-4">

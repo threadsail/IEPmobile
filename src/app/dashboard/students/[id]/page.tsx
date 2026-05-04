@@ -57,13 +57,13 @@ export default async function StudentDetailPage({ params }: Params) {
           Student details
         </h1>
         <p
-          className={`mt-1 text-lg font-medium text-black xl:mt-1 ${dashboardHeroSubtitleCorporateXl}`}
+          className={`mt-1 text-lg font-medium text-black md:mt-1 ${dashboardHeroSubtitleCorporateXl}`}
         >
           {name}
         </p>
       </section>
 
-      <div className="space-y-4 xl:space-y-3">
+      <div className="space-y-4 md:space-y-3">
         <section className={dashboardSectionCard}>
           <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
             Profile
@@ -119,13 +119,13 @@ export default async function StudentDetailPage({ params }: Params) {
         <div className="flex flex-wrap items-center gap-3">
           <Link
             href={`/dashboard/students/${id}/edit`}
-            className="rounded-lg bg-pink-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-pink-700 dark:bg-pink-500 dark:hover:bg-pink-600 xl:bg-zinc-800 xl:hover:bg-zinc-900 dark:xl:bg-zinc-700 dark:xl:hover:bg-zinc-600"
+            className="rounded-lg bg-pink-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-pink-700 dark:bg-pink-500 dark:hover:bg-pink-600 md:bg-zinc-800 md:hover:bg-zinc-900 dark:md:bg-zinc-700 dark:md:hover:bg-zinc-600"
           >
             Edit student
           </Link>
           <Link
             href="/dashboard/students"
-            className="text-sm font-medium text-pink-600 hover:underline dark:text-pink-400 xl:text-zinc-600 xl:hover:text-zinc-900 dark:xl:text-zinc-400 dark:xl:hover:text-zinc-200"
+            className="text-sm font-medium text-pink-600 hover:underline dark:text-pink-400 md:text-zinc-600 md:hover:text-zinc-900 dark:md:text-zinc-400 dark:md:hover:text-zinc-200"
           >
             ← Back to students
           </Link>

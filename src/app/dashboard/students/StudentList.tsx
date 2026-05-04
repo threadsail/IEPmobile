@@ -1,43 +1,47 @@
-import Link from "next/link";
+"use client";
+
+import { useMemo } from "react";
 import { studentDisplayName, type Student } from "@/types/student";
 
-export default function StudentList({ students }: { students: Student[] }) {
+export default function StudentList({
+  students,
+  filterActive = false,
+  onSelectStudent,
+}: {
+  students: Student[];
+  filterActive?: boolean;
+  onSelectStudent: (student: Student) => void;
+}) {
+  const sortedByName = useMemo(() => {
+    if (students.length === 0) return [];
+    return [...students].sort((a, b) =>
+      studentDisplayName(a).localeCompare(studentDisplayName(b), undefined, {
+        sensitivity: "base",
+      })
+    );
+  }, [students]);
+
   if (students.length === 0) {
     return (
       <p className="text-sm text-zinc-500 dark:text-zinc-400">
-        No students yet. Add a student above to get started.
+        {filterActive
+          ? "No students in this classroom. Choose another filter or clear the filter to see everyone."
+          : "No students yet. Add a student above to get started."}
       </p>
     );
   }
 
   return (
-    <ul className="space-y-2">
-      {students.map((student) => (
-        <li
-          key={student.id}
-          className="rounded-lg border border-zinc-200/80 bg-white/70 shadow-sm transition-colors hover:border-pink-200 hover:bg-white dark:border-zinc-700/50 dark:bg-zinc-900/60 dark:hover:border-pink-800 dark:hover:bg-zinc-900/80"
-        >
-          <Link
-            href={`/dashboard/students/${student.id}`}
-            className="flex items-center justify-between gap-3 px-4 py-3"
+    <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3">
+      {sortedByName.map((student) => (
+        <li key={student.id} className="min-w-0">
+          <button
+            type="button"
+            onClick={() => onSelectStudent(student)}
+            className="w-full truncate rounded-lg border border-zinc-200/80 bg-white/70 px-3 py-2.5 text-left text-sm font-medium text-pink-600 shadow-sm transition-colors hover:border-pink-200 hover:bg-white dark:border-zinc-700/50 dark:bg-zinc-900/60 dark:text-pink-400 dark:hover:border-pink-800 dark:hover:bg-zinc-900/80"
           >
-            <div className="min-w-0 flex-1">
-              <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                {studentDisplayName(student)}
-              </p>
-              {student.note ? (
-                <p className="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">
-                  {student.note}
-                </p>
-              ) : null}
-            </div>
-            <span
-              className="text-xs font-medium text-zinc-400 transition-colors group-hover:text-pink-500"
-              aria-hidden
-            >
-              View
-            </span>
-          </Link>
+            {studentDisplayName(student)}
+          </button>
         </li>
       ))}
     </ul>

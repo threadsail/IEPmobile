@@ -30,25 +30,26 @@ export function getWorkspaceTabColorForPath(pathname: string | null): WorkspaceT
  * Matches mobile dashboard page header gradients (`bg-gradient-to-br` + /90 stops).
  * See e.g. `dashboard/page.tsx`, `schedule/page.tsx`, etc.
  */
-const workspaceMainColumnGradientXl: Record<WorkspaceTabColor, string> = {
+const workspaceMainColumnGradientMd: Record<WorkspaceTabColor, string> = {
   blue:
-    "xl:bg-gradient-to-br xl:from-blue-400/90 xl:to-blue-600/90 dark:xl:from-blue-700/90 dark:xl:to-blue-800/90",
+    "md:bg-gradient-to-br md:from-blue-400/90 md:to-blue-600/90 dark:md:from-blue-700/90 dark:md:to-blue-800/90",
   teal:
-    "xl:bg-gradient-to-br xl:from-teal-400/90 xl:to-teal-600/90 dark:xl:from-teal-700/90 dark:xl:to-teal-800/90",
+    "md:bg-gradient-to-br md:from-teal-400/90 md:to-teal-600/90 dark:md:from-teal-700/90 dark:md:to-teal-800/90",
   orange:
-    "xl:bg-gradient-to-br xl:from-orange-300/90 xl:to-orange-500/90 dark:xl:from-orange-600/90 dark:xl:to-orange-800/90",
+    "md:bg-gradient-to-br md:from-orange-300/90 md:to-orange-500/90 dark:md:from-orange-600/90 dark:md:to-orange-800/90",
   purple:
-    "xl:bg-gradient-to-br xl:from-purple-400/90 xl:to-purple-600/90 dark:xl:from-purple-700/90 dark:xl:to-purple-800/90",
+    "md:bg-gradient-to-br md:from-purple-400/90 md:to-purple-600/90 dark:md:from-purple-700/90 dark:md:to-purple-800/90",
   pink:
-    "xl:bg-gradient-to-br xl:from-pink-400/90 xl:to-pink-600/90 dark:xl:from-pink-700/90 dark:xl:to-pink-800/90",
+    "md:bg-gradient-to-br md:from-pink-400/90 md:to-pink-600/90 dark:md:from-pink-700/90 dark:md:to-pink-800/90",
 };
 
 /** Non-tab dashboard routes: same treatment as Home header. */
-const workspaceMainColumnGradientDefaultXl =
-  "xl:bg-gradient-to-br xl:from-blue-400/90 xl:to-blue-600/90 dark:xl:from-blue-700/90 dark:xl:to-blue-800/90";
+const workspaceMainColumnGradientDefaultMd =
+  "md:bg-gradient-to-br md:from-blue-400/90 md:to-blue-600/90 dark:md:from-blue-700/90 dark:md:to-blue-800/90";
 
-export function getWorkspaceMainColumnGradientXl(pathname: string | null): string {
+/** Desktop workspace main column gradient (applies at `md` breakpoint and up). */
+export function getWorkspaceMainColumnGradientMd(pathname: string | null): string {
   const color = getWorkspaceTabColorForPath(pathname);
-  if (!color) return workspaceMainColumnGradientDefaultXl;
-  return workspaceMainColumnGradientXl[color];
+  if (!color) return workspaceMainColumnGradientDefaultMd;
+  return workspaceMainColumnGradientMd[color];
 }

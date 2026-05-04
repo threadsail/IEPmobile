@@ -17,6 +17,8 @@ export type Student = {
   goals: string[] | null;
   /** Archived IEP goals (from admin.student_goals where archived = true) */
   archived_goals: string[] | null;
+  /** Set when the student record is archived (see get_my_archived_students). */
+  archived_at?: string | null;
 };
 
 /** Display name from first_name + last_name (handles nulls). */

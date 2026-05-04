@@ -1,5 +1,8 @@
 "use client";
 
+import ActivityPopupImage from "@/components/ActivityPopupImage";
+import YoutubeActivityEmbed from "@/components/YoutubeActivityEmbed";
+import { getActivityPopupImageCandidates, getYoutubeVideoId } from "@/utils/youtube-activity";
 import { useActionState, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Activity } from "@/types/activity";
 import type { ScheduleEntry } from "@/types/schedule";
@@ -245,6 +248,10 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
     [activities]
   );
 
+  const activityPopupYoutubeId = activityPopup
+    ? getYoutubeVideoId(activityPopup.youtube_url)
+    : null;
+
   const fourDayWindow = useMemo(() => {
     const todayKey = toDateKey(new Date());
     const todayIndex = weekDates.findIndex((d) => toDateKey(d) === todayKey);
@@ -301,10 +308,10 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
   };
 
   const arrowClass =
-    "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-zinc-200/80 bg-white/80 text-zinc-600 transition-colors hover:border-teal-400 hover:bg-teal-50 hover:text-teal-700 dark:border-zinc-700/50 dark:bg-zinc-800/60 dark:text-zinc-400 dark:hover:border-teal-700 dark:hover:bg-teal-900/40 dark:hover:text-teal-300 xl:hover:border-zinc-300 xl:hover:bg-zinc-100 xl:hover:text-zinc-800 dark:xl:hover:border-zinc-600 dark:xl:hover:bg-zinc-800 dark:xl:hover:text-zinc-200 sm:h-10 sm:w-10";
+    "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-zinc-200/80 bg-white/80 text-zinc-600 transition-colors hover:border-teal-400 hover:bg-teal-50 hover:text-teal-700 dark:border-zinc-700/50 dark:bg-zinc-800/60 dark:text-zinc-400 dark:hover:border-teal-700 dark:hover:bg-teal-900/40 dark:hover:text-teal-300 md:hover:border-zinc-300 md:hover:bg-zinc-100 md:hover:text-zinc-800 dark:md:hover:border-zinc-600 dark:md:hover:bg-zinc-800 dark:md:hover:text-zinc-200 sm:h-10 sm:w-10";
 
   return (
-    <div className="space-y-4 xl:space-y-3">
+    <div className="space-y-4 md:space-y-3">
       <div className="flex items-center justify-center gap-2 sm:gap-3">
         <button type="button" onClick={goPrevWeek} className={arrowClass} aria-label="Previous week">
           <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -321,10 +328,10 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
               inFourDay && inFiveDay
                 ? "flex flex-col"
                 : inFourDay
-                  ? "flex flex-col md:hidden lg:flex lg:flex-col"
+                  ? "flex flex-col md:hidden xl:flex xl:flex-col"
                   : inFiveDay
-                    ? "hidden md:flex md:flex-col lg:flex lg:flex-col"
-                    : "hidden lg:flex lg:flex-col";
+                    ? "hidden md:flex md:flex-col xl:flex xl:flex-col"
+                    : "hidden xl:flex xl:flex-col";
             return (
               <button
                 key={key}
@@ -332,8 +339,8 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
                 onClick={() => setSelectedKey(key)}
                 className={`min-w-[2.5rem] flex-shrink-0 flex-col items-center rounded-lg border-2 px-2 py-1.5 transition-colors sm:min-w-[2.75rem] sm:rounded-xl sm:px-2.5 sm:py-2 md:min-w-[4rem] md:px-3 md:py-2 ${visibilityClass} ${
                   isSelected
-                    ? "border-teal-500 bg-teal-500/20 text-teal-800 dark:border-teal-400 dark:bg-teal-400/20 dark:text-teal-100 xl:border-zinc-700 xl:bg-zinc-200 xl:text-zinc-900 dark:xl:border-zinc-500 dark:xl:bg-zinc-800 dark:xl:text-zinc-100"
-                    : "border-zinc-200/80 bg-white/70 text-zinc-700 hover:border-teal-300 hover:bg-teal-50/50 dark:border-zinc-700/50 dark:bg-zinc-800/60 dark:text-zinc-300 dark:hover:border-teal-700 dark:hover:bg-teal-900/30 xl:hover:border-zinc-300 xl:hover:bg-zinc-50 dark:xl:hover:border-zinc-600 dark:xl:hover:bg-zinc-800/60"
+                    ? "border-teal-500 bg-teal-500/20 text-teal-800 dark:border-teal-400 dark:bg-teal-400/20 dark:text-teal-100 md:border-zinc-700 md:bg-zinc-200 md:text-zinc-900 dark:md:border-zinc-500 dark:md:bg-zinc-800 dark:md:text-zinc-100"
+                    : "border-zinc-200/80 bg-white/70 text-zinc-700 hover:border-teal-300 hover:bg-teal-50/50 dark:border-zinc-700/50 dark:bg-zinc-800/60 dark:text-zinc-300 dark:hover:border-teal-700 dark:hover:bg-teal-900/30 md:hover:border-zinc-300 md:hover:bg-zinc-50 dark:md:hover:border-zinc-600 dark:md:hover:bg-zinc-800/60"
                 }`}
               >
                 <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 sm:text-xs">
@@ -351,11 +358,11 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
         </button>
       </div>
 
-      <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 xl:text-base">
+      <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 md:text-base">
         {selectedLabel}
       </h2>
 
-      <p className="text-sm text-zinc-500 dark:text-zinc-400 xl:text-xs">
+      <p className="text-sm text-zinc-500 dark:text-zinc-400 md:text-xs">
         Click a time slot to add an entry. Entries are visible to everyone in your organization.
       </p>
 
@@ -367,7 +374,7 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
                 key={`${hour}-${minute}`}
                 type="button"
                 onClick={() => openModalForSlot(hour, minute)}
-                className={`flex min-h-[2.75rem] w-full items-center justify-end border-b border-zinc-100 px-2 py-2 text-right text-xs font-medium tabular-nums text-zinc-600 transition-colors last:border-b-0 hover:bg-teal-50/80 hover:text-teal-700 dark:border-zinc-700/80 dark:text-zinc-400 dark:hover:bg-teal-900/30 dark:hover:text-teal-300 xl:hover:bg-zinc-100/90 xl:hover:text-zinc-800 dark:xl:hover:bg-zinc-800/80 dark:xl:hover:text-zinc-200 ${
+                className={`flex min-h-[2.75rem] w-full items-center justify-end border-b border-zinc-100 px-2 py-2 text-right text-xs font-medium tabular-nums text-zinc-600 transition-colors last:border-b-0 hover:bg-teal-50/80 hover:text-teal-700 dark:border-zinc-700/80 dark:text-zinc-400 dark:hover:bg-teal-900/30 dark:hover:text-teal-300 md:hover:bg-zinc-100/90 md:hover:text-zinc-800 dark:md:hover:bg-zinc-800/80 dark:md:hover:text-zinc-200 ${
                   i % 2 === 0 ? "bg-white dark:bg-zinc-900/80" : "bg-zinc-100/80 dark:bg-zinc-800/80"
                 }`}
                 aria-label={`Add entry at ${label}`}
@@ -405,7 +412,7 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
                 return (
                   <div
                     key={entry.id}
-                    className="absolute pointer-events-auto flex items-stretch gap-0.5 overflow-hidden rounded bg-teal-500/90 shadow dark:bg-teal-600/90 xl:bg-zinc-700 dark:xl:bg-zinc-600"
+                    className="absolute pointer-events-auto flex items-stretch gap-0.5 overflow-hidden rounded bg-teal-500/90 shadow dark:bg-teal-600/90 md:bg-zinc-700 dark:md:bg-zinc-600"
                     style={{
                       top: `${topPct}%`,
                       height: `${heightPct}%`,
@@ -417,7 +424,7 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
                     <button
                       type="button"
                       onClick={() => setEditingEntry(entry)}
-                      className="flex-1 min-w-0 cursor-pointer px-2 py-0.5 text-center text-xs font-medium text-white hover:bg-teal-600/90 dark:hover:bg-teal-500/90 xl:hover:bg-zinc-600/90 dark:xl:hover:bg-zinc-500/90"
+                      className="flex-1 min-w-0 cursor-pointer px-2 py-0.5 text-center text-xs font-medium text-white hover:bg-teal-600/90 dark:hover:bg-teal-500/90 md:hover:bg-zinc-600/90 dark:md:hover:bg-zinc-500/90"
                       title={entry.name}
                     >
                       <span className="line-clamp-2 block">{entry.name}</span>
@@ -447,7 +454,7 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
                 key={`${hour}-${minute}`}
                 type="button"
                 onClick={() => openModalForSlot(hour, minute)}
-                className={`min-h-[2.75rem] flex-1 border-b border-zinc-100 px-2 py-1 text-left transition-colors last:border-b-0 hover:bg-teal-50/50 dark:border-zinc-700/80 dark:hover:bg-teal-900/20 xl:hover:bg-zinc-100/70 dark:xl:hover:bg-zinc-800/50 ${
+                className={`min-h-[2.75rem] flex-1 border-b border-zinc-100 px-2 py-1 text-left transition-colors last:border-b-0 hover:bg-teal-50/50 dark:border-zinc-700/80 dark:hover:bg-teal-900/20 md:hover:bg-zinc-100/70 dark:md:hover:bg-zinc-800/50 ${
                   i % 2 === 0 ? "bg-white dark:bg-zinc-900/80" : "bg-zinc-100/80 dark:bg-zinc-800/80"
                 }`}
                 aria-label={`Add entry at ${formatTimeLabel(hour, minute)}`}
@@ -536,7 +543,7 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
               <div className="flex gap-2 pt-2">
                 <button
                   type="submit"
-                  className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600 xl:bg-zinc-800 xl:hover:bg-zinc-900 dark:xl:bg-zinc-700 dark:xl:hover:bg-zinc-600"
+                  className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600 md:bg-zinc-800 md:hover:bg-zinc-900 dark:md:bg-zinc-700 dark:md:hover:bg-zinc-600"
                 >
                   Add entry
                 </button>
@@ -650,7 +657,7 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
                 <div className="flex gap-2">
                   <button
                     type="submit"
-                    className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600 xl:bg-zinc-800 xl:hover:bg-zinc-900 dark:xl:bg-zinc-700 dark:xl:hover:bg-zinc-600"
+                    className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600 md:bg-zinc-800 md:hover:bg-zinc-900 dark:md:bg-zinc-700 dark:md:hover:bg-zinc-600"
                   >
                     Save
                   </button>
@@ -701,7 +708,11 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
           role="dialog"
           aria-labelledby="activity-popup-title"
         >
-          <div className="w-full max-w-md rounded-xl border border-zinc-200 bg-white p-6 shadow-xl dark:border-zinc-700 dark:bg-zinc-900">
+          <div
+            className={`w-full rounded-xl border border-zinc-200 bg-white p-6 shadow-xl dark:border-zinc-700 dark:bg-zinc-900 ${
+              activityPopupYoutubeId ? "max-w-lg" : "max-w-md"
+            }`}
+          >
             <div className="flex items-start justify-between gap-2">
               <h3 id="activity-popup-title" className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
                 {activityPopup.name}
@@ -717,14 +728,21 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
                 </svg>
               </button>
             </div>
-            {activityPopup.image_url && (
-              <div className="mt-3 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
-                <img
-                  src={activityPopup.image_url}
-                  alt=""
-                  className="h-48 w-full object-cover"
-                />
-              </div>
+            {activityPopupYoutubeId ? (
+              <YoutubeActivityEmbed
+                key={activityPopup.id}
+                videoId={activityPopupYoutubeId}
+                title={activityPopup.name}
+                youtubeUrl={activityPopup.youtube_url}
+                className="mt-3"
+              />
+            ) : (
+              <ActivityPopupImage
+                key={activityPopup.id}
+                urls={getActivityPopupImageCandidates(activityPopup)}
+                alt=""
+                className="h-48 w-full object-cover"
+              />
             )}
             {activityPopup.description && (
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{activityPopup.description}</p>
@@ -735,17 +753,14 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
               </p>
             )}
             {activityPopup.youtube_url && (
-              <div className="mt-4">
+              <div className="mt-3">
                 <a
                   href={activityPopup.youtube_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700"
+                  className="text-sm font-medium text-purple-600 underline hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-300"
                 >
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                  </svg>
-                  Open YouTube
+                  Open on YouTube
                 </a>
               </div>
             )}

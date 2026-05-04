@@ -31,9 +31,16 @@ type ProfileInformationProps = {
   email: string | undefined;
   profile: Profile | null;
   userCreatedAt?: string | null;
+  /** When profile name fields are empty (e.g. Google OAuth), show this from auth.user_metadata. */
+  oauthFullNameHint?: string | null;
 };
 
-export default function ProfileInformation({ email, profile, userCreatedAt }: ProfileInformationProps) {
+export default function ProfileInformation({
+  email,
+  profile,
+  userCreatedAt,
+  oauthFullNameHint,
+}: ProfileInformationProps) {
   const router = useRouter();
   const [state, formAction] = useActionState(updateProfile, {});
   const [editing, setEditing] = useState(false);
@@ -47,7 +54,10 @@ export default function ProfileInformation({ email, profile, userCreatedAt }: Pr
   }, [state, router]);
 
   const fullName =
-    [profile?.first_name, profile?.last_name].filter(Boolean).join(" ").trim() || "Not set";
+    [profile?.first_name, profile?.last_name].filter(Boolean).join(" ").trim() ||
+    profile?.full_name?.trim() ||
+    oauthFullNameHint?.trim() ||
+    "Not set";
 
   if (!profile) {
     return (

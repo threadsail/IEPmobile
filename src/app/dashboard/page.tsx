@@ -8,24 +8,25 @@ import {
 } from "@/data/dashboard-desktop-section";
 import { getProfile } from "./profile/get-profile";
 import { getCurrentUser } from "@/utils/auth";
-
-function getDisplayName(
-  profile: { first_name: string | null; last_name: string | null; username: string | null } | null,
-  email: string | undefined
-): string {
-  if (profile?.first_name || profile?.last_name) {
-    return [profile.first_name, profile.last_name].filter(Boolean).join(" ").trim();
-  }
-  if (profile?.username) return profile.username;
-  if (email) return email;
-  return "User";
-}
+import {
+  accountDisplayName,
+  welcomeHeadingName,
+} from "@/utils/account-display-name";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
   const profile = user ? await getProfile(user.id) : null;
-  const displayName = getDisplayName(profile, user?.email);
-  const welcomeName = profile?.first_name?.trim() || displayName;
+  const meta = user?.user_metadata as Record<string, unknown> | undefined;
+  const displayName = accountDisplayName({
+    profile,
+    email: user?.email,
+    userMetadata: meta,
+  });
+  const welcomeName = welcomeHeadingName({
+    profile,
+    email: user?.email,
+    userMetadata: meta,
+  });
 
   const currentDate = new Date().toLocaleDateString(undefined, {
     weekday: "long",
@@ -50,7 +51,7 @@ export default async function DashboardPage() {
           Welcome
         </h1>
         <p
-          className={`mt-1 text-2xl font-medium text-black xl:mt-1 ${dashboardHeroSubtitleCorporateXl}`}
+          className={`mt-1 text-2xl font-medium text-black md:mt-1 ${dashboardHeroSubtitleCorporateXl}`}
         >
           {welcomeName}
         </p>
@@ -58,34 +59,34 @@ export default async function DashboardPage() {
 
       {/* Current date — suppressHydrationWarning: server TZ/locale may differ from client */}
       <p
-        className="text-center text-base text-zinc-600 dark:text-zinc-400 md:text-2xl xl:text-sm xl:text-zinc-500 dark:xl:text-zinc-400"
+        className="text-center text-base text-zinc-600 dark:text-zinc-400 md:text-2xl md:text-sm md:text-zinc-500 dark:md:text-zinc-400"
         suppressHydrationWarning
       >
         {currentDate}
       </p>
 
       {/* Two sections side by side */}
-      <div className="grid grid-cols-2 gap-4 xl:gap-3">
+      <div className="grid grid-cols-2 gap-4 md:gap-3">
         <Link
           href="/dashboard/students"
-          className="flex flex-col items-center justify-center rounded-lg border border-zinc-200/80 bg-white/70 p-6 text-center shadow-sm transition-colors hover:border-blue-200 hover:bg-white dark:border-zinc-700/50 dark:bg-zinc-900/60 dark:hover:border-blue-800 dark:hover:bg-zinc-900/80 xl:border-zinc-200 xl:p-4 xl:shadow-none xl:hover:border-zinc-300 dark:xl:border-zinc-800 dark:xl:bg-zinc-950 dark:xl:hover:border-zinc-600"
+          className="flex flex-col items-center justify-center rounded-lg border border-zinc-200/80 bg-white/70 p-6 text-center shadow-sm transition-colors hover:border-blue-200 hover:bg-white dark:border-zinc-700/50 dark:bg-zinc-900/60 dark:hover:border-blue-800 dark:hover:bg-zinc-900/80 md:border-zinc-200 md:p-4 md:shadow-none md:hover:border-zinc-300 dark:md:border-zinc-800 dark:md:bg-zinc-950 dark:md:hover:border-zinc-600"
         >
-          <span className="bg-gradient-to-br from-pink-500 to-pink-700 bg-clip-text text-5xl font-bold tabular-nums text-transparent dark:from-pink-400 dark:to-pink-600 xl:bg-none xl:text-4xl xl:text-zinc-900 dark:xl:text-zinc-100">
+          <span className="bg-gradient-to-br from-pink-500 to-pink-700 bg-clip-text text-5xl font-bold tabular-nums text-transparent dark:from-pink-400 dark:to-pink-600 md:bg-none md:text-4xl md:text-zinc-900 dark:md:text-zinc-100">
             {studentCount}
           </span>
-          <h2 className="mt-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100 xl:text-base">
+          <h2 className="mt-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100 md:text-base">
             Students
           </h2>
         </Link>
 
         <Link
           href="/dashboard/data"
-          className="flex flex-col items-center justify-center rounded-lg border border-zinc-200/80 bg-white/70 p-6 text-center shadow-sm transition-colors hover:border-blue-200 hover:bg-white dark:border-zinc-700/50 dark:bg-zinc-900/60 dark:hover:border-blue-800 dark:hover:bg-zinc-900/80 xl:border-zinc-200 xl:p-4 xl:shadow-none xl:hover:border-zinc-300 dark:xl:border-zinc-800 dark:xl:bg-zinc-950 dark:xl:hover:border-zinc-600"
+          className="flex flex-col items-center justify-center rounded-lg border border-zinc-200/80 bg-white/70 p-6 text-center shadow-sm transition-colors hover:border-blue-200 hover:bg-white dark:border-zinc-700/50 dark:bg-zinc-900/60 dark:hover:border-blue-800 dark:hover:bg-zinc-900/80 md:border-zinc-200 md:p-4 md:shadow-none md:hover:border-zinc-300 dark:md:border-zinc-800 dark:md:bg-zinc-950 dark:md:hover:border-zinc-600"
         >
-          <span className="bg-gradient-to-br from-orange-500 to-amber-600 bg-clip-text text-5xl font-bold tabular-nums text-transparent dark:from-orange-400 dark:to-amber-500 xl:bg-none xl:text-4xl xl:text-zinc-900 dark:xl:text-zinc-100">
+          <span className="bg-gradient-to-br from-orange-500 to-amber-600 bg-clip-text text-5xl font-bold tabular-nums text-transparent dark:from-orange-400 dark:to-amber-500 md:bg-none md:text-4xl md:text-zinc-900 dark:md:text-zinc-100">
             {toDoReviewCount}
           </span>
-          <h2 className="mt-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100 xl:text-base">
+          <h2 className="mt-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100 md:text-base">
             Data Review
           </h2>
         </Link>
@@ -93,15 +94,15 @@ export default async function DashboardPage() {
 
       {/* Today's schedule */}
       <section
-        className={`${dashboardSectionCard} p-3 sm:p-4 md:p-6 xl:p-4`}
+        className={`${dashboardSectionCard} p-3 sm:p-4 md:p-6 md:p-4`}
       >
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 sm:text-lg xl:text-base">
+          <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 sm:text-lg md:text-base">
             Today&apos;s schedule
           </h2>
           <Link
             href="/dashboard/schedule"
-            className="text-xs font-medium text-blue-600 hover:underline dark:text-blue-400 sm:text-sm xl:text-xs xl:font-medium xl:text-zinc-600 xl:no-underline xl:hover:text-zinc-900 dark:xl:text-zinc-400 dark:xl:hover:text-zinc-200"
+            className="text-xs font-medium text-blue-600 hover:underline dark:text-blue-400 sm:text-sm md:text-xs md:font-medium md:text-zinc-600 md:no-underline md:hover:text-zinc-900 dark:md:text-zinc-400 dark:md:hover:text-zinc-200"
           >
             View schedule →
           </Link>

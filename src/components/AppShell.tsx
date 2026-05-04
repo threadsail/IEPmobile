@@ -15,7 +15,7 @@ export default async function AppShell({
     <div
       className={
         user
-          ? "flex min-h-screen flex-col xl:flex-row"
+          ? "flex min-h-screen flex-col md:flex-row"
           : "flex min-h-screen flex-col"
       }
     >

@@ -28,10 +28,11 @@ export default function AuthForm() {
   const isSignUp = mode === "signup";
   const callbackError = searchParams.get("error");
   const nextPath = searchParams.get("next") ?? "/dashboard";
-  const redirectBase =
+  const rawRedirectBase =
     typeof window !== "undefined"
       ? window.location.origin
       : process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const redirectBase = rawRedirectBase.replace(/\/$/, "");
   const signUpRedirectUrl = `${redirectBase}/auth/callback?next=${encodeURIComponent(nextPath)}`;
 
   async function handleOAuth(provider: "google" | "azure") {
@@ -43,6 +44,8 @@ export default function AuthForm() {
         provider,
         options: {
           redirectTo: signUpRedirectUrl,
+          // Do not set `scopes` for Google here — Supabase Auth already requests the
+          // right OIDC scopes; overriding can trigger Google’s “request is invalid”.
         },
       });
       if (error) throw error;
@@ -316,7 +319,7 @@ export default function AuthForm() {
             disabled={loading}
             className="flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
           >
-            <svg className="h-5 w-5" viewBox="0 0 24 24">
+            <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden>
               <path
                 fill="#4285F4"
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -342,13 +345,13 @@ export default function AuthForm() {
             disabled={loading}
             className="flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
           >
-            <svg className="h-5 w-5" viewBox="0 0 23 23">
+            <svg className="h-5 w-5" viewBox="0 0 23 23" aria-hidden>
               <path fill="#f35325" d="M1 1h10v10H1z" />
               <path fill="#81bc06" d="M12 1h10v10H12z" />
               <path fill="#05a6f0" d="M1 12h10v10H1z" />
               <path fill="#ffba08" d="M12 12h10v10H12z" />
             </svg>
-            Continue with Azure
+            Continue with Microsoft
           </button>
         </div>
 

@@ -3,8 +3,13 @@ import { SITE_DOMAIN } from "@/lib/site-config";
 /** Public production hosts that show the coming-soon page until launch. */
 const COMING_SOON_HOSTS = new Set([SITE_DOMAIN, `www.${SITE_DOMAIN}`]);
 
-/** Paths that stay reachable on production during coming-soon (webhooks, etc.). */
-const COMING_SOON_ALLOWED_PREFIXES = ["/coming-soon", "/api/"];
+/** Paths that stay reachable on production during coming-soon (webhooks, auth, etc.). */
+const COMING_SOON_ALLOWED_PREFIXES = [
+  "/coming-soon",
+  "/api/",
+  "/auth",
+  "/oauth/consent",
+];
 
 export function isComingSoonHost(hostname: string): boolean {
   if (process.env.COMING_SOON === "false") return false;

@@ -1,7 +1,6 @@
 import { OAUTH_NEXT_COOKIE } from "@/constants/oauth-post-login";
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import { type NextRequest, NextResponse } from "next/server";
 
 function clearOauthNextCookie(response: NextResponse) {
   response.cookies.set(OAUTH_NEXT_COOKIE, "", {
@@ -28,13 +27,20 @@ function safeNextPath(next: string | null, requestUrl: URL): string {
   }
 }
 
-export async function GET(request: Request) {
-  const requestUrl = new URL(request.url);
-  const { searchParams } = requestUrl;
-  const code = searchParams.get("code");
+function authErrorRedirect(requestUrl: URL, reason?: string) {
+  const url = new URL("/auth", requestUrl);
+  url.searchParams.set("error", "callback");
+  if (reason) {
+    url.searchParams.set("reason", reason.slice(0, 200));
+  }
+  return NextResponse.redirect(url);
+}
 
-  const cookieStore = await cookies();
-  const fromCookie = cookieStore.get(OAUTH_NEXT_COOKIE)?.value;
+export async function GET(request: NextRequest) {
+  const requestUrl = request.nextUrl;
+  const code = requestUrl.searchParams.get("code");
+
+  const fromCookie = request.cookies.get(OAUTH_NEXT_COOKIE)?.value;
   let decodedCookie: string | null = null;
   if (fromCookie) {
     try {
@@ -43,28 +49,47 @@ export async function GET(request: Request) {
       decodedCookie = null;
     }
   }
-  const nextRaw = searchParams.get("next") ?? decodedCookie;
+
+  const nextRaw =
+    requestUrl.searchParams.get("next") ?? decodedCookie;
   const next = safeNextPath(nextRaw, requestUrl);
 
-  if (code) {
-    try {
-      const supabase = await createClient();
-      const { error } = await supabase.auth.exchangeCodeForSession(code);
-      if (!error) {
-        const res = NextResponse.redirect(new URL(next, requestUrl));
-        clearOauthNextCookie(res);
-        return res;
-      }
-    } catch {
-      const res = NextResponse.redirect(
-        new URL("/auth?error=callback", requestUrl)
-      );
-      clearOauthNextCookie(res);
-      return res;
-    }
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    return authErrorRedirect(requestUrl, "Missing Supabase configuration");
   }
 
-  const res = NextResponse.redirect(new URL("/auth?error=callback", requestUrl));
-  clearOauthNextCookie(res);
-  return res;
+  if (!code) {
+    return authErrorRedirect(requestUrl, "Missing authorization code");
+  }
+
+  const response = NextResponse.redirect(new URL(next, requestUrl));
+
+  const supabase = createServerClient(supabaseUrl, supabaseKey, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value, options }) => {
+          response.cookies.set(name, value, options);
+        });
+      },
+    },
+  });
+
+  try {
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (error) {
+      return authErrorRedirect(requestUrl, error.message);
+    }
+
+    clearOauthNextCookie(response);
+    return response;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Callback failed";
+    return authErrorRedirect(requestUrl, message);
+  }
 }

@@ -43,6 +43,7 @@ export default function AuthForm() {
 
   const isSignUp = mode === "signup";
   const callbackError = searchParams.get("error");
+  const callbackReason = searchParams.get("reason");
   const nextPath = searchParams.get("next") ?? "/dashboard";
   const rawRedirectBase =
     typeof window !== "undefined" ? window.location.origin : getSiteUrl();
@@ -175,8 +176,9 @@ export default function AuthForm() {
 
         {callbackError && (
           <p className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-300">
-            Sign-in link expired or there was a connection problem. Try signing
-            in again with your email and password.
+            {callbackReason
+              ? `Google sign-in failed: ${callbackReason}`
+              : "Sign-in link expired or there was a connection problem. Try signing in again."}
           </p>
         )}
 

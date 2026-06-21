@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import "./globals.css";
 import AppShell from "@/components/AppShell";
 import { SITE_NAME } from "@/lib/site-config";
@@ -32,11 +33,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = (await headers()).get("x-pathname") ?? "";
+  const isComingSoon = pathname.startsWith("/coming-soon");
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -47,7 +51,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <AppShell>{children}</AppShell>
+        {isComingSoon ? children : <AppShell>{children}</AppShell>}
       </body>
     </html>
   );

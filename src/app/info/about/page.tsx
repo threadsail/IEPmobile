@@ -6,7 +6,7 @@ export default function AboutPage() {
           About Us
         </h1>
         <p className="mt-3 text-lg text-zinc-600 dark:text-zinc-400">
-          Learn more about our company and the people behind IEP mobile.
+          Learn more about our company and the people behind IEP Classroom.
         </p>
       </header>
 
@@ -17,7 +17,7 @@ export default function AboutPage() {
         </h2>
         <div className="mt-4 space-y-4 text-zinc-600 dark:text-zinc-400">
           <p className="leading-relaxed">
-            <strong className="text-zinc-900 dark:text-zinc-100">IEP mobile</strong> helps teachers and IEP teams manage daily schedules, assigned activities, and student data in one place—so you spend less time on paperwork and more time supporting learners.
+            <strong className="text-zinc-900 dark:text-zinc-100">IEP Classroom</strong> helps teachers and IEP teams manage daily schedules, assigned activities, and student data in one place—so you spend less time on paperwork and more time supporting learners.
           </p>
           <p className="leading-relaxed">
             We build tools that simplify IEP workflow: consistent routines, clear visibility for aides and support staff, and progress tracking that fits how you already work.

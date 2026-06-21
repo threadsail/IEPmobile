@@ -1,3 +1,4 @@
+import { CONTACT_EMAIL } from "@/lib/site-config";
 import Link from "next/link";
 
 export default function ContactPage() {
@@ -16,10 +17,10 @@ export default function ContactPage() {
             Email
           </p>
           <a
-            href="mailto:jordan@threadsail.io"
+            href={`mailto:${CONTACT_EMAIL}`}
             className="mt-1 inline-block text-lg font-medium text-blue-600 hover:underline dark:text-blue-400"
           >
-            jordan@threadsail.io
+            {CONTACT_EMAIL}
           </a>
         </div>
         <div>

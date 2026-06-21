@@ -1,3 +1,4 @@
+import { getSiteUrl } from "@/lib/site-url";
 import Stripe from "stripe";
 
 export type PaidPlanId = "basic" | "pro";
@@ -67,10 +68,5 @@ export function billingPortalConfigurationId(): string | undefined {
 }
 
 export function appOrigin(): string {
-  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
-  if (explicit) return explicit;
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL.replace(/^https?:\/\//, "")}`;
-  }
-  return "http://localhost:3000";
+  return getSiteUrl();
 }

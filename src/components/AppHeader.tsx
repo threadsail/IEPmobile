@@ -2,6 +2,7 @@ import type { User } from "@supabase/supabase-js";
 import Image from "next/image";
 import Link from "next/link";
 import { signOut } from "@/app/actions/auth";
+import { COPYRIGHT_LINE, PRODUCTION_SITE_URL } from "@/lib/site-config";
 import DesktopSidebarNav from "@/components/DesktopSidebarNav";
 import NavigationDropdown from "@/components/NavigationDropdown";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -32,7 +33,7 @@ export default function AppHeader({ user }: { user: User | null }) {
                 IEP
               </span>
               <span className="ml-1 font-[family-name:var(--font-aloja)] text-[10px] font-bold tracking-tight text-zinc-400 transition-[font-size] duration-200 ease-out dark:text-zinc-50 md:text-xs">
-                mobile
+                Classroom
               </span>
             </div>
           ) : (
@@ -51,7 +52,7 @@ export default function AppHeader({ user }: { user: User | null }) {
                 IEP
               </span>
               <span className="ml-1 font-[family-name:var(--font-aloja)] text-[10px] font-bold tracking-tight text-zinc-400 transition-[font-size] duration-200 ease-out dark:text-zinc-50 md:text-xs">
-                mobile
+                Classroom
               </span>
             </Link>
           )}
@@ -148,7 +149,7 @@ export default function AppHeader({ user }: { user: User | null }) {
                   IEP
                 </span>
                 <span className="-mt-0.5 font-[family-name:var(--font-aloja)] text-[10px] font-bold tracking-wide text-zinc-500 dark:text-zinc-400">
-                  DESKTOP
+                  Classroom
                 </span>
               </div>
             </Link>
@@ -211,9 +212,12 @@ export default function AppHeader({ user }: { user: User | null }) {
                     Contact
                   </Link>
                 </div>
-                <p className="text-[9px] text-zinc-400 dark:text-zinc-500">
-                  © 2026 IEPmobile @ threadsail.io
-                </p>
+                <a
+                  href={PRODUCTION_SITE_URL}
+                  className="text-[9px] text-zinc-400 hover:text-zinc-600 hover:underline dark:text-zinc-500 dark:hover:text-zinc-300"
+                >
+                  {COPYRIGHT_LINE}
+                </a>
               </div>
             </div>
           </div>

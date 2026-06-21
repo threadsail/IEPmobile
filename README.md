@@ -18,7 +18,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Environment variables
 
-Copy `.env.example` to `.env.local` and fill in values. At minimum you need `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY`, and `NEXT_PUBLIC_APP_URL` (your site origin, e.g. `http://localhost:3000`).
+Copy `.env.example` to `.env.local` and fill in values. At minimum you need `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY`, and `NEXT_PUBLIC_APP_URL` (your site origin — `http://localhost:3000` locally, `https://iepclassroom.com` in production).
 
 ## Social sign-in (Supabase OAuth)
 
@@ -28,7 +28,7 @@ The auth page offers **Continue with Google** and **Continue with Microsoft** (`
 
 **Microsoft (Entra):** [Entra admin center](https://entra.microsoft.com/) → App registrations → redirect URI `https://<YOUR_PROJECT_REF>.supabase.co/auth/v1/callback`. **Supabase** → Providers → **Azure**: enable; paste Entra client ID and secret.
 
-**Both:** **Supabase** → Authentication → URL configuration: **Site URL** and **Redirect URLs** including `http://localhost:3000/auth/callback` and your production `/auth/callback`. Credentials live in Supabase, not in `.env`.
+**Both:** **Supabase** → Authentication → URL configuration: **Site URL** and **Redirect URLs** including `http://localhost:3000/auth/callback` and `https://iepclassroom.com/auth/callback`. Credentials live in Supabase, not in `.env`.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

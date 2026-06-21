@@ -1,10 +1,31 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import AppShell from "@/components/AppShell";
+import { SITE_NAME } from "@/lib/site-config";
+import { absoluteUrl } from "@/lib/site-url";
 
 export const metadata: Metadata = {
-  title: "IEP mobile",
-  description: "IEP management for teachers and teams—schedules, activities, and student data in one place.",
+  metadataBase: new URL(absoluteUrl("/")),
+  title: {
+    default: SITE_NAME,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description:
+    "IEP management for teachers and teams—schedules, activities, and student data in one place.",
+  alternates: {
+    canonical: "/",
+    types: {
+      "text/plain": [{ url: "/llms.txt", title: "LLM site index" }],
+    },
+  },
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    title: SITE_NAME,
+    description:
+      "IEP management for teachers and teams—schedules, activities, and student data in one place.",
+    url: "/",
+  },
   icons: {
     icon: "/pencil-logo.png",
     apple: "/pencil-logo.png",

@@ -15,6 +15,6 @@ export async function submitSupportForm(
     return { error: "Please fill out all fields." };
   }
 
-  // TODO: Send email to jordan@threadsail.io or wire to your email API
+  // TODO: Wire support form to email API (recipient: SUPPORT_EMAIL)
   return { success: true, error: null };
 }

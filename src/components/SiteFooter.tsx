@@ -1,5 +1,6 @@
 "use client";
 
+import { COPYRIGHT_LINE, PRODUCTION_SITE_URL } from "@/lib/site-config";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -31,7 +32,14 @@ export default function SiteFooter({ hideOnDesktop = false }: Props) {
             Contact
           </Link>
         </div>
-        <p className="mt-1">© 2026 IEPmobile @ threadsail.io</p>
+        <p className="mt-1">
+          <a
+            href={PRODUCTION_SITE_URL}
+            className="hover:text-zinc-700 hover:underline dark:hover:text-zinc-300"
+          >
+            {COPYRIGHT_LINE}
+          </a>
+        </p>
       </div>
     </footer>
   );

@@ -1,3 +1,4 @@
+import { SUPPORT_EMAIL } from "@/lib/site-config";
 import SupportForm from "./SupportForm";
 
 export default function SupportPage() {
@@ -16,10 +17,10 @@ export default function SupportPage() {
             Email
           </p>
           <a
-            href="mailto:jordan@threadsail.io"
+            href={`mailto:${SUPPORT_EMAIL}`}
             className="mt-1 inline-block text-lg font-medium text-blue-600 hover:underline dark:text-blue-400"
           >
-            jordan@threadsail.io
+            {SUPPORT_EMAIL}
           </a>
         </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { OAUTH_NEXT_COOKIE } from "@/constants/oauth-post-login";
+import { getSiteUrl } from "@/lib/site-url";
 import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -44,9 +45,7 @@ export default function AuthForm() {
   const callbackError = searchParams.get("error");
   const nextPath = searchParams.get("next") ?? "/dashboard";
   const rawRedirectBase =
-    typeof window !== "undefined"
-      ? window.location.origin
-      : process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    typeof window !== "undefined" ? window.location.origin : getSiteUrl();
   const redirectBase = rawRedirectBase.replace(/\/$/, "");
   const oauthCallbackUrl = `${redirectBase}/auth/callback`;
   const signUpRedirectUrl = `${redirectBase}/auth/callback?next=${encodeURIComponent(nextPath)}`;

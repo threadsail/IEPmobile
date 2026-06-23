@@ -579,7 +579,7 @@ export async function unarchiveStudentRecord(
   redirect(`/dashboard/students/${id}`);
 }
 
-export type DeleteStudentRecordState = { error: string | null };
+export type DeleteStudentRecordState = { error: string | null; deleted?: boolean };
 
 export async function deleteStudentRecord(
   _prev: DeleteStudentRecordState,
@@ -615,5 +615,6 @@ export async function deleteStudentRecord(
   revalidatePath(`/dashboard/students/${id}/edit`);
   revalidatePath("/dashboard/data");
   revalidatePath("/dashboard/schedule");
-  redirect("/dashboard/students");
+  // Return success for client navigation — redirect() + useActionState can leave the UI hung.
+  return { error: null, deleted: true };
 }

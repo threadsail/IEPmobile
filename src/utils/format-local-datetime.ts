@@ -72,6 +72,16 @@ export function formatLocalDate(
   }
 }
 
+/** Today's calendar date in the viewer's local timezone (midnight local = new day). */
+export function formatLocalToday(): string {
+  return new Date().toLocaleDateString(undefined, {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
 /** Prefer auth.users.created_at (account signup), then profile row. */
 export function accountCreatedIso(
   authCreatedAt: string | null | undefined,

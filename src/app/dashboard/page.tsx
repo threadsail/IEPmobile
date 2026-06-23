@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LocalTodayDate from "@/components/LocalTodayDate";
 import {
   dashboardHeroCorporateXl,
   dashboardHeroSubtitleCorporateXl,
@@ -31,13 +32,6 @@ export default async function DashboardPage() {
     userMetadata: meta,
   });
 
-  const currentDate = new Date().toLocaleDateString(undefined, {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
   let studentCount = 0;
   let toDoReviewCount = 0;
   if (user) {
@@ -68,13 +62,7 @@ export default async function DashboardPage() {
         </p>
       </section>
 
-      {/* Current date — suppressHydrationWarning: server TZ/locale may differ from client */}
-      <p
-        className="text-center text-base text-zinc-600 dark:text-zinc-400 md:text-2xl md:text-sm md:text-zinc-500 dark:md:text-zinc-400"
-        suppressHydrationWarning
-      >
-        {currentDate}
-      </p>
+      <LocalTodayDate className="text-center text-base text-zinc-600 dark:text-zinc-400 md:text-2xl md:text-sm md:text-zinc-500 dark:md:text-zinc-400" />
 
       {/* Two sections side by side */}
       <div className="grid grid-cols-2 gap-4 md:gap-3">

@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect, useState } from "react";
 import type { Student } from "@/types/student";
 import { archiveStudentRecord, deleteStudentRecord, updateStudent } from "./actions";
 
@@ -10,14 +11,24 @@ const inputClass =
 const labelClass = "mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300";
 
 export default function EditStudentForm({ student }: { student: Student }) {
+  const router = useRouter();
   const [state, formAction] = useActionState(updateStudent, { error: null });
   const [archiveState, archiveAction] = useActionState(archiveStudentRecord, {
     error: null,
   });
-  const [deleteState, deleteAction] = useActionState(deleteStudentRecord, { error: null });
+  const [deleteState, deleteAction, isDeletePending] = useActionState(deleteStudentRecord, {
+    error: null,
+  });
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const initialGoals = student.goals?.length ? student.goals : [""];
   const [goalFields, setGoalFields] = useState<string[]>(initialGoals);
+
+  useEffect(() => {
+    if (deleteState?.deleted) {
+      router.replace("/dashboard/students");
+      router.refresh();
+    }
+  }, [deleteState?.deleted, router]);
 
   function addGoalField() {
     setGoalFields((prev) => [...prev, ""]);
@@ -248,11 +259,12 @@ export default function EditStudentForm({ student }: { student: Student }) {
               This will permanently remove this student and their goals. You cannot undo this.
             </span>
           </p>
-          <div className="mt-4 flex flex-wrap gap-3">
+          <div className="mt-4 flex flex-wrap items-center gap-3">
             <button
               type="button"
               onClick={() => setDeleteConfirm(false)}
-              className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-800 transition-colors hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+              disabled={isDeletePending}
+              className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-800 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
             >
               Cancel
             </button>
@@ -260,9 +272,21 @@ export default function EditStudentForm({ student }: { student: Student }) {
               <input type="hidden" name="id" value={student.id} />
               <button
                 type="submit"
-                className="rounded-lg border border-red-800 bg-red-800 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-900 dark:border-red-700 dark:bg-red-700 dark:hover:bg-red-600"
+                disabled={isDeletePending}
+                aria-busy={isDeletePending}
+                className="inline-flex min-w-[11rem] items-center justify-center gap-2 rounded-lg border border-red-800 bg-red-800 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-900 disabled:cursor-not-allowed disabled:opacity-80 dark:border-red-700 dark:bg-red-700 dark:hover:bg-red-600"
               >
-                Yes, delete permanently
+                {isDeletePending ? (
+                  <>
+                    <span
+                      className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
+                      aria-hidden
+                    />
+                    Deleting…
+                  </>
+                ) : (
+                  "Yes, delete permanently"
+                )}
               </button>
             </form>
           </div>

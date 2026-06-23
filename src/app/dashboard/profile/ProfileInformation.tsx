@@ -1,6 +1,7 @@
 "use client";
 
 import FormattedLocalDateTime from "@/components/FormattedLocalDateTime";
+import { accountCreatedIso } from "@/utils/format-local-datetime";
 import { useActionState, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { updateProfile } from "./actions";
@@ -47,6 +48,8 @@ export default function ProfileInformation({
     profile?.full_name?.trim() ||
     oauthFullNameHint?.trim() ||
     "Not set";
+
+  const accountCreated = accountCreatedIso(userCreatedAt, profile?.created_at ?? null);
 
   if (!profile) {
     return (
@@ -151,9 +154,9 @@ export default function ProfileInformation({
           </dd>
         </div>
         <div className={rowClass}>
-          <dt className={dtClass}>Profile created</dt>
+          <dt className={dtClass}>Account created</dt>
           <dd className={ddClass}>
-            <FormattedLocalDateTime iso={profile.created_at ?? userCreatedAt ?? null} />
+            <FormattedLocalDateTime iso={accountCreated} dateOnly dateStyle="long" />
           </dd>
         </div>
         <div className={rowClass}>
@@ -213,9 +216,9 @@ export default function ProfileInformation({
           <dd className={ddClass}>{profile.organization_name ?? "Not set"}</dd>
         </div>
         <div className={displayRowClass}>
-          <dt className={dtClass}>Profile created</dt>
+          <dt className={dtClass}>Account created</dt>
           <dd className={ddClass}>
-            <FormattedLocalDateTime iso={profile.created_at ?? userCreatedAt ?? null} />
+            <FormattedLocalDateTime iso={accountCreated} dateOnly dateStyle="long" />
           </dd>
         </div>
         <div className={displayRowClass}>

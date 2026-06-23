@@ -312,4 +312,12 @@ begin
 end;
 $$;
 
+-- OAuth profile rows often got created_at = now() at sync time; align with auth signup date.
+update public.profiles p
+set created_at = u.created_at
+from auth.users u
+where p.id = u.id
+  and p.created_at is not null
+  and p.created_at > u.created_at;
+
 notify pgrst, 'reload schema';

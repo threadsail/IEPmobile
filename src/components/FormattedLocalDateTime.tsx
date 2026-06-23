@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  formatLocalDate,
+  formatLocalDateTime,
+  parseApiTimestamp,
+} from "@/utils/format-local-datetime";
 import { useEffect, useState } from "react";
 
 type FormattedLocalDateTimeProps = {
@@ -7,14 +12,17 @@ type FormattedLocalDateTimeProps = {
   fallback?: string;
   dateStyle?: "short" | "medium" | "long" | "full";
   timeStyle?: "short" | "medium" | "long" | "full";
+  /** When true, shows calendar date only (no time). */
+  dateOnly?: boolean;
 };
 
-/** Formats ISO timestamps in the viewer's local timezone (avoids UTC SSR showing the wrong day). */
+/** Formats ISO timestamps in the viewer's local timezone after mount. */
 export default function FormattedLocalDateTime({
   iso,
   fallback = "—",
   dateStyle = "medium",
   timeStyle = "short",
+  dateOnly = false,
 }: FormattedLocalDateTimeProps) {
   const [text, setText] = useState(fallback);
 
@@ -23,17 +31,14 @@ export default function FormattedLocalDateTime({
       setText(fallback);
       return;
     }
-    try {
-      setText(
-        new Date(iso).toLocaleString(undefined, {
-          dateStyle,
-          timeStyle,
-        })
-      );
-    } catch {
-      setText(fallback);
-    }
-  }, [iso, fallback, dateStyle, timeStyle]);
+    setText(
+      dateOnly
+        ? formatLocalDate(iso, dateStyle)
+        : formatLocalDateTime(iso, { dateStyle, timeStyle })
+    );
+  }, [iso, fallback, dateStyle, timeStyle, dateOnly]);
 
   return <span suppressHydrationWarning>{text}</span>;
 }
+
+export { parseApiTimestamp };

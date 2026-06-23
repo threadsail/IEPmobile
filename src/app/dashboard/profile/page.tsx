@@ -1,5 +1,7 @@
 import Link from "next/link";
+import FormattedLocalDateTime from "@/components/FormattedLocalDateTime";
 import { getProfile } from "./get-profile";
+import { parseApiTimestamp } from "@/utils/format-local-datetime";
 import { getCurrentUser } from "@/utils/auth";
 import type { Profile } from "@/types/profile";
 import ProfileInformation from "./ProfileInformation";
@@ -21,32 +23,23 @@ const PLAN_PRICES: Record<"basic" | "pro", { monthly: number; annual: number }> 
   pro: { monthly: 39, annual: 390 },
 };
 
-function formatDate(iso: string | null | undefined): string | null {
-  if (!iso) return null;
-  try {
-    return new Date(iso).toLocaleDateString(undefined, { dateStyle: "long" });
-  } catch {
-    return null;
-  }
-}
-
-function getRenewalDate(profile: Profile | null): string | null {
+function getRenewalIso(profile: Profile | null): string | null {
   if (!profile) return null;
   const end = profile.subscription_period_end;
-  if (end) return formatDate(end);
+  if (end) return end;
   const start = profile.subscription_period_start;
   const interval = profile.subscription_interval;
   if (!start || !interval) return null;
   try {
-    const d = new Date(start);
+    const d = parseApiTimestamp(start);
     if (interval === "monthly") {
-      d.setMonth(d.getMonth() + 1);
+      d.setUTCMonth(d.getUTCMonth() + 1);
     } else if (interval === "annual") {
-      d.setFullYear(d.getFullYear() + 1);
+      d.setUTCFullYear(d.getUTCFullYear() + 1);
     } else {
       return null;
     }
-    return d.toLocaleDateString(undefined, { dateStyle: "long" });
+    return d.toISOString();
   } catch {
     return null;
   }
@@ -72,8 +65,8 @@ function SubscriptionSection({
         : "Monthly"
       : null;
 
-  const startDate = formatDate(profile?.subscription_period_start ?? null);
-  const renewalDate = getRenewalDate(profile);
+  const startIso = profile?.subscription_period_start ?? null;
+  const renewalIso = getRenewalIso(profile);
 
   let monthlyPriceLabel: string | null = null;
   if (plan === "starter") {
@@ -125,23 +118,23 @@ function SubscriptionSection({
             </dd>
           </div>
         )}
-        {startDate && (
+        {startIso && (
           <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white/60 py-2.5 px-3 dark:bg-black/20">
             <dt className="text-sm font-medium text-violet-700 dark:text-violet-300">
               Start date
             </dt>
             <dd className="text-sm text-violet-900 dark:text-violet-100">
-              {startDate}
+              <FormattedLocalDateTime iso={startIso} dateOnly dateStyle="long" />
             </dd>
           </div>
         )}
-        {renewalDate && (
+        {renewalIso && (
           <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white/60 py-2.5 px-3 dark:bg-black/20">
             <dt className="text-sm font-medium text-violet-700 dark:text-violet-300">
               Renewal date
             </dt>
             <dd className="text-sm text-violet-900 dark:text-violet-100">
-              {renewalDate}
+              <FormattedLocalDateTime iso={renewalIso} dateOnly dateStyle="long" />
             </dd>
           </div>
         )}

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import FormattedLocalDateTime from "@/components/FormattedLocalDateTime";
 import { getProfile } from "./get-profile";
-import { parseApiTimestamp } from "@/utils/format-local-datetime";
+import { parseApiTimestampToMs } from "@/utils/format-local-datetime";
 import { getCurrentUser } from "@/utils/auth";
 import type { Profile } from "@/types/profile";
 import ProfileInformation from "./ProfileInformation";
@@ -31,7 +31,9 @@ function getRenewalIso(profile: Profile | null): string | null {
   const interval = profile.subscription_interval;
   if (!start || !interval) return null;
   try {
-    const d = parseApiTimestamp(start);
+    const ms = parseApiTimestampToMs(start);
+    if (ms === null) return null;
+    const d = new Date(ms);
     if (interval === "monthly") {
       d.setUTCMonth(d.getUTCMonth() + 1);
     } else if (interval === "annual") {

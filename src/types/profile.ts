@@ -31,4 +31,6 @@ export type Profile = {
   stripe_customer_id: string | null;
   /** Active Stripe Subscription id when on a paid plan via Stripe. */
   stripe_subscription_id: string | null;
+  /** From auth.users.created_at via get_my_account_created_at RPC. */
+  account_created_at: string | null;
 };

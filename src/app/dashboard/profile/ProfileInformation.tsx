@@ -49,7 +49,10 @@ export default function ProfileInformation({
     oauthFullNameHint?.trim() ||
     "Not set";
 
-  const accountCreated = accountCreatedIso(userCreatedAt, profile?.created_at ?? null);
+  const accountCreated = accountCreatedIso(
+    profile?.account_created_at ?? userCreatedAt,
+    profile?.created_at ?? null
+  );
 
   if (!profile) {
     return (

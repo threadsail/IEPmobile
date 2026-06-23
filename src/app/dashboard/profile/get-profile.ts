@@ -49,9 +49,10 @@ async function getProfileWithClient(
     publicResult = await fetchPublicProfile();
   }
 
-  const [subRow, orgNameResult] = await Promise.all([
+  const [subRow, orgNameResult, accountCreatedResult] = await Promise.all([
     getSubscriptionRow(supabase, userId),
     supabase.rpc("get_my_organization_name").then(({ data, error }) => (error ? null : (data as string | null) ?? null)),
+    supabase.rpc("get_my_account_created_at").then(({ data, error }) => (error ? null : (data as string | null) ?? null)),
   ]);
 
   const data = publicResult.data;
@@ -71,6 +72,7 @@ async function getProfileWithClient(
     full_name: null,
     role: null,
     organization_id: null,
+    account_created_at: accountCreatedResult,
   };
 
   const organization_id = (base as { organization_id?: string | null }).organization_id ?? null;
@@ -106,6 +108,7 @@ async function getProfileWithClient(
     downgrade_to_interval,
     stripe_customer_id: subRow?.stripe_customer_id ?? null,
     stripe_subscription_id: subRow?.stripe_subscription_id ?? null,
+    account_created_at: accountCreatedResult,
   } as Profile;
 }
 

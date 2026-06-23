@@ -3,12 +3,10 @@
 import {
   formatLocalDate,
   formatLocalDateTime,
-  parseApiTimestamp,
 } from "@/utils/format-local-datetime";
-import { useEffect, useState } from "react";
 
 type FormattedLocalDateTimeProps = {
-  iso: string | null | undefined;
+  iso: string | number | null | undefined;
   fallback?: string;
   dateStyle?: "short" | "medium" | "long" | "full";
   timeStyle?: "short" | "medium" | "long" | "full";
@@ -16,7 +14,7 @@ type FormattedLocalDateTimeProps = {
   dateOnly?: boolean;
 };
 
-/** Formats ISO timestamps in the viewer's local timezone after mount. */
+/** Formats timestamps in the viewer's local timezone (client render only). */
 export default function FormattedLocalDateTime({
   iso,
   fallback = "—",
@@ -24,21 +22,13 @@ export default function FormattedLocalDateTime({
   timeStyle = "short",
   dateOnly = false,
 }: FormattedLocalDateTimeProps) {
-  const [text, setText] = useState(fallback);
+  if (typeof window === "undefined" || iso == null || iso === "") {
+    return <span suppressHydrationWarning>{fallback}</span>;
+  }
 
-  useEffect(() => {
-    if (!iso) {
-      setText(fallback);
-      return;
-    }
-    setText(
-      dateOnly
-        ? formatLocalDate(iso, dateStyle)
-        : formatLocalDateTime(iso, { dateStyle, timeStyle })
-    );
-  }, [iso, fallback, dateStyle, timeStyle, dateOnly]);
+  const text = dateOnly
+    ? formatLocalDate(iso, dateStyle)
+    : formatLocalDateTime(iso, { dateStyle, timeStyle });
 
   return <span suppressHydrationWarning>{text}</span>;
 }
-
-export { parseApiTimestamp };

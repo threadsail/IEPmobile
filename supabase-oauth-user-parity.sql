@@ -320,4 +320,18 @@ where p.id = u.id
   and p.created_at is not null
   and p.created_at > u.created_at;
 
+-- Account signup timestamp (for profile "Account created" display).
+create or replace function public.get_my_account_created_at()
+returns timestamptz
+language sql
+security definer
+stable
+set search_path = ''
+as $$
+  select created_at from auth.users where id = auth.uid();
+$$;
+
+grant execute on function public.get_my_account_created_at() to authenticated;
+grant execute on function public.get_my_account_created_at() to service_role;
+
 notify pgrst, 'reload schema';

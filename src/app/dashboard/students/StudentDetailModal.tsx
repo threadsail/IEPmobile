@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { studentDisplayName, type Student } from "@/types/student";
-import StudentIepGoalsPanel from "./StudentIepGoalsPanel";
+import StudentDetailTabs from "./StudentDetailTabs";
 
 type Props = {
   student: Student | null;
@@ -56,31 +56,7 @@ export default function StudentDetailModal({ student, onClose }: Props) {
           </header>
 
           <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
-            <div className="space-y-4">
-              <section className="rounded-lg border border-zinc-200/80 bg-zinc-50/50 p-4 dark:border-zinc-700/50 dark:bg-zinc-800/40">
-                <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Profile</h3>
-                <dl className="mt-3 grid grid-cols-1 gap-3 text-sm text-zinc-700 dark:text-zinc-300 sm:grid-cols-2">
-                  <div>
-                    <dt className="font-medium">Name</dt>
-                    <dd className="mt-0.5">{studentDisplayName(student)}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-medium">Grade</dt>
-                    <dd className="mt-0.5">{student.grade || "—"}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-medium">Classroom</dt>
-                    <dd className="mt-0.5">{student.classroom || "—"}</dd>
-                  </div>
-                  <div className="sm:col-span-2">
-                    <dt className="font-medium">Note</dt>
-                    <dd className="mt-0.5">{student.note || "—"}</dd>
-                  </div>
-                </dl>
-              </section>
-
-              <StudentIepGoalsPanel student={student} />
-            </div>
+            <StudentDetailTabs student={student} variant="modal" />
           </div>
 
           <footer className="flex shrink-0 flex-wrap items-center gap-2 border-t border-zinc-200 bg-zinc-50/80 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-900/80">

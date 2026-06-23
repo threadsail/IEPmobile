@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { parseStudentGoalReturnTo } from "./student-goal-action-return-to";
+import { getStudents } from "./get-students";
 
 const TEST_FIRST_NAMES = [
   "Avery",
@@ -241,19 +242,7 @@ export async function updateStudent(
   const note = (formData.get("note") as string)?.trim() || null;
   const grade = (formData.get("grade") as string)?.trim() || null;
   const classroom = (formData.get("classroom") as string)?.trim() || null;
-  let goals: string[];
-  if (formData.has("goals_text")) {
-    const block = (formData.get("goals_text") as string) ?? "";
-    goals = block
-      .split(/\r?\n/)
-      .map((g) => g.trim())
-      .filter(Boolean);
-  } else {
-    const goalsRaw = formData.getAll("goals");
-    goals = (Array.isArray(goalsRaw) ? goalsRaw : [goalsRaw])
-      .map((g) => (typeof g === "string" ? g : "").trim())
-      .filter(Boolean);
-  }
+  const updateGoals = (formData.get("update_goals") as string)?.trim() === "1";
 
   try {
     const supabase = await createClient();
@@ -262,6 +251,26 @@ export async function updateStudent(
     } = await supabase.auth.getUser();
     if (!user) {
       return { error: "You must be signed in to update a student." };
+    }
+
+    let goals: string[];
+    if (updateGoals) {
+      if (formData.has("goals_text")) {
+        const block = (formData.get("goals_text") as string) ?? "";
+        goals = block
+          .split(/\r?\n/)
+          .map((g) => g.trim())
+          .filter(Boolean);
+      } else {
+        const goalsRaw = formData.getAll("goals");
+        goals = (Array.isArray(goalsRaw) ? goalsRaw : [goalsRaw])
+          .map((g) => (typeof g === "string" ? g : "").trim())
+          .filter(Boolean);
+      }
+    } else {
+      const students = await getStudents(supabase, user.id);
+      const existing = students.find((s) => s.id === id);
+      goals = existing?.goals ?? [];
     }
 
     const { error } = await supabase.rpc(

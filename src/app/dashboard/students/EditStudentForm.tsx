@@ -5,15 +5,11 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 import { NO_AUTOFILL } from "@/constants/form-autocomplete";
 import type { Student } from "@/types/student";
-import { parseStoredGoal, serializeGoal, type ParsedGoal } from "@/utils/iep-goal-serde";
 import { archiveStudentRecord, deleteStudentRecord, updateStudent } from "./actions";
-import IepGoalFieldsEditor from "./IepGoalFieldsEditor";
 
 const inputClass =
   "w-full min-w-0 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 placeholder-zinc-500 focus:border-pink-500 focus:outline-none focus:ring-1 focus:ring-pink-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-400 dark:focus:border-pink-400 dark:focus:ring-pink-400";
 const labelClass = "mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300";
-
-const emptyGoal = (): ParsedGoal => ({ title: "", description: "" });
 
 export default function EditStudentForm({ student }: { student: Student }) {
   const router = useRouter();
@@ -25,11 +21,6 @@ export default function EditStudentForm({ student }: { student: Student }) {
     error: null,
   });
   const [deleteConfirm, setDeleteConfirm] = useState(false);
-  const initialGoals =
-    student.goals?.length && student.goals.length > 0
-      ? student.goals.map(parseStoredGoal)
-      : [emptyGoal()];
-  const [goalFields, setGoalFields] = useState<ParsedGoal[]>(initialGoals);
 
   useEffect(() => {
     if (deleteState?.deleted) {
@@ -132,19 +123,6 @@ export default function EditStudentForm({ student }: { student: Student }) {
           defaultValue={student.note ?? ""}
         />
       </div>
-
-      <IepGoalFieldsEditor
-        goals={goalFields}
-        onChange={setGoalFields}
-        onAdd={() => setGoalFields((prev) => [...prev, emptyGoal()])}
-        onRemove={(index) => setGoalFields((prev) => prev.filter((_, i) => i !== index))}
-      />
-      {goalFields.map((goal, i) => {
-        const serialized = serializeGoal(goal.title, goal.description);
-        return serialized ? (
-          <input key={i} type="hidden" name="goals" value={serialized} />
-        ) : null;
-      })}
 
       <div className="flex flex-wrap items-center gap-3">
         <button

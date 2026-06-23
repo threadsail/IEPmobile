@@ -25,6 +25,24 @@ export default function IepGoalFieldsEditor({
     onChange(goals.map((g, i) => (i === index ? { ...g, ...partial } : g)));
   }
 
+  function patchObjective(goalIndex: number, objectiveIndex: number, value: string) {
+    const objectives = goals[goalIndex].objectives.length > 0 ? [...goals[goalIndex].objectives] : [""];
+    objectives[objectiveIndex] = value;
+    patchGoal(goalIndex, { objectives });
+  }
+
+  function addObjective(goalIndex: number) {
+    const objectives = [...(goals[goalIndex].objectives.length > 0 ? goals[goalIndex].objectives : [""]), ""];
+    patchGoal(goalIndex, { objectives });
+  }
+
+  function removeObjective(goalIndex: number, objectiveIndex: number) {
+    const objectives = (goals[goalIndex].objectives.length > 0 ? goals[goalIndex].objectives : [""]).filter(
+      (_, i) => i !== objectiveIndex
+    );
+    patchGoal(goalIndex, { objectives: objectives.length > 0 ? objectives : [""] });
+  }
+
   return (
     <div>
       <div className="mb-2 flex items-center justify-between gap-2">
@@ -38,7 +56,9 @@ export default function IepGoalFieldsEditor({
         </button>
       </div>
       <div className="space-y-4">
-        {goals.map((goal, i) => (
+        {goals.map((goal, i) => {
+          const objectives = goal.objectives.length > 0 ? goal.objectives : [""];
+          return (
           <div
             key={i}
             className="rounded-lg border border-zinc-200/80 bg-zinc-50/50 p-3 dark:border-zinc-700/50 dark:bg-zinc-800/30"
@@ -79,16 +99,53 @@ export default function IepGoalFieldsEditor({
                 <textarea
                   rows={3}
                   maxLength={2000}
-                  placeholder="Measurable details, criteria, or notes for this goal"
-                  value={goal.description}
-                  onChange={(e) => patchGoal(i, { description: e.target.value })}
+                  placeholder="Overall goal statement"
+                  value={goal.goal}
+                  onChange={(e) => patchGoal(i, { goal: e.target.value })}
                   className={`${textareaClass} min-h-[4.5rem] resize-y`}
                   autoComplete={NO_AUTOFILL}
                 />
               </div>
+              <div>
+                <div className="mb-1 flex items-center justify-between gap-2">
+                  <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400">Objectives</span>
+                  <button
+                    type="button"
+                    onClick={() => addObjective(i)}
+                    className="text-xs font-medium text-pink-700 hover:underline dark:text-pink-300"
+                  >
+                    + Add objective
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {objectives.map((objective, j) => (
+                    <div key={j} className="flex gap-2">
+                      <input
+                        type="text"
+                        maxLength={500}
+                        placeholder={`Objective ${j + 1}`}
+                        value={objective}
+                        onChange={(e) => patchObjective(i, j, e.target.value)}
+                        className={inputClass}
+                        autoComplete={NO_AUTOFILL}
+                      />
+                      {objectives.length > 1 ? (
+                        <button
+                          type="button"
+                          onClick={() => removeObjective(i, j)}
+                          className="shrink-0 px-2 text-xs font-medium text-zinc-500 hover:text-red-600 dark:text-zinc-400 dark:hover:text-red-400"
+                        >
+                          Remove
+                        </button>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

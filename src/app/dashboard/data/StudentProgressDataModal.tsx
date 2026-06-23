@@ -6,7 +6,7 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { submitStudentProgress } from "@/app/dashboard/data/actions";
 import { NO_AUTOFILL } from "@/constants/form-autocomplete";
 import { studentDisplayName, type Student } from "@/types/student";
-import { parseStoredGoal, serializeGoal, storedGoalListLabel } from "@/utils/iep-goal-serde";
+import { parseStoredGoal, serializeParsedGoal, storedGoalListLabel } from "@/utils/iep-goal-serde";
 
 const inputClass =
   "w-full min-w-0 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:focus:border-orange-400 dark:focus:ring-orange-400";
@@ -137,7 +137,7 @@ export default function StudentProgressDataModal({ student, onClose }: Props) {
                     const row = parseStoredGoal(raw);
                     return (
                       <option key={i} value={String(i)}>
-                        {storedGoalListLabel(serializeGoal(row.title, row.description), i)}
+                        {storedGoalListLabel(serializeParsedGoal(row), i)}
                       </option>
                     );
                   })}

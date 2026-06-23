@@ -50,13 +50,12 @@ export async function createScheduleEntry(
     if (id == null) {
       return { error: "Failed to create schedule entry." };
     }
+
+    return { error: null };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Something went wrong.";
     return { error: message };
   }
-
-  // Schedule entries are refetched client-side; no need to revalidate the route here.
-  return { error: null };
 }
 
 export async function updateScheduleEntry(
@@ -103,12 +102,12 @@ export async function updateScheduleEntry(
     if (!ok) {
       return { error: "Failed to update schedule entry." };
     }
+
+    return { error: null };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Something went wrong.";
     return { error: message };
   }
-  // Schedule entries are refetched client-side; no need to revalidate the route here.
-  return { error: null };
 }
 
 export async function deleteScheduleEntry(entryId: string): Promise<{ error: string | null }> {

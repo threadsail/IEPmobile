@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { NO_AUTOFILL } from "@/constants/form-autocomplete";
 import { createSuggestion } from "./actions";
 
 const inputClass =
@@ -24,7 +25,7 @@ export default function SuggestionForm() {
   }
 
   return (
-    <form action={formAction} className="space-y-3">
+    <form action={formAction} autoComplete={NO_AUTOFILL} className="space-y-3">
       {state?.error ? (
         <div
           role="alert"
@@ -45,6 +46,7 @@ export default function SuggestionForm() {
           maxLength={2000}
           placeholder="Share an idea for the product..."
           className={inputClass}
+          autoComplete={NO_AUTOFILL}
         />
         <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Max 2000 characters</p>
       </div>

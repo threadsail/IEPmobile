@@ -2,6 +2,7 @@
 
 import FormattedLocalDateTime from "@/components/FormattedLocalDateTime";
 import { accountCreatedIso } from "@/utils/format-local-datetime";
+import { NO_AUTOFILL } from "@/constants/form-autocomplete";
 import { useActionState, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { updateProfile } from "./actions";
@@ -67,7 +68,7 @@ export default function ProfileInformation({
 
   if (editing && canEdit) {
     return (
-      <form action={formAction} className="divide-y divide-zinc-200 dark:divide-zinc-700">
+      <form action={formAction} autoComplete={NO_AUTOFILL} className="divide-y divide-zinc-200 dark:divide-zinc-700">
         {state?.error ? (
           <div
             role="alert"
@@ -103,6 +104,7 @@ export default function ProfileInformation({
               placeholder="First name"
               defaultValue={profile.first_name ?? ""}
               className={inputClass}
+              autoComplete={NO_AUTOFILL}
             />
           </dd>
         </div>
@@ -119,6 +121,7 @@ export default function ProfileInformation({
               placeholder="Last name"
               defaultValue={profile.last_name ?? ""}
               className={inputClass}
+              autoComplete={NO_AUTOFILL}
             />
           </dd>
         </div>
@@ -131,6 +134,7 @@ export default function ProfileInformation({
               id="profile-role"
               name="role"
               className={selectClass}
+              autoComplete={NO_AUTOFILL}
               defaultValue={profile.role ?? ""}
             >
               <option value="">—</option>
@@ -153,6 +157,7 @@ export default function ProfileInformation({
               placeholder="Organization name (owners only)"
               defaultValue={profile.organization_name ?? ""}
               className={inputClass}
+              autoComplete={NO_AUTOFILL}
             />
           </dd>
         </div>

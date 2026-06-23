@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { NO_AUTOFILL } from "@/constants/form-autocomplete";
 import { submitSupportForm } from "./actions";
 
 const inputClass =
@@ -21,7 +22,7 @@ export default function SupportForm() {
   }
 
   return (
-    <form action={formAction} className="w-full space-y-5">
+    <form action={formAction} autoComplete={NO_AUTOFILL} className="w-full space-y-5">
       {state?.error ? (
         <div
           role="alert"
@@ -43,6 +44,7 @@ export default function SupportForm() {
           maxLength={200}
           placeholder="Your name"
           className={inputClass}
+          autoComplete={NO_AUTOFILL}
         />
       </div>
 
@@ -58,6 +60,7 @@ export default function SupportForm() {
           maxLength={200}
           placeholder="your@email.com"
           className={inputClass}
+          autoComplete={NO_AUTOFILL}
         />
       </div>
 
@@ -73,6 +76,7 @@ export default function SupportForm() {
           maxLength={200}
           placeholder="Brief subject"
           className={inputClass}
+          autoComplete={NO_AUTOFILL}
         />
       </div>
 
@@ -88,6 +92,7 @@ export default function SupportForm() {
           maxLength={2000}
           placeholder="How can we help?"
           className={inputClass}
+          autoComplete={NO_AUTOFILL}
         />
       </div>
 

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
+import { NO_AUTOFILL } from "@/constants/form-autocomplete";
 import { studentDisplayName, type Student } from "@/types/student";
 import { bulkUpdateStudents } from "../actions";
 
@@ -12,7 +13,7 @@ export default function BulkEditStudentsForm({ students }: { students: Student[]
   const [state, formAction] = useActionState(bulkUpdateStudents, { error: null });
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} autoComplete={NO_AUTOFILL} className="space-y-4">
       <input type="hidden" name="row_count" value={students.length} />
 
       {state?.error ? (
@@ -69,6 +70,7 @@ export default function BulkEditStudentsForm({ students }: { students: Student[]
                     type="text"
                     maxLength={200}
                     className={cellInputClass}
+                    autoComplete={NO_AUTOFILL}
                     defaultValue={student.first_name ?? ""}
                     aria-label={`First name, ${studentDisplayName(student)}`}
                   />
@@ -79,6 +81,7 @@ export default function BulkEditStudentsForm({ students }: { students: Student[]
                     type="text"
                     maxLength={200}
                     className={cellInputClass}
+                    autoComplete={NO_AUTOFILL}
                     defaultValue={student.last_name ?? ""}
                     aria-label={`Last name, ${studentDisplayName(student)}`}
                   />
@@ -89,6 +92,7 @@ export default function BulkEditStudentsForm({ students }: { students: Student[]
                     type="text"
                     maxLength={50}
                     className={cellInputClass}
+                    autoComplete={NO_AUTOFILL}
                     defaultValue={student.grade ?? ""}
                     aria-label={`Grade, ${studentDisplayName(student)}`}
                   />
@@ -99,6 +103,7 @@ export default function BulkEditStudentsForm({ students }: { students: Student[]
                     type="text"
                     maxLength={100}
                     className={cellInputClass}
+                    autoComplete={NO_AUTOFILL}
                     defaultValue={student.classroom ?? ""}
                     aria-label={`Classroom, ${studentDisplayName(student)}`}
                   />
@@ -109,6 +114,7 @@ export default function BulkEditStudentsForm({ students }: { students: Student[]
                     type="text"
                     maxLength={500}
                     className={cellInputClass}
+                    autoComplete={NO_AUTOFILL}
                     defaultValue={student.note ?? ""}
                     aria-label={`Note, ${studentDisplayName(student)}`}
                   />
@@ -119,6 +125,7 @@ export default function BulkEditStudentsForm({ students }: { students: Student[]
                     rows={3}
                     maxLength={8000}
                     className={`${cellInputClass} min-h-[4.5rem] resize-y font-mono text-xs leading-snug`}
+                    autoComplete={NO_AUTOFILL}
                     defaultValue={(student.goals ?? []).join("\n")}
                     aria-label={`IEP goals, ${studentDisplayName(student)}`}
                   />

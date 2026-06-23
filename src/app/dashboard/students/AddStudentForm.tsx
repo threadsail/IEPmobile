@@ -2,26 +2,23 @@
 
 import Link from "next/link";
 import { useActionState, useState } from "react";
+import { NO_AUTOFILL } from "@/constants/form-autocomplete";
+import { serializeGoal, type ParsedGoal } from "@/utils/iep-goal-serde";
 import { addStudent } from "./actions";
+import IepGoalFieldsEditor from "./IepGoalFieldsEditor";
 
 const inputClass =
-  "w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 placeholder-zinc-500 focus:border-pink-500 focus:outline-none focus:ring-1 focus:ring-pink-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-400 dark:focus:border-pink-400 dark:focus:ring-pink-400";
+  "w-full min-w-0 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 placeholder-zinc-500 focus:border-pink-500 focus:outline-none focus:ring-1 focus:ring-pink-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-400 dark:focus:border-pink-400 dark:focus:ring-pink-400";
 const labelClass = "mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300";
+
+const emptyGoal = (): ParsedGoal => ({ title: "", description: "" });
 
 export default function AddStudentForm() {
   const [state, formAction] = useActionState(addStudent, { error: null });
-  const [goalFields, setGoalFields] = useState<string[]>([""]);
-
-  function addGoalField() {
-    setGoalFields((prev) => [...prev, ""]);
-  }
-
-  function removeGoalField(index: number) {
-    setGoalFields((prev) => prev.filter((_, i) => i !== index));
-  }
+  const [goalFields, setGoalFields] = useState<ParsedGoal[]>([emptyGoal()]);
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} autoComplete={NO_AUTOFILL} className="space-y-4">
       {state?.error ? (
         <div
           role="alert"
@@ -43,6 +40,7 @@ export default function AddStudentForm() {
           maxLength={200}
           placeholder="e.g. Alex"
           className={inputClass}
+          autoComplete={NO_AUTOFILL}
         />
       </div>
 
@@ -57,6 +55,7 @@ export default function AddStudentForm() {
           maxLength={200}
           placeholder="e.g. Smith"
           className={inputClass}
+          autoComplete={NO_AUTOFILL}
         />
       </div>
 
@@ -71,6 +70,7 @@ export default function AddStudentForm() {
           maxLength={50}
           placeholder="e.g. 3rd"
           className={inputClass}
+          autoComplete={NO_AUTOFILL}
         />
       </div>
 
@@ -85,6 +85,7 @@ export default function AddStudentForm() {
           maxLength={100}
           placeholder="e.g. Room 12"
           className={inputClass}
+          autoComplete={NO_AUTOFILL}
         />
       </div>
 
@@ -99,45 +100,22 @@ export default function AddStudentForm() {
           maxLength={500}
           placeholder="Optional note"
           className={inputClass}
+          autoComplete={NO_AUTOFILL}
         />
       </div>
 
-      <div>
-        <div className="mb-2 flex items-center justify-between gap-2">
-          <label className={labelClass}>IEP goals</label>
-          <button
-            type="button"
-            onClick={addGoalField}
-            className="rounded-lg border border-pink-500 bg-pink-500/10 px-3 py-1.5 text-sm font-medium text-pink-700 transition-colors hover:bg-pink-500/20 dark:border-pink-400 dark:bg-pink-400/10 dark:text-pink-300 dark:hover:bg-pink-400/20"
-          >
-            + Add goal
-          </button>
-        </div>
-        <div className="space-y-2">
-          {goalFields.map((_, i) => (
-            <div key={i} className="flex gap-2">
-              <input
-                name="goals"
-                type="text"
-                maxLength={500}
-                placeholder={`IEP goal ${i + 1}`}
-                className={`${inputClass} flex-1`}
-                defaultValue=""
-              />
-              {i > 0 ? (
-                <button
-                  type="button"
-                  onClick={() => removeGoalField(i)}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-zinc-300 bg-white text-xs font-semibold text-zinc-500 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
-                  aria-label={`Remove IEP goal ${i + 1}`}
-                >
-                  ×
-                </button>
-              ) : null}
-            </div>
-          ))}
-        </div>
-      </div>
+      <IepGoalFieldsEditor
+        goals={goalFields}
+        onChange={setGoalFields}
+        onAdd={() => setGoalFields((prev) => [...prev, emptyGoal()])}
+        onRemove={(index) => setGoalFields((prev) => prev.filter((_, i) => i !== index))}
+      />
+      {goalFields.map((goal, i) => {
+        const serialized = serializeGoal(goal.title, goal.description);
+        return serialized ? (
+          <input key={i} type="hidden" name="goals" value={serialized} />
+        ) : null;
+      })}
 
       <div className="flex flex-wrap items-center gap-3">
         <button

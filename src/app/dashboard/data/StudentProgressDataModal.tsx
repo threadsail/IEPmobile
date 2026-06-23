@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { submitStudentProgress } from "@/app/dashboard/data/actions";
+import { NO_AUTOFILL } from "@/constants/form-autocomplete";
 import { studentDisplayName, type Student } from "@/types/student";
 import { parseStoredGoal, serializeGoal, storedGoalListLabel } from "@/utils/iep-goal-serde";
 
@@ -96,7 +97,7 @@ export default function StudentProgressDataModal({ student, onClose }: Props) {
               <span className="font-mono text-xs">supabase-student-progress-log.sql</span>.
             </p>
 
-            <form key={student.id} action={saveAction} className="mt-4 space-y-4">
+            <form key={student.id} action={saveAction} autoComplete={NO_AUTOFILL} className="mt-4 space-y-4">
               <input type="hidden" name="student_id" value={student.id} />
               <input type="hidden" name="stay_open" value="1" />
 
@@ -113,6 +114,7 @@ export default function StudentProgressDataModal({ student, onClose }: Props) {
                   type="date"
                   defaultValue={todayInputValue()}
                   className={inputClass}
+                  autoComplete={NO_AUTOFILL}
                 />
               </div>
 
@@ -127,6 +129,7 @@ export default function StudentProgressDataModal({ student, onClose }: Props) {
                   id={`progress-goal-${student.id}`}
                   name="goal_index"
                   className={selectClass}
+                  autoComplete={NO_AUTOFILL}
                   defaultValue=""
                 >
                   <option value="">General / not tied to a single goal</option>
@@ -157,6 +160,7 @@ export default function StudentProgressDataModal({ student, onClose }: Props) {
                   value={progressText}
                   onChange={(e) => setProgressText(e.target.value)}
                   className={`${textareaClass} min-h-[8rem] resize-y`}
+                  autoComplete={NO_AUTOFILL}
                   placeholder="e.g. Met benchmark on reading fluency; 45 wpm with 90% accuracy."
                 />
               </div>

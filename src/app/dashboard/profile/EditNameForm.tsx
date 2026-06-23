@@ -2,6 +2,7 @@
 
 import { useActionState, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { NO_AUTOFILL } from "@/constants/form-autocomplete";
 import { updateProfile } from "./actions";
 
 const inputClass =
@@ -44,7 +45,7 @@ export default function EditNameForm({ firstName, lastName, role, organizationNa
   }
 
   return (
-    <form action={formAction} className="mt-4 space-y-4 border-t border-zinc-200 pt-4 dark:border-zinc-700">
+    <form action={formAction} autoComplete={NO_AUTOFILL} className="mt-4 space-y-4 border-t border-zinc-200 pt-4 dark:border-zinc-700">
       {state?.error ? (
         <div
           role="alert"
@@ -71,6 +72,7 @@ export default function EditNameForm({ firstName, lastName, role, organizationNa
           placeholder="First name"
           defaultValue={firstName ?? ""}
           className={inputClass}
+          autoComplete={NO_AUTOFILL}
         />
       </div>
 
@@ -86,6 +88,7 @@ export default function EditNameForm({ firstName, lastName, role, organizationNa
           placeholder="Last name"
           defaultValue={lastName ?? ""}
           className={inputClass}
+          autoComplete={NO_AUTOFILL}
         />
       </div>
 
@@ -97,6 +100,7 @@ export default function EditNameForm({ firstName, lastName, role, organizationNa
           id="profile-role"
           name="role"
           className={selectClass}
+          autoComplete={NO_AUTOFILL}
           defaultValue={role ?? ""}
         >
           <option value="">—</option>
@@ -118,6 +122,7 @@ export default function EditNameForm({ firstName, lastName, role, organizationNa
           placeholder="Organization name (if you are the owner)"
           defaultValue={organizationName ?? ""}
           className={inputClass}
+          autoComplete={NO_AUTOFILL}
         />
         <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
           Only organization owners can change this.

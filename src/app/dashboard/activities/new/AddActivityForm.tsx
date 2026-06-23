@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState, useState } from "react";
+import { NO_AUTOFILL } from "@/constants/form-autocomplete";
 import { createActivity } from "../actions";
 
 const inputClass =
@@ -41,7 +42,7 @@ export default function AddActivityForm() {
         </button>
       </div>
 
-      <form action={formAction} className="space-y-5">
+      <form action={formAction} autoComplete={NO_AUTOFILL} className="space-y-5">
         <input type="hidden" name="activity_type" value={mode} />
 
         {state?.error ? (
@@ -65,6 +66,7 @@ export default function AddActivityForm() {
             maxLength={200}
             placeholder={mode === "youtube" ? "e.g. Math tutorial" : "e.g. Reading practice"}
             className={inputClass}
+            autoComplete={NO_AUTOFILL}
           />
         </div>
 
@@ -80,6 +82,7 @@ export default function AddActivityForm() {
               required
               placeholder="https://www.youtube.com/watch?v=..."
               className={inputClass}
+            autoComplete={NO_AUTOFILL}
             />
           </div>
         )}
@@ -95,6 +98,7 @@ export default function AddActivityForm() {
             maxLength={500}
             placeholder="Optional short description or category"
             className={inputClass}
+            autoComplete={NO_AUTOFILL}
           />
         </div>
 
@@ -108,6 +112,7 @@ export default function AddActivityForm() {
             type="url"
             placeholder="https://example.com/image.jpg"
             className={inputClass}
+            autoComplete={NO_AUTOFILL}
           />
         </div>
 

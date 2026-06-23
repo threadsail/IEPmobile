@@ -2,6 +2,7 @@
 
 import ActivityPopupImage from "@/components/ActivityPopupImage";
 import YoutubeActivityEmbed from "@/components/YoutubeActivityEmbed";
+import { NO_AUTOFILL } from "@/constants/form-autocomplete";
 import { getActivityPopupImageCandidates, getYoutubeVideoId } from "@/utils/youtube-activity";
 import { useActionState, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Activity } from "@/types/activity";
@@ -12,7 +13,6 @@ import {
   fetchScheduleEntries,
   updateScheduleEntry,
 } from "./actions";
-import type { UpdateScheduleEntryState } from "./actions";
 
 function getWeekDates(anchor: Date): Date[] {
   const d = new Date(anchor);
@@ -82,6 +82,9 @@ const TOTAL_MINUTES = (SLOT_END_HOUR - SLOT_START_HOUR) * 60; // 540
 const START_OFFSET_MINUTES = SLOT_START_HOUR * 60; // 420
 
 const SLOT_INTERVAL_MINUTES = 15;
+
+/** Vertical gap between stacked schedule blocks so adjacent entries stay visually separate. */
+const ENTRY_EDGE_GAP_PX = 3;
 
 function getTimeSlots(): { hour: number; minute: number; label: string }[] {
   const slots: { hour: number; minute: number; label: string }[] = [];
@@ -168,10 +171,10 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
   const [confirmDeleteEntryId, setConfirmDeleteEntryId] = useState<string | null>(null);
   const [activityPopup, setActivityPopup] = useState<Activity | null>(null);
   const [slotStart, setSlotStart] = useState({ hour: 8, minute: 0 });
-  const [state, formAction] = useActionState(createScheduleEntry, { error: null });
-  const [updateState, updateFormAction] = useActionState(updateScheduleEntry, { error: null } as UpdateScheduleEntryState);
-  const prevErrorRef = useRef<string | null>(null);
-  const prevUpdateErrorRef = useRef<string | null>(null);
+  const [state, formAction, isCreatePending] = useActionState(createScheduleEntry, { error: null });
+  const [updateState, updateFormAction, isUpdatePending] = useActionState(updateScheduleEntry, { error: null });
+  const wasCreatePendingRef = useRef(false);
+  const wasUpdatePendingRef = useRef(false);
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
@@ -200,30 +203,53 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
   const isFirstMount = useRef(true);
 
   useEffect(() => {
-    if (modalOpen && prevErrorRef.current !== null && state?.error === null) {
-      setModalOpen(false);
-      refetchEntriesRef.current();
+    if (!modalOpen) {
+      wasCreatePendingRef.current = false;
     }
-    prevErrorRef.current = state?.error ?? null;
-  }, [state, modalOpen]);
+  }, [modalOpen]);
 
-  const updateSubmittedRef = useRef(false);
+  useEffect(() => {
+    if (isCreatePending) {
+      wasCreatePendingRef.current = true;
+      return;
+    }
+    if (!wasCreatePendingRef.current || !modalOpen) {
+      return;
+    }
+    wasCreatePendingRef.current = false;
+    if (state?.error) {
+      return;
+    }
+    void (async () => {
+      await refetchEntries();
+      setModalOpen(false);
+    })();
+  }, [isCreatePending, state?.error, modalOpen, refetchEntries]);
 
   useEffect(() => {
     if (!editingEntry) {
-      updateSubmittedRef.current = false;
+      wasUpdatePendingRef.current = false;
       setConfirmDeleteEntryId(null);
     }
   }, [editingEntry]);
 
   useEffect(() => {
-    if (editingEntry && updateSubmittedRef.current && updateState?.error === null) {
-      setEditingEntry(null);
-      refetchEntriesRef.current();
-      updateSubmittedRef.current = false;
+    if (isUpdatePending) {
+      wasUpdatePendingRef.current = true;
+      return;
     }
-    prevUpdateErrorRef.current = updateState?.error ?? null;
-  }, [updateState, editingEntry]);
+    if (!wasUpdatePendingRef.current || !editingEntry) {
+      return;
+    }
+    wasUpdatePendingRef.current = false;
+    if (updateState?.error) {
+      return;
+    }
+    void (async () => {
+      await refetchEntries();
+      setEditingEntry(null);
+    })();
+  }, [isUpdatePending, updateState?.error, editingEntry, refetchEntries]);
 
   useEffect(() => {
     if (isFirstMount.current) {
@@ -401,30 +427,31 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
                 const heightPct = (duration / TOTAL_MINUTES) * 100;
                 if (from7 < 0 || from7 + duration > TOTAL_MINUTES) return null;
                 const { columnIndex, totalColumns } = entryLayout[i] ?? { columnIndex: 0, totalColumns: 1 };
-                const inset = 1;
+                const inset = 1.5;
                 const available = 100 - inset * 2;
-                const gapPct = totalColumns > 1 ? 0.4 : 0;
-                const widthPct = available / totalColumns - gapPct;
-                const leftPct = inset + columnIndex * (available / totalColumns) + gapPct / 2;
+                const colGapPct = totalColumns > 1 ? 1.2 : 0;
+                const widthPct = available / totalColumns - colGapPct;
+                const leftPct = inset + columnIndex * (available / totalColumns) + colGapPct / 2;
                 const activity = entry.activity_id
                   ? activityById.get(String(entry.activity_id).toLowerCase())
-                  : null;
+                  : undefined;
                 return (
                   <div
                     key={entry.id}
-                    className="absolute pointer-events-auto flex items-stretch gap-0.5 overflow-hidden rounded bg-teal-500/90 shadow dark:bg-teal-600/90 md:bg-zinc-700 dark:md:bg-zinc-600"
+                    className="absolute pointer-events-auto p-px"
                     style={{
-                      top: `${topPct}%`,
-                      height: `${heightPct}%`,
-                      minHeight: "1.25rem",
+                      top: `calc(${topPct}% + ${ENTRY_EDGE_GAP_PX}px)`,
+                      height: `calc(${heightPct}% - ${ENTRY_EDGE_GAP_PX * 2}px)`,
+                      minHeight: "1.35rem",
                       left: `${leftPct}%`,
                       width: `${widthPct}%`,
                     }}
                   >
+                    <div className="flex h-full w-full items-stretch gap-0.5 overflow-hidden rounded-md border border-zinc-300 bg-zinc-200 shadow-sm ring-1 ring-zinc-900/5 dark:border-zinc-600 dark:bg-zinc-700 dark:ring-white/10">
                     <button
                       type="button"
                       onClick={() => setEditingEntry(entry)}
-                      className="flex-1 min-w-0 cursor-pointer px-2 py-0.5 text-center text-xs font-medium text-white hover:bg-teal-600/90 dark:hover:bg-teal-500/90 md:hover:bg-zinc-600/90 dark:md:hover:bg-zinc-500/90"
+                      className="flex-1 min-w-0 cursor-pointer px-2 py-0.5 text-center text-xs font-medium text-zinc-800 hover:bg-zinc-300/80 dark:text-zinc-100 dark:hover:bg-zinc-600/80"
                       title={entry.name}
                     >
                       <span className="line-clamp-2 block">{entry.name}</span>
@@ -436,7 +463,7 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
                           e.stopPropagation();
                           setActivityPopup(activity);
                         }}
-                        className="shrink-0 flex items-center justify-center w-9 text-white/95 hover:bg-white/25 hover:text-white rounded-r"
+                        className="shrink-0 flex items-center justify-center w-9 text-zinc-600 hover:bg-zinc-300/60 hover:text-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-600/60 dark:hover:text-zinc-100"
                         title={`Open ${activity.name}`}
                         aria-label={`Open activity: ${activity.name}`}
                       >
@@ -445,6 +472,7 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
                         </svg>
                       </button>
                     )}
+                    </div>
                   </div>
                 );
               })}
@@ -475,7 +503,11 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
             <h3 id="schedule-modal-title" className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
               Add schedule entry
             </h3>
-            <form action={formAction} className="mt-4 space-y-4">
+            <form
+              action={formAction}
+              autoComplete={NO_AUTOFILL}
+              className="mt-4 space-y-4"
+            >
               <input type="hidden" name="schedule_date" value={selectedKey} />
               {state?.error && (
                 <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-300">
@@ -493,6 +525,7 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
                   required
                   placeholder="e.g. Reading block"
                   className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                  autoComplete={NO_AUTOFILL}
                 />
               </div>
               <div>
@@ -503,6 +536,7 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
                   id="schedule-activity"
                   name="activity_id"
                   className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                  autoComplete={NO_AUTOFILL}
                 >
                   <option value="">None</option>
                   {activities.map((a) => (
@@ -524,6 +558,7 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
                     required
                     defaultValue={defaultStartTime}
                     className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                  autoComplete={NO_AUTOFILL}
                   />
                 </div>
                 <div>
@@ -537,15 +572,17 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
                     required
                     defaultValue={defaultEndTime}
                     className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                  autoComplete={NO_AUTOFILL}
                   />
                 </div>
               </div>
               <div className="flex gap-2 pt-2">
                 <button
                   type="submit"
-                  className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600 md:bg-zinc-800 md:hover:bg-zinc-900 dark:md:bg-zinc-700 dark:md:hover:bg-zinc-600"
+                  disabled={isCreatePending}
+                  className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-teal-500 dark:hover:bg-teal-600 md:bg-zinc-800 md:hover:bg-zinc-900 dark:md:bg-zinc-700 dark:md:hover:bg-zinc-600"
                 >
-                  Add entry
+                  {isCreatePending ? "Adding…" : "Add entry"}
                 </button>
                 <button
                   type="button"
@@ -581,9 +618,7 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
             <form
               key={editingEntry.id}
               action={updateFormAction}
-              onSubmit={() => {
-                updateSubmittedRef.current = true;
-              }}
+              autoComplete={NO_AUTOFILL}
               className="mt-4 space-y-4"
             >
               <input type="hidden" name="id" value={editingEntry.id} />
@@ -605,6 +640,7 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
                   defaultValue={editingEntry.name}
                   placeholder="e.g. Reading block"
                   className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                  autoComplete={NO_AUTOFILL}
                 />
               </div>
               <div>
@@ -616,6 +652,7 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
                   name="activity_id"
                   defaultValue={editingEntry.activity_id ?? ""}
                   className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                  autoComplete={NO_AUTOFILL}
                 >
                   <option value="">None</option>
                   {activities.map((a) => (
@@ -637,6 +674,7 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
                     required
                     defaultValue={timeToInputValue(editingEntry.start_time)}
                     className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                  autoComplete={NO_AUTOFILL}
                   />
                 </div>
                 <div>
@@ -650,6 +688,7 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
                     required
                     defaultValue={timeToInputValue(editingEntry.end_time)}
                     className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                  autoComplete={NO_AUTOFILL}
                   />
                 </div>
               </div>
@@ -657,9 +696,10 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
                 <div className="flex gap-2">
                   <button
                     type="submit"
-                    className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600 md:bg-zinc-800 md:hover:bg-zinc-900 dark:md:bg-zinc-700 dark:md:hover:bg-zinc-600"
+                    disabled={isUpdatePending}
+                    className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-teal-500 dark:hover:bg-teal-600 md:bg-zinc-800 md:hover:bg-zinc-900 dark:md:bg-zinc-700 dark:md:hover:bg-zinc-600"
                   >
-                    Save
+                    {isUpdatePending ? "Saving…" : "Save"}
                   </button>
                   <button
                     type="button"

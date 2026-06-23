@@ -30,17 +30,30 @@ export function serializeGoal(title: string, description: string): string {
   return `${PREFIX}${JSON.stringify({ t, d })}`;
 }
 
-/** Short label for selects and lists. */
+/** Display title for lists (full title, not truncated). */
+export function storedGoalTitle(raw: string, index: number): string {
+  const { title, description } = parseStoredGoal(raw);
+  if (title.trim()) return title.trim();
+  const firstLine = description
+    .trim()
+    .split(/\r?\n/)
+    .find((l) => l.trim())
+    ?.trim();
+  if (firstLine) return firstLine;
+  return `Goal ${index + 1}`;
+}
+
+/** Short label for selects and compact lists. */
 export function storedGoalListLabel(raw: string, index: number): string {
   const { title, description } = parseStoredGoal(raw);
-  const head =
-    title.trim() ||
-    description
-      .trim()
-      .split(/\r?\n/)
-      .find((l) => l.trim())?.trim() ||
-    "";
-  if (!head) return `Goal ${index + 1} (empty)`;
+  if (!title.trim() && !description.trim()) {
+    return `Goal ${index + 1} (empty)`;
+  }
+  const head = storedGoalTitle(raw, index);
   const max = 56;
   return head.length > max ? `${head.slice(0, max)}…` : head;
+}
+
+export function goalHasDetails(raw: string): boolean {
+  return Boolean(parseStoredGoal(raw).description.trim());
 }

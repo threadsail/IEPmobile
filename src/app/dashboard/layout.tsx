@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { ensureUserProfileSetup } from "@/lib/ensure-user-profile";
 import { getCurrentUser } from "@/utils/auth";
 
 /** Always run auth + fresh markup for dashboard (avoids stale shell after OAuth / deploys). */
@@ -15,6 +16,8 @@ export default async function DashboardLayout({
   if (!user) {
     redirect("/auth");
   }
+
+  await ensureUserProfileSetup(user.id);
 
   return <>{children}</>;
 }

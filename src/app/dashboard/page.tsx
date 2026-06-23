@@ -6,7 +6,10 @@ import {
   dashboardPageStack,
   dashboardSectionCard,
 } from "@/data/dashboard-desktop-section";
+import { createClient } from "@/utils/supabase/server";
+import { getPendingAppliedData } from "./data/get-pending-applied-data";
 import { getProfile } from "./profile/get-profile";
+import { getStudents } from "./students/get-students";
 import { getCurrentUser } from "@/utils/auth";
 import {
   accountDisplayName,
@@ -35,9 +38,17 @@ export default async function DashboardPage() {
     day: "numeric",
   });
 
-  // Placeholder counts until students and review tables exist
-  const studentCount = 0;
-  const toDoReviewCount = 0;
+  let studentCount = 0;
+  let toDoReviewCount = 0;
+  if (user) {
+    const supabase = await createClient();
+    const [students, pendingReview] = await Promise.all([
+      getStudents(supabase, user.id),
+      getPendingAppliedData(supabase, user.id),
+    ]);
+    studentCount = students.length;
+    toDoReviewCount = pendingReview.length;
+  }
 
   return (
     <div className={dashboardPageStack}>

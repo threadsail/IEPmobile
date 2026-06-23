@@ -1,5 +1,12 @@
--- Progress / observation log per student (Data tab). Run in Supabase SQL Editor.
--- Requires: admin.students, auth.uid().
+-- Progress / observation log per student (Data tab).
+-- Run once in Supabase Dashboard → SQL Editor:
+--   https://supabase.com/dashboard/project/htrasouxjtbpqbcjuari/sql/new
+--
+-- Requires: admin.students (supabase-students.sql), auth.uid().
+-- After running, if the app still cannot find the RPC, open
+-- Project Settings → API → Reload schema cache.
+
+create schema if not exists admin;
 
 create table if not exists admin.student_progress_logs (
   id uuid primary key default gen_random_uuid(),
@@ -14,7 +21,9 @@ create table if not exists admin.student_progress_logs (
 create index if not exists student_progress_logs_student_created
   on admin.student_progress_logs (student_id, created_at desc);
 
+-- Drop any prior overload so PostgREST sees a single signature.
 drop function if exists public.insert_student_progress_log(uuid, date, int, text);
+drop function if exists public.insert_student_progress_log(uuid, date, integer, text);
 
 create or replace function public.insert_student_progress_log(
   p_student_id uuid,
@@ -31,6 +40,7 @@ begin
   if auth.uid() is null then
     raise exception 'not authenticated';
   end if;
+
   if not exists (
     select 1
     from admin.students s
@@ -38,9 +48,11 @@ begin
   ) then
     raise exception 'student not found';
   end if;
+
   if p_summary is null or length(trim(p_summary)) = 0 then
     raise exception 'summary required';
   end if;
+
   insert into admin.student_progress_logs (student_id, user_id, logged_on, goal_index, summary)
   values (
     p_student_id,
@@ -54,3 +66,5 @@ $$;
 
 grant execute on function public.insert_student_progress_log(uuid, date, int, text) to authenticated;
 grant execute on function public.insert_student_progress_log(uuid, date, int, text) to service_role;
+
+notify pgrst, 'reload schema';

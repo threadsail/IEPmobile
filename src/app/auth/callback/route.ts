@@ -1,4 +1,5 @@
 import { OAUTH_NEXT_COOKIE } from "@/constants/oauth-post-login";
+import { ensureUserProfileSetup } from "@/lib/ensure-user-profile";
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
@@ -81,9 +82,14 @@ export async function GET(request: NextRequest) {
   });
 
   try {
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { data: sessionData, error } = await supabase.auth.exchangeCodeForSession(code);
     if (error) {
       return authErrorRedirect(requestUrl, error.message);
+    }
+
+    const userId = sessionData.user?.id;
+    if (userId) {
+      await ensureUserProfileSetup(userId);
     }
 
     clearOauthNextCookie(response);

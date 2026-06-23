@@ -1,21 +1,10 @@
 "use client";
 
+import FormattedLocalDateTime from "@/components/FormattedLocalDateTime";
 import { useActionState, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { updateProfile } from "./actions";
 import type { Profile } from "@/types/profile";
-
-function formatDate(iso: string | null): string {
-  if (!iso) return "—";
-  try {
-    return new Date(iso).toLocaleDateString(undefined, {
-      dateStyle: "medium",
-      timeStyle: "short",
-    });
-  } catch {
-    return "—";
-  }
-}
 
 const rowClass = "flex flex-col gap-0.5 py-4 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between sm:py-3";
 const displayRowClass =
@@ -163,11 +152,15 @@ export default function ProfileInformation({
         </div>
         <div className={rowClass}>
           <dt className={dtClass}>Profile created</dt>
-          <dd className={ddClass}>{formatDate(profile.created_at ?? userCreatedAt ?? null)}</dd>
+          <dd className={ddClass}>
+            <FormattedLocalDateTime iso={profile.created_at ?? userCreatedAt ?? null} />
+          </dd>
         </div>
         <div className={rowClass}>
           <dt className={dtClass}>Last updated</dt>
-          <dd className={ddClass}>{formatDate(profile.updated_at ?? null)}</dd>
+          <dd className={ddClass}>
+            <FormattedLocalDateTime iso={profile.updated_at ?? null} />
+          </dd>
         </div>
         <div className="flex flex-wrap gap-3 pt-4">
           <button
@@ -221,11 +214,15 @@ export default function ProfileInformation({
         </div>
         <div className={displayRowClass}>
           <dt className={dtClass}>Profile created</dt>
-          <dd className={ddClass}>{formatDate(profile.created_at ?? userCreatedAt ?? null)}</dd>
+          <dd className={ddClass}>
+            <FormattedLocalDateTime iso={profile.created_at ?? userCreatedAt ?? null} />
+          </dd>
         </div>
         <div className={displayRowClass}>
           <dt className={dtClass}>Last updated</dt>
-          <dd className={ddClass}>{formatDate(profile.updated_at ?? null)}</dd>
+          <dd className={ddClass}>
+            <FormattedLocalDateTime iso={profile.updated_at ?? null} />
+          </dd>
         </div>
       </dl>
       {canEdit && (

@@ -157,6 +157,7 @@ export async function addStudent(
     return { error: message };
   }
 
+  revalidatePath("/dashboard");
   revalidatePath("/dashboard/students");
   redirect("/dashboard/students");
 }
@@ -213,6 +214,7 @@ export async function seedTestStudents(
     return { error: message };
   }
 
+  revalidatePath("/dashboard");
   revalidatePath("/dashboard/students");
   revalidatePath("/dashboard/data");
   revalidatePath("/dashboard/schedule");
@@ -284,6 +286,7 @@ export async function updateStudent(
   }
 
   const stayOpen = (formData.get("stay_open") as string)?.trim() === "1";
+  revalidatePath("/dashboard");
   revalidatePath("/dashboard/students");
   revalidatePath(`/dashboard/students/${id}`);
   revalidatePath("/dashboard/data");
@@ -379,6 +382,7 @@ export async function bulkUpdateStudents(
     return { error: message };
   }
 
+  revalidatePath("/dashboard");
   revalidatePath("/dashboard/students");
   revalidatePath("/dashboard/students/bulk-edit");
   for (let i = 0; i < count; i++) {
@@ -432,6 +436,7 @@ export async function archiveStudentGoal(
   }
 
   const stayOpen = (formData.get("stay_open") as string)?.trim() === "1";
+  revalidatePath("/dashboard");
   revalidatePath("/dashboard/students");
   revalidatePath(`/dashboard/students/${id}`);
   revalidatePath("/dashboard/data");
@@ -485,6 +490,7 @@ export async function unarchiveStudentGoal(
   }
 
   const stayOpen = (formData.get("stay_open") as string)?.trim() === "1";
+  revalidatePath("/dashboard");
   revalidatePath("/dashboard/students");
   revalidatePath(`/dashboard/students/${id}`);
   revalidatePath("/dashboard/data");
@@ -526,6 +532,7 @@ export async function archiveStudentRecord(
     return { error: message };
   }
 
+  revalidatePath("/dashboard");
   revalidatePath("/dashboard/students");
   revalidatePath(`/dashboard/students/${id}`);
   revalidatePath(`/dashboard/students/${id}/edit`);
@@ -564,6 +571,7 @@ export async function unarchiveStudentRecord(
     return { error: message };
   }
 
+  revalidatePath("/dashboard");
   revalidatePath("/dashboard/students");
   revalidatePath(`/dashboard/students/${id}`);
   revalidatePath("/dashboard/data");
@@ -601,6 +609,7 @@ export async function deleteStudentRecord(
     return { error: message };
   }
 
+  revalidatePath("/dashboard");
   revalidatePath("/dashboard/students");
   revalidatePath(`/dashboard/students/${id}`);
   revalidatePath(`/dashboard/students/${id}/edit`);

@@ -94,11 +94,12 @@ export async function submitStudentProgress(
     });
 
     if (error) {
-      const hint =
+      const missingRpc =
         error.message.toLowerCase().includes("function") ||
-        error.message.toLowerCase().includes("schema cache")
-          ? " Add the RPC in Supabase (see supabase-student-progress-log.sql) and reload the schema cache."
-          : "";
+        error.message.toLowerCase().includes("schema cache");
+      const hint = missingRpc
+        ? " Run supabase-student-progress-log.sql in the Supabase SQL Editor, then reload the API schema cache (Project Settings → API)."
+        : "";
       return { error: `${error.message}${hint}` };
     }
   } catch (err) {

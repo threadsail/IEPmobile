@@ -1,8 +1,7 @@
 -- =============================================================================
 -- Patch: map Google/Microsoft OAuth names into public.profiles on signup.
--- Run in Supabase SQL Editor if new OAuth users get empty first_name/last_name
--- and a synthetic username like user_a1b2c3d4… (dashboard then showed that).
--- Replaces only public.handle_new_user — keep your existing trigger name.
+-- Prefer running supabase-oauth-user-parity.sql instead — it includes this
+-- name mapping plus admin.profiles, organization, and backfill for OAuth users.
 -- =============================================================================
 
 create or replace function public.handle_new_user()

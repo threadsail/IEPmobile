@@ -1,6 +1,7 @@
 import { cache } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Profile } from "@/types/profile";
+import { ensureUserProfileSetup } from "@/lib/ensure-user-profile";
 import { createClient } from "@/utils/supabase/server";
 
 type SubscriptionRow = {
@@ -28,12 +29,27 @@ async function getProfileWithClient(
   supabase: SupabaseClient,
   userId: string
 ): Promise<Profile | null> {
-  const [publicResult, subRow, orgNameResult] = await Promise.all([
+  const fetchPublicProfile = () =>
     supabase
       .from("profiles")
-      .select("id, username, created_at, first_name, last_name, full_name, role, organization_id")
+      .select(
+        "id, username, created_at, updated_at, first_name, last_name, full_name, role, organization_id"
+      )
       .eq("id", userId)
-      .maybeSingle(),
+      .maybeSingle();
+
+  let publicResult = await fetchPublicProfile();
+
+  const needsSetup =
+    (!publicResult.data && !publicResult.error) ||
+    Boolean(publicResult.data && !publicResult.data.organization_id);
+
+  if (needsSetup) {
+    await ensureUserProfileSetup(userId);
+    publicResult = await fetchPublicProfile();
+  }
+
+  const [subRow, orgNameResult] = await Promise.all([
     getSubscriptionRow(supabase, userId),
     supabase.rpc("get_my_organization_name").then(({ data, error }) => (error ? null : (data as string | null) ?? null)),
   ]);

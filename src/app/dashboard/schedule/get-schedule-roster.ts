@@ -15,16 +15,19 @@ export async function getScheduleRoster(
   const { data, error } = await supabase.rpc("get_schedule_roster");
   if (error) return [];
 
-  return (data ?? []).reduce<ScheduleRosterMember[]>((acc, row) => {
-    const r = row as Record<string, unknown>;
-    const user_id = String(r.user_id ?? "");
-    if (!user_id || acc.some((m) => m.user_id === user_id)) return acc;
-    acc.push({
+  const rows = Array.isArray(data) ? (data as Record<string, unknown>[]) : [];
+  const roster: ScheduleRosterMember[] = [];
+
+  for (const row of rows) {
+    const user_id = String(row.user_id ?? "");
+    if (!user_id || roster.some((m) => m.user_id === user_id)) continue;
+    roster.push({
       user_id,
-      display_name: rosterDisplayName(r),
-      role: r.role == null ? null : String(r.role),
-      can_edit: Boolean(r.can_edit),
+      display_name: rosterDisplayName(row),
+      role: row.role == null ? null : String(row.role),
+      can_edit: Boolean(row.can_edit),
     });
-    return acc;
-  }, []);
+  }
+
+  return roster;
 }

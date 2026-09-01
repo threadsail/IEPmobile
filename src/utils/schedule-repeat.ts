@@ -1,4 +1,13 @@
-export type ScheduleRepeat = "none" | "daily" | "weekdays" | "weekly";
+/** Sunday = 0 … Saturday = 6 (matches schedule calendar). */
+export const WEEKDAY_OPTIONS = [
+  { value: 0, label: "Sun" },
+  { value: 1, label: "Mon" },
+  { value: 2, label: "Tue" },
+  { value: 3, label: "Wed" },
+  { value: 4, label: "Thu" },
+  { value: 5, label: "Fri" },
+  { value: 6, label: "Sat" },
+] as const;
 
 function parseYmd(ymd: string): Date {
   const [y, m, d] = ymd.split("-").map(Number);
@@ -18,55 +27,45 @@ function addDays(d: Date, days: number): Date {
   return x;
 }
 
-/** Sunday–Saturday week; returns Saturday of the week containing `d`. */
-function saturdayOfWeek(d: Date): Date {
-  const x = new Date(d);
-  x.setDate(x.getDate() + (6 - x.getDay()));
-  return x;
+export function weekdayFromYmd(ymd: string): number | null {
+  const d = parseYmd(ymd);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.getDay();
 }
 
 /**
- * Dates to create schedule entries for, starting at `startDate` (YYYY-MM-DD).
+ * From start date, repeat on selected weekdays for `weeks` weeks (inclusive of start week).
  */
-export function getRepeatScheduleDates(startDate: string, repeat: ScheduleRepeat): string[] {
+export function getWeeklyRepeatScheduleDates(
+  startDate: string,
+  weeks: number,
+  daysOfWeek: number[]
+): string[] {
   const start = parseYmd(startDate);
   if (Number.isNaN(start.getTime())) return [];
 
-  if (repeat === "none") return [startDate];
+  const daySet = new Set(daysOfWeek.filter((d) => d >= 0 && d <= 6));
+  if (daySet.size === 0) return [];
 
+  const weekCount = Math.max(1, Math.min(weeks, 26));
   const dates = new Set<string>();
-  dates.add(startDate);
 
-  if (repeat === "daily") {
-    const end = saturdayOfWeek(start);
-    for (let cursor = addDays(start, 1); cursor <= end; cursor = addDays(cursor, 1)) {
+  for (let i = 0; i < weekCount * 7; i++) {
+    const cursor = addDays(start, i);
+    if (daySet.has(cursor.getDay())) {
       dates.add(toYmd(cursor));
     }
-    return [...dates].sort();
   }
 
-  if (repeat === "weekdays") {
-    for (let i = 1; i < 14; i++) {
-      const cursor = addDays(start, i);
-      const dow = cursor.getDay();
-      if (dow >= 1 && dow <= 5) dates.add(toYmd(cursor));
-    }
-    return [...dates].sort();
-  }
-
-  if (repeat === "weekly") {
-    for (let w = 1; w < 4; w++) {
-      dates.add(toYmd(addDays(start, w * 7)));
-    }
-    return [...dates].sort();
-  }
-
-  return [startDate];
+  return [...dates].sort();
 }
 
-export const SCHEDULE_REPEAT_OPTIONS: { value: ScheduleRepeat; label: string }[] = [
-  { value: "none", label: "Don't repeat" },
-  { value: "daily", label: "Daily (through Saturday this week)" },
-  { value: "weekdays", label: "Weekdays (2 weeks)" },
-  { value: "weekly", label: "Weekly (4 weeks)" },
-];
+export function parseRepeatDays(formData: FormData): number[] {
+  const raw = formData.getAll("repeat_days");
+  const days = new Set<number>();
+  for (const value of raw) {
+    const n = Number(value);
+    if (Number.isInteger(n) && n >= 0 && n <= 6) days.add(n);
+  }
+  return [...days].sort((a, b) => a - b);
+}

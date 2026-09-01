@@ -4,14 +4,12 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import {
-  getRepeatScheduleDates,
-  type ScheduleRepeat,
+  getWeeklyRepeatScheduleDates,
+  parseRepeatDays,
 } from "@/utils/schedule-repeat";
 
 export type CreateActivityState = { error: string | null };
 export type AddActivityToScheduleState = { error: string | null; success: boolean; created: number };
-
-const REPEAT_VALUES: ScheduleRepeat[] = ["none", "daily", "weekdays", "weekly"];
 
 export async function addActivityToSchedule(
   _prev: AddActivityToScheduleState,
@@ -23,10 +21,13 @@ export async function addActivityToSchedule(
   const startTime = (formData.get("start_time") as string)?.trim();
   const endTime = (formData.get("end_time") as string)?.trim();
   const ownerUserId = (formData.get("owner_user_id") as string)?.trim() || null;
-  const repeatRaw = (formData.get("repeat") as string)?.trim() ?? "none";
-  const repeat = REPEAT_VALUES.includes(repeatRaw as ScheduleRepeat)
-    ? (repeatRaw as ScheduleRepeat)
-    : "none";
+  const repeatWeekly = formData.get("repeat_weekly") === "1";
+  const repeatWeeksRaw = Number(formData.get("repeat_weeks"));
+  const repeatWeeks =
+    Number.isFinite(repeatWeeksRaw) && repeatWeeksRaw >= 1 && repeatWeeksRaw <= 26
+      ? Math.round(repeatWeeksRaw)
+      : 4;
+  const repeatDays = parseRepeatDays(formData);
 
   if (!activityId) return { error: "Activity is required.", success: false, created: 0 };
   if (!name) return { error: "Name is required.", success: false, created: 0 };
@@ -37,8 +38,13 @@ export async function addActivityToSchedule(
   if (endTime <= startTime) {
     return { error: "End time must be after start time.", success: false, created: 0 };
   }
+  if (repeatWeekly && repeatDays.length === 0) {
+    return { error: "Select at least one day to repeat on.", success: false, created: 0 };
+  }
 
-  const dates = getRepeatScheduleDates(scheduleDate, repeat);
+  const dates = repeatWeekly
+    ? getWeeklyRepeatScheduleDates(scheduleDate, repeatWeeks, repeatDays)
+    : [scheduleDate];
   if (dates.length === 0) {
     return { error: "Invalid date.", success: false, created: 0 };
   }

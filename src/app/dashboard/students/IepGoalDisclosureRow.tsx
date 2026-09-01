@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import {
-  goalHasDetails,
-  parseStoredGoal,
+  storedGoalObjectives,
   storedGoalTitle,
 } from "@/utils/iep-goal-serde";
 
@@ -40,11 +39,9 @@ export default function IepGoalDisclosureRow({
   action,
 }: IepGoalDisclosureRowProps) {
   const [open, setOpen] = useState(false);
-  const { goal, objectives } = parseStoredGoal(raw);
   const displayTitle = storedGoalTitle(raw, index);
-  const goalText = goal.trim();
-  const objectiveItems = objectives.map((item) => item.trim()).filter(Boolean);
-  const canExpand = goalHasDetails(raw);
+  const objectiveItems = storedGoalObjectives(raw);
+  const canExpand = objectiveItems.length > 0;
 
   const titleClass = archived
     ? "text-zinc-500 dark:text-zinc-400"
@@ -77,31 +74,21 @@ export default function IepGoalDisclosureRow({
       </div>
 
       {canExpand && open ? (
-        <div className="mb-2 ml-5 space-y-2.5 border-l border-zinc-200/90 pl-3 dark:border-zinc-700/80">
-          {goalText ? (
-            <div>
-              <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500">Goal</p>
-              <p className="mt-0.5 whitespace-pre-wrap break-words text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                {goalText}
-              </p>
-            </div>
-          ) : null}
-          {objectiveItems.length > 0 ? (
-            <div>
-              <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500">Objectives</p>
-              <ul className="mt-1 space-y-1.5">
-                {objectiveItems.map((item, i) => (
-                  <li
-                    key={i}
-                    className="flex gap-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400"
-                  >
-                    <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-zinc-300 dark:bg-zinc-600" />
-                    <span className="min-w-0 flex-1 whitespace-pre-wrap break-words">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
+        <div className="mb-2 ml-5 border-l border-zinc-200/90 pl-3 dark:border-zinc-700/80">
+          <p className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500">
+            Objectives / benchmarks
+          </p>
+          <ul className="mt-1 space-y-1.5">
+            {objectiveItems.map((item, i) => (
+              <li
+                key={i}
+                className="flex gap-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400"
+              >
+                <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-zinc-300 dark:bg-zinc-600" />
+                <span className="min-w-0 flex-1 whitespace-pre-wrap break-words">{item}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       ) : null}
     </div>

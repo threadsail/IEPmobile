@@ -2,17 +2,27 @@ const PREFIX = "iep1:";
 
 export type ParsedGoal = {
   title: string;
-  goal: string;
   objectives: string[];
 };
 
 export function emptyParsedGoal(): ParsedGoal {
-  return { title: "", goal: "", objectives: [""] };
+  return { title: "", objectives: [""] };
 }
 
 function normalizeObjectives(raw: unknown): string[] {
   if (!Array.isArray(raw)) return [];
-  return raw.filter((item): item is string => typeof item === "string").map((s) => s.trim()).filter(Boolean);
+  return raw
+    .filter((item): item is string => typeof item === "string")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function mergeLegacyDescription(goalText: string, objectives: string[]): string[] {
+  const normalized = normalizeObjectives(objectives);
+  const description = goalText.trim();
+  if (!description) return normalized;
+  if (normalized.length > 0) return normalized;
+  return [description];
 }
 
 /** Decode a stored goal string (legacy plain text or structured). */
@@ -27,29 +37,27 @@ export function parseStoredGoal(raw: string): ParsedGoal {
           typeof o.g === "string" ? o.g : typeof o.d === "string" ? o.d : "";
         return {
           title: typeof o.t === "string" ? o.t : "",
-          goal: goalText,
-          objectives: normalizeObjectives(o.o),
+          objectives: mergeLegacyDescription(goalText, normalizeObjectives(o.o)),
         };
       }
     } catch {
       /* fall through */
     }
   }
-  return { title: s.trim(), goal: "", objectives: [] };
+  return { title: s.trim(), objectives: [] };
 }
 
 /** Encode for RPC / DB; empty goals return "" and are dropped by callers. */
 export function serializeParsedGoal(goal: ParsedGoal): string {
   const t = goal.title.trim();
-  const g = goal.goal.trim();
   const o = normalizeObjectives(goal.objectives);
-  if (!t && !g && o.length === 0) return "";
-  return `${PREFIX}${JSON.stringify({ t, g, o })}`;
+  if (!t && o.length === 0) return "";
+  return `${PREFIX}${JSON.stringify({ t, o })}`;
 }
 
 /** @deprecated Use serializeParsedGoal */
-export function serializeGoal(title: string, goal: string): string {
-  return serializeParsedGoal({ title, goal, objectives: [] });
+export function serializeGoal(title: string, _goal?: string): string {
+  return serializeParsedGoal({ title, objectives: [] });
 }
 
 export function parsedGoalHasContent(goal: ParsedGoal): boolean {
@@ -59,31 +67,22 @@ export function parsedGoalHasContent(goal: ParsedGoal): boolean {
 export function goalsContentEqual(a: ParsedGoal, b: ParsedGoal): boolean {
   return (
     a.title.trim() === b.title.trim() &&
-    a.goal.trim() === b.goal.trim() &&
     JSON.stringify(normalizeObjectives(a.objectives)) ===
       JSON.stringify(normalizeObjectives(b.objectives))
   );
 }
 
-/** Display title for lists (full title, not truncated). */
+/** Heading for lists and collapsed rows — title field only. */
 export function storedGoalTitle(raw: string, index: number): string {
-  const { title, goal } = parseStoredGoal(raw);
-  if (title.trim()) return title.trim();
-  const firstLine = goal
-    .trim()
-    .split(/\r?\n/)
-    .find((l) => l.trim())
-    ?.trim();
-  if (firstLine) return firstLine;
-  const { objectives } = parseStoredGoal(raw);
-  if (objectives[0]?.trim()) return objectives[0].trim();
+  const title = parseStoredGoal(raw).title.trim();
+  if (title) return title;
   return `Goal ${index + 1}`;
 }
 
 /** Short label for selects and compact lists. */
 export function storedGoalListLabel(raw: string, index: number): string {
   const parsed = parseStoredGoal(raw);
-  if (!parsed.title.trim() && !parsed.goal.trim() && parsed.objectives.length === 0) {
+  if (!parsed.title.trim() && parsed.objectives.length === 0) {
     return `Goal ${index + 1} (empty)`;
   }
   const head = storedGoalTitle(raw, index);
@@ -92,6 +91,21 @@ export function storedGoalListLabel(raw: string, index: number): string {
 }
 
 export function goalHasDetails(raw: string): boolean {
-  const { goal, objectives } = parseStoredGoal(raw);
-  return Boolean(goal.trim() || objectives.length > 0);
+  return storedGoalObjectives(raw).length > 0;
+}
+
+/** Non-empty objectives/benchmarks for a stored goal. */
+export function storedGoalObjectives(raw: string): string[] {
+  return normalizeObjectives(parseStoredGoal(raw).objectives);
+}
+
+export function storedObjectiveLabel(
+  raw: string,
+  objectiveIndex: number,
+  maxLength = 72
+): string {
+  const objectives = storedGoalObjectives(raw);
+  const text = objectives[objectiveIndex]?.trim();
+  if (!text) return `Benchmark ${objectiveIndex + 1}`;
+  return text.length > maxLength ? `${text.slice(0, maxLength)}…` : text;
 }

@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import { getScheduleRoster } from "@/app/dashboard/schedule/get-schedule-roster";
 import {
   dashboardHeroCorporateXl,
   dashboardHeroTitleCorporateXl,
@@ -11,9 +12,21 @@ type Props = { searchParams: Promise<{ filter?: string }> };
 
 export default async function ActivitiesPage({ searchParams }: Props) {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const params = await searchParams;
   const filter = (params.filter === "mine" ? "mine" : "org") as ActivityFilter;
   const activities = await getActivities(supabase, filter);
+
+  let roster: Awaited<ReturnType<typeof getScheduleRoster>> = [];
+  if (user) {
+    try {
+      roster = await getScheduleRoster(supabase);
+    } catch {
+      roster = [];
+    }
+  }
 
   return (
     <div className={dashboardPageStack}>
@@ -27,7 +40,12 @@ export default async function ActivitiesPage({ searchParams }: Props) {
         </h1>
       </section>
 
-      <ActivitiesList activities={activities} currentFilter={filter} />
+      <ActivitiesList
+        activities={activities}
+        currentFilter={filter}
+        roster={roster}
+        currentUserId={user?.id ?? null}
+      />
 
       {activities.length === 0 ? (
         <p className="text-center text-zinc-500 dark:text-zinc-400">

@@ -24,17 +24,20 @@ function toDateOnly(value: unknown): string {
 export async function getScheduleEntries(
   supabase: SupabaseClient,
   dateFrom: string,
-  dateTo: string
+  dateTo: string,
+  ownerUserId?: string | null
 ): Promise<ScheduleEntry[]> {
   const { data, error } = await supabase.rpc("get_schedule_entries", {
     p_date_from: dateFrom,
     p_date_to: dateTo,
+    p_owner_user_id: ownerUserId ?? null,
   });
 
   if (error) return [];
   const rows = (data ?? []) as ScheduleEntry[];
   return rows.map((r) => ({
     ...r,
+    owner_user_id: r.owner_user_id != null ? String(r.owner_user_id) : "",
     schedule_date: toDateOnly(r.schedule_date),
     activity_id: r.activity_id != null && r.activity_id !== "" ? String(r.activity_id) : null,
     start_time: typeof r.start_time === "string" ? r.start_time : String(r.start_time ?? ""),

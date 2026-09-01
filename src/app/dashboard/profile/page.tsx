@@ -9,8 +9,13 @@ import { fullNameFromUserMetadata } from "@/utils/account-display-name";
 import { createClient } from "@/utils/supabase/server";
 import { getStudents } from "@/app/dashboard/students/get-students";
 import { getTotalOrgDataEntriesCount } from "./get-org-data-entries-count";
+import { getOrganizationAideCount } from "./get-org-aide-count";
+import { getOrganizationInviteCode } from "./get-org-invite-code";
+import TeamAccessSection from "./TeamAccessSection";
+import { absoluteUrl } from "@/lib/site-url";
 import TestApplySubscriptionButton from "../purchase/TestApplySubscriptionButton";
 import ManageBillingButton from "./ManageBillingButton";
+import { isStaffRole } from "@/utils/profile-roles";
 
 const PLAN_LABELS: Record<string, string> = {
   starter: "Starter",
@@ -179,21 +184,23 @@ function FeaturesUsageSection({
   profile,
   studentCount,
   dataEntriesCount,
+  aideCount,
 }: {
   profile: Profile | null;
   studentCount: number;
   dataEntriesCount: number;
+  aideCount: number;
 }) {
   const raw = profile?.subscription_plan;
   const plan = raw === "starter" || raw === "basic" || raw === "pro" ? raw : "basic";
   const interval = profile?.subscription_interval;
   const role = profile?.role ?? null;
-  const isTeacherOrAdmin = role === "Teacher" || role === "Admin";
+  const isStaff = isStaffRole(role);
 
-  if (!isTeacherOrAdmin) return null;
+  if (!isStaff) return null;
 
   const teacherUsed = 1; // this account
-  const aideUsed = 0; // aides not tracked yet in this view
+  const aideUsed = aideCount;
   const studentsUsed = studentCount;
   const dataEntriesUsed = dataEntriesCount;
 
@@ -245,7 +252,7 @@ function FeaturesUsageSection({
       <dl className="mt-5 space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white/60 py-2.5 px-3 dark:bg-black/20">
           <dt className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
-            Teachers
+            Teachers &amp; administrators
           </dt>
           <dd className="text-sm font-semibold text-emerald-900 dark:text-emerald-100">
             {formatUsage(teacherUsed, teacherLimit)}
@@ -383,20 +390,32 @@ export default async function ProfilePage() {
   const user = await getCurrentUser();
   const profile = user ? await getProfile(user.id) : null;
   const role = profile?.role ?? null;
-  const isTeacherOrAdmin = role === "Teacher" || role === "Admin";
+  const isStaff = isStaffRole(role);
   const isDev = process.env.NODE_ENV === "development";
 
   let studentCount = 0;
   let dataEntriesCount = 0;
-  if (user && isTeacherOrAdmin) {
+  let aideCount = 0;
+  let inviteCode: string | null = null;
+  if (user) {
     const supabase = await createClient();
-    const [students, totalDataEntries] = await Promise.all([
-      getStudents(supabase, user.id),
-      getTotalOrgDataEntriesCount(supabase),
-    ]);
-    studentCount = students.length;
-    dataEntriesCount = totalDataEntries;
+    if (isStaff) {
+      const [students, totalDataEntries, aides, code] = await Promise.all([
+        getStudents(supabase, user.id),
+        getTotalOrgDataEntriesCount(supabase),
+        getOrganizationAideCount(supabase),
+        getOrganizationInviteCode(supabase),
+      ]);
+      studentCount = students.length;
+      dataEntriesCount = totalDataEntries;
+      aideCount = aides;
+      inviteCode = code;
+    }
   }
+
+  const inviteUrl = inviteCode
+    ? absoluteUrl(`/auth?mode=signup&invite=${encodeURIComponent(inviteCode)}`)
+    : null;
 
   return (
     <div className="mx-auto w-full max-w-2xl px-2 md:max-w-6xl">
@@ -450,9 +469,22 @@ export default async function ProfilePage() {
 
         <SubscriptionSection profile={profile} isDev={isDev} />
 
-        {isTeacherOrAdmin && (
+        <div className="md:col-span-2">
+          <TeamAccessSection
+            isStaff={isStaff}
+            inviteCode={inviteCode}
+            inviteUrl={inviteUrl}
+          />
+        </div>
+
+        {isStaff && (
           <div className="md:col-span-2">
-            <FeaturesUsageSection profile={profile} studentCount={studentCount} dataEntriesCount={dataEntriesCount} />
+            <FeaturesUsageSection
+              profile={profile}
+              studentCount={studentCount}
+              dataEntriesCount={dataEntriesCount}
+              aideCount={aideCount}
+            />
           </div>
         )}
 

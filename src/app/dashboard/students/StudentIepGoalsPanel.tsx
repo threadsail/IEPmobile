@@ -15,14 +15,11 @@ import {
   parseStoredGoal,
   parsedGoalHasContent,
   serializeParsedGoal,
-  storedGoalTitle,
   type ParsedGoal,
 } from "@/utils/iep-goal-serde";
 import IepGoalDisclosureRow from "./IepGoalDisclosureRow";
 
 const inputClass =
-  "w-full min-w-0 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-500 focus:border-pink-500 focus:outline-none focus:ring-1 focus:ring-pink-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-400 dark:focus:border-pink-400 dark:focus:ring-pink-400";
-const textareaClass =
   "w-full min-w-0 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-500 focus:border-pink-500 focus:outline-none focus:ring-1 focus:ring-pink-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-400 dark:focus:border-pink-400 dark:focus:ring-pink-400";
 
 type Props = {
@@ -174,83 +171,70 @@ export default function StudentIepGoalsPanel({ student, embedded = false }: Prop
     const objectives = editorObjectives(goal);
 
     return (
-      <div className="space-y-3 rounded-lg border border-zinc-200/80 bg-zinc-50/60 p-3 dark:border-zinc-700/50 dark:bg-zinc-800/40">
-        <div className="space-y-2">
-          <div>
-            <label
-              htmlFor={`goal-title-${student.id}-${i}`}
-              className="mb-1 block text-xs font-medium text-zinc-600 dark:text-zinc-400"
-            >
-              Title
-            </label>
-            <input
-              ref={focusTitle ? newGoalTitleRef : undefined}
-              id={`goal-title-${student.id}-${i}`}
-              type="text"
-              maxLength={200}
-              value={goal.title}
-              onChange={(e) => patchGoal(i, { title: e.target.value })}
-              className={inputClass}
-              placeholder="e.g. Reading comprehension"
-              autoComplete={NO_AUTOFILL}
-            />
-          </div>
-          <div>
-            <label
-              htmlFor={`goal-text-${student.id}-${i}`}
-              className="mb-1 block text-xs font-medium text-zinc-600 dark:text-zinc-400"
-            >
-              Goal
-            </label>
-            <textarea
-              id={`goal-text-${student.id}-${i}`}
-              maxLength={2000}
-              rows={3}
-              value={goal.goal}
-              onChange={(e) => patchGoal(i, { goal: e.target.value })}
-              className={`${textareaClass} min-h-[4.5rem] resize-y`}
-              autoComplete={NO_AUTOFILL}
-              placeholder="Overall goal statement"
-            />
-          </div>
-          <div>
-            <div className="mb-1 flex items-center justify-between gap-2">
-              <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400">Objectives</span>
-              <button
-                type="button"
-                onClick={() => addObjective(i)}
-                className="text-xs font-medium text-pink-700 hover:underline dark:text-pink-300"
-              >
-                + Add objective
-              </button>
+      <div className="space-y-4 rounded-lg border border-zinc-200/80 bg-zinc-50/60 p-3 dark:border-zinc-700/50 dark:bg-zinc-800/40">
+        <section className="rounded-md border border-zinc-200/80 bg-white p-3 dark:border-zinc-700/50 dark:bg-zinc-900/40">
+          <h4 className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+            Title
+          </h4>
+          <p className="mt-0.5 text-[11px] text-zinc-400">Short name shown in lists and progress logs.</p>
+          <input
+            ref={focusTitle ? newGoalTitleRef : undefined}
+            id={`goal-title-${student.id}-${i}`}
+            type="text"
+            maxLength={200}
+            value={goal.title}
+            onChange={(e) => patchGoal(i, { title: e.target.value })}
+            className={`${inputClass} mt-2`}
+            placeholder="e.g. Reading comprehension"
+            autoComplete={NO_AUTOFILL}
+          />
+        </section>
+
+        <section className="rounded-md border border-zinc-200/80 bg-white p-3 dark:border-zinc-700/50 dark:bg-zinc-900/40">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                Objectives / benchmarks
+              </h4>
+              <p className="mt-0.5 text-[11px] text-zinc-400">
+                Measurable steps for this goal. Add one or more.
+              </p>
             </div>
-            <div className="space-y-2">
-              {objectives.map((objective, j) => (
-                <div key={j} className="flex gap-2">
-                  <input
-                    type="text"
-                    maxLength={500}
-                    value={objective}
-                    onChange={(e) => patchObjective(i, j, e.target.value)}
-                    className={inputClass}
-                    placeholder={`Objective ${j + 1}`}
-                    autoComplete={NO_AUTOFILL}
-                  />
-                  {objectives.length > 1 ? (
-                    <button
-                      type="button"
-                      onClick={() => removeObjective(i, j)}
-                      className="shrink-0 px-2 text-xs font-medium text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
-                      aria-label={`Remove objective ${j + 1}`}
-                    >
-                      Remove
-                    </button>
-                  ) : null}
-                </div>
-              ))}
-            </div>
+            <button
+              type="button"
+              onClick={() => addObjective(i)}
+              className="shrink-0 text-xs font-medium text-pink-700 hover:underline dark:text-pink-300"
+            >
+              + Add
+            </button>
           </div>
-        </div>
+          <div className="mt-2 space-y-2">
+            {objectives.map((objective, j) => (
+              <div key={j} className="flex gap-2">
+                <input
+                  type="text"
+                  maxLength={500}
+                  value={objective}
+                  onChange={(e) => patchObjective(i, j, e.target.value)}
+                  className={inputClass}
+                  placeholder={`Benchmark ${j + 1}`}
+                  autoComplete={NO_AUTOFILL}
+                />
+                {objectives.length > 1 ? (
+                  <button
+                    type="button"
+                    onClick={() => removeObjective(i, j)}
+                    className="shrink-0 px-2 text-xs font-medium text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
+                    aria-label={`Remove objective ${j + 1}`}
+                  >
+                    Remove
+                  </button>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </section>
+
         <div className="flex flex-wrap items-center gap-2">
           {!hasContent ? (
             <button

@@ -27,6 +27,8 @@ export async function createScheduleEntry(
     return { error: "Start and end time are required." };
   }
 
+  const ownerUserId = (formData.get("owner_user_id") as string)?.trim() || null;
+
   try {
     const supabase = await createClient();
     const {
@@ -42,6 +44,7 @@ export async function createScheduleEntry(
       p_schedule_date: scheduleDate,
       p_start_time: startTime,
       p_end_time: endTime,
+      p_owner_user_id: ownerUserId,
     });
 
     if (error) {
@@ -139,9 +142,10 @@ export async function deleteScheduleEntry(entryId: string): Promise<{ error: str
 
 export async function fetchScheduleEntries(
   dateFrom: string,
-  dateTo: string
+  dateTo: string,
+  ownerUserId?: string | null
 ): Promise<{ entries: Awaited<ReturnType<typeof getScheduleEntries>> }> {
   const supabase = await createClient();
-  const entries = await getScheduleEntries(supabase, dateFrom, dateTo);
+  const entries = await getScheduleEntries(supabase, dateFrom, dateTo, ownerUserId);
   return { entries };
 }

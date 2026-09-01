@@ -45,11 +45,17 @@ export default function AuthForm() {
   const callbackError = searchParams.get("error");
   const callbackReason = searchParams.get("reason");
   const nextPath = searchParams.get("next") ?? "/dashboard";
+  const inviteCodeFromUrl = searchParams.get("invite")?.trim() ?? "";
   const rawRedirectBase =
     typeof window !== "undefined" ? window.location.origin : getSiteUrl();
   const redirectBase = rawRedirectBase.replace(/\/$/, "");
   const oauthCallbackUrl = `${redirectBase}/auth/callback`;
   const signUpRedirectUrl = `${redirectBase}/auth/callback?next=${encodeURIComponent(nextPath)}`;
+
+  async function applyInviteIfPresent(supabase: ReturnType<typeof createClient>) {
+    if (!inviteCodeFromUrl) return;
+    await supabase.rpc("join_organization_as_aide", { p_invite_code: inviteCodeFromUrl });
+  }
 
   async function handleOAuth(provider: "google" | "azure") {
     setMessage(null);
@@ -105,6 +111,7 @@ export default function AuthForm() {
           return;
         }
         if (data.session) {
+          await applyInviteIfPresent(supabase);
           router.push(nextPath);
           router.refresh();
           return;
@@ -115,6 +122,7 @@ export default function AuthForm() {
           password,
         });
         if (error) throw error;
+        await applyInviteIfPresent(supabase);
         router.push(nextPath);
         router.refresh();
       }
@@ -249,10 +257,16 @@ export default function AuthForm() {
                   value={organizationName}
                   onChange={(e) => setOrganizationName(e.target.value)}
                   placeholder="School or organization name"
-                  required
-                  className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-zinc-900 placeholder-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-400"
+                  required={!inviteCodeFromUrl}
+                  disabled={Boolean(inviteCodeFromUrl)}
+                  className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-zinc-900 placeholder-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-400 dark:disabled:bg-zinc-900/60"
                 />
               </div>
+              {inviteCodeFromUrl ? (
+                <p className="rounded-lg bg-sky-50 px-3 py-2 text-sm text-sky-800 dark:bg-sky-950/40 dark:text-sky-200">
+                  You&apos;re joining as an aide. After signup you&apos;ll see your teacher&apos;s schedule.
+                </p>
+              ) : null}
               <div>
                 <label
                   htmlFor="username"

@@ -1,12 +1,12 @@
 import { createClient } from "@/utils/supabase/server";
 import { getActivities } from "@/app/dashboard/activities/get-activities";
-import { getProfile } from "@/app/dashboard/profile/get-profile";
 import {
   dashboardHeroCorporateXl,
   dashboardHeroTitleCorporateXl,
   dashboardPageStack,
 } from "@/data/dashboard-desktop-section";
 import { getScheduleEntries } from "./get-schedule-entries";
+import { getScheduleRoster } from "./get-schedule-roster";
 import ScheduleView from "./ScheduleView";
 
 function getWeekRange(anchor: Date): { from: string; to: string } {
@@ -26,18 +26,29 @@ export default async function SchedulePage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const profile = user ? await getProfile(user.id) : null;
   const activities = user ? await getActivities(supabase) : [];
   const anchor = new Date();
   const { from, to } = getWeekRange(anchor);
+
+  let roster: Awaited<ReturnType<typeof getScheduleRoster>> = [];
   let entries: Awaited<ReturnType<typeof getScheduleEntries>> = [];
-  try {
-    entries = user ? await getScheduleEntries(supabase, from, to) : [];
-  } catch {
-    entries = [];
+
+  if (user) {
+    try {
+      roster = await getScheduleRoster(supabase);
+    } catch {
+      roster = [];
+    }
+
+    const defaultOwnerId =
+      roster.find((m) => m.user_id === user.id)?.user_id ?? roster[0]?.user_id ?? user.id;
+
+    try {
+      entries = await getScheduleEntries(supabase, from, to, defaultOwnerId);
+    } catch {
+      entries = [];
+    }
   }
-  const canDeleteSchedule =
-    profile?.role === "Teacher" || profile?.role === "Admin";
 
   return (
     <div className={dashboardPageStack}>
@@ -52,9 +63,10 @@ export default async function SchedulePage() {
       </section>
 
       <ScheduleView
+        currentUserId={user?.id ?? null}
+        roster={Array.isArray(roster) ? roster : []}
         initialEntries={Array.isArray(entries) ? entries : []}
         activities={Array.isArray(activities) ? activities : []}
-        canDeleteSchedule={canDeleteSchedule}
       />
     </div>
   );

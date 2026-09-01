@@ -1,4 +1,5 @@
--- Schedule entries per organization (visible to all users in the org).
+-- Schedule entries per organization, per person (owner_user_id).
+-- Staff roles Teacher and School administrator (Admin) share the same org permissions.
 -- Run in Supabase SQL Editor. Requires: admin.organization, public.profiles.organization_id.
 
 create table if not exists admin.schedule_entries (
@@ -14,7 +15,22 @@ create table if not exists admin.schedule_entries (
 
 create index if not exists schedule_entries_org_date_idx on admin.schedule_entries(organization_id, schedule_date);
 
--- RPC: get schedule entries for current user's org in date range
+-- Org ids the current user may read schedules for (extended by supabase-teacher-aide-links.sql for linked aides).
+create or replace function public.get_my_schedule_organization_ids()
+returns setof uuid
+language sql
+security definer
+stable
+set search_path = ''
+as $$
+  select p.organization_id
+  from public.profiles p
+  where p.id = auth.uid() and p.organization_id is not null;
+$$;
+
+grant execute on function public.get_my_schedule_organization_ids() to authenticated;
+
+-- RPC: get schedule entries for current user's org (and linked orgs for aides) in date range
 create or replace function public.get_schedule_entries(
   p_date_from date,
   p_date_to date
@@ -34,11 +50,14 @@ security definer
 set search_path = ''
 as $$
 begin
+  if auth.uid() is null then return; end if;
+
   return query
   select e.id, e.organization_id, e.name, e.activity_id, e.schedule_date, e.start_time, e.end_time, e.created_at
   from admin.schedule_entries e
-  join public.profiles p on p.organization_id = e.organization_id and p.id = auth.uid()
-  where e.schedule_date >= p_date_from and e.schedule_date <= p_date_to
+  where e.schedule_date >= p_date_from
+    and e.schedule_date <= p_date_to
+    and e.organization_id in (select public.get_my_schedule_organization_ids())
   order by e.schedule_date, e.start_time;
 end;
 $$;
@@ -60,12 +79,14 @@ set search_path = ''
 as $$
 declare
   org_id uuid;
+  user_role text;
   new_id uuid;
 begin
   if auth.uid() is null then return null; end if;
   if nullif(trim(coalesce(p_name, '')), '') is null then return null; end if;
-  select organization_id into org_id from public.profiles where id = auth.uid() limit 1;
+  select organization_id, role into org_id, user_role from public.profiles where id = auth.uid() limit 1;
   if org_id is null then return null; end if;
+  if user_role is null or user_role not in ('Teacher', 'Admin') then return null; end if;
   if p_end_time <= p_start_time then return null; end if;
   insert into admin.schedule_entries (organization_id, name, activity_id, schedule_date, start_time, end_time)
   values (org_id, trim(p_name), p_activity_id, p_schedule_date, p_start_time, p_end_time)
@@ -93,11 +114,13 @@ set search_path = ''
 as $$
 declare
   org_id uuid;
+  user_role text;
 begin
   if auth.uid() is null then return false; end if;
   if nullif(trim(coalesce(p_name, '')), '') is null then return false; end if;
-  select organization_id into org_id from public.profiles where id = auth.uid() limit 1;
+  select organization_id, role into org_id, user_role from public.profiles where id = auth.uid() limit 1;
   if org_id is null then return false; end if;
+  if user_role is null or user_role not in ('Teacher', 'Admin') then return false; end if;
   if p_end_time <= p_start_time then return false; end if;
   update admin.schedule_entries
   set name = trim(p_name), activity_id = p_activity_id, schedule_date = p_schedule_date, start_time = p_start_time, end_time = p_end_time

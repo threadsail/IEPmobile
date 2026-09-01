@@ -3,11 +3,14 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import type { Activity } from "@/types/activity";
+import type { ScheduleRosterMember } from "@/types/schedule";
 import type { ActivityFilter } from "./get-activities";
 import { toggleActivityUpvote } from "./actions";
+import AddActivityToScheduleForm from "./AddActivityToScheduleForm";
 import ActivityPopupImage from "@/components/ActivityPopupImage";
 import YoutubeActivityEmbed from "@/components/YoutubeActivityEmbed";
 import {
+  ACTIVITY_DEFAULT_IMAGE_URL,
   getActivityPopupImageCandidates,
   getActivityThumbnailUrl,
   getYoutubeVideoId,
@@ -33,9 +36,19 @@ function sortActivities(activities: Activity[], sort: SortOption): Activity[] {
   return copy;
 }
 
-type Props = { activities: Activity[]; currentFilter: ActivityFilter };
+type Props = {
+  activities: Activity[];
+  currentFilter: ActivityFilter;
+  roster: ScheduleRosterMember[];
+  currentUserId: string | null;
+};
 
-export default function ActivitiesList({ activities, currentFilter }: Props) {
+export default function ActivitiesList({
+  activities,
+  currentFilter,
+  roster,
+  currentUserId,
+}: Props) {
   const [sort, setSort] = useState<SortOption>("recent");
   const [isPending, startTransition] = useTransition();
   const [openActivity, setOpenActivity] = useState<Activity | null>(null);
@@ -119,6 +132,7 @@ export default function ActivitiesList({ activities, currentFilter }: Props) {
       <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3">
         {sorted.map((activity) => {
           const thumbnailUrl = getActivityThumbnailUrl(activity);
+          const isDefaultThumbnail = thumbnailUrl === ACTIVITY_DEFAULT_IMAGE_URL;
           return (
           <article
             key={activity.id}
@@ -130,15 +144,28 @@ export default function ActivitiesList({ activities, currentFilter }: Props) {
               className="flex min-h-0 flex-1 flex-col text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
               aria-label={`Open details: ${activity.name}`}
             >
-              <div className="relative min-h-0 w-full flex-1 bg-zinc-900/5 dark:bg-zinc-950">
-                {thumbnailUrl ? (
+              <div
+                className={`relative min-h-0 w-full flex-1 ${
+                  isDefaultThumbnail ? "bg-zinc-200" : "bg-zinc-900/5 dark:bg-zinc-950"
+                }`}
+              >
+                {activity.icon?.trim() && isDefaultThumbnail ? (
+                  <div
+                    className="flex h-full min-h-[7rem] w-full items-center justify-center bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900/40 dark:to-purple-800/40 md:from-zinc-100 md:to-zinc-200 dark:md:from-zinc-800 dark:md:to-zinc-900"
+                    aria-hidden
+                  >
+                    <span className="text-4xl sm:text-5xl">{activity.icon}</span>
+                  </div>
+                ) : (
                   <>
                     <img
                       src={thumbnailUrl}
                       alt=""
-                      className="h-full w-full object-contain object-center"
+                      className={`h-full w-full object-center ${
+                        isDefaultThumbnail ? "object-contain p-4" : "object-contain"
+                      }`}
                     />
-                    {activity.youtube_url && (
+                    {activity.youtube_url && !isDefaultThumbnail ? (
                       <div
                         className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/15"
                         aria-hidden
@@ -149,37 +176,8 @@ export default function ActivitiesList({ activities, currentFilter }: Props) {
                           </svg>
                         </span>
                       </div>
-                    )}
+                    ) : null}
                   </>
-                ) : (
-                  <div
-                    className="flex h-full min-h-[7rem] w-full items-center justify-center bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900/40 dark:to-purple-800/40 md:from-zinc-100 md:to-zinc-200 dark:md:from-zinc-800 dark:md:to-zinc-900"
-                    aria-hidden
-                  >
-                    {activity.icon ? (
-                      <span className="text-4xl sm:text-5xl">{activity.icon}</span>
-                    ) : activity.activity_type === "youtube" ? (
-                      <svg
-                        className="h-14 w-14 text-purple-600 dark:text-purple-400 md:text-zinc-500 dark:md:text-zinc-400"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                        aria-hidden
-                      >
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    ) : (
-                      <svg
-                        className="h-14 w-14 text-purple-600 dark:text-purple-400 md:text-zinc-500 dark:md:text-zinc-400"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={1.5}
-                        aria-hidden
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.38 8.98a3 3 0 00-4.243-4.243m3.38 8.98a9 9 0 10-12.72 0" />
-                      </svg>
-                    )}
-                  </div>
                 )}
               </div>
             </button>
@@ -268,7 +266,6 @@ export default function ActivitiesList({ activities, currentFilter }: Props) {
             </div>
             {openYoutubeId ? (
               <YoutubeActivityEmbed
-                key={openActivity.id}
                 videoId={openYoutubeId}
                 title={openActivity.name}
                 youtubeUrl={openActivity.youtube_url}
@@ -276,7 +273,6 @@ export default function ActivitiesList({ activities, currentFilter }: Props) {
               />
             ) : (
               <ActivityPopupImage
-                key={openActivity.id}
                 urls={getActivityPopupImageCandidates(openActivity)}
                 alt=""
               />
@@ -301,6 +297,14 @@ export default function ActivitiesList({ activities, currentFilter }: Props) {
                 </a>
               </div>
             ) : null}
+
+            <AddActivityToScheduleForm
+              key={openActivity.id}
+              activity={openActivity}
+              roster={roster}
+              currentUserId={currentUserId}
+            />
+
             <div className="mt-6 flex justify-end">
               <button
                 type="button"

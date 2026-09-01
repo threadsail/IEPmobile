@@ -6,7 +6,7 @@ import { NO_AUTOFILL } from "@/constants/form-autocomplete";
 import { getActivityPopupImageCandidates, getYoutubeVideoId } from "@/utils/youtube-activity";
 import { useActionState, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Activity } from "@/types/activity";
-import type { ScheduleEntry } from "@/types/schedule";
+import type { ScheduleEntry, ScheduleRosterMember } from "@/types/schedule";
 import {
   createScheduleEntry,
   deleteScheduleEntry,
@@ -157,12 +157,28 @@ function computeEntryLayout(
 }
 
 type ScheduleViewProps = {
+  currentUserId: string | null;
+  roster: ScheduleRosterMember[];
   initialEntries: ScheduleEntry[];
   activities: Activity[];
-  canDeleteSchedule?: boolean;
 };
 
-export default function ScheduleView({ initialEntries, activities, canDeleteSchedule = false }: ScheduleViewProps) {
+function rosterTabLabel(member: ScheduleRosterMember, currentUserId: string | null): string {
+  if (currentUserId && member.user_id === currentUserId) return "Me";
+  const first = member.display_name.trim().split(/\s+/)[0];
+  return first || member.display_name;
+}
+
+export default function ScheduleView({
+  currentUserId,
+  roster,
+  initialEntries,
+  activities,
+}: ScheduleViewProps) {
+  const defaultOwnerId =
+    roster.find((m) => m.user_id === currentUserId)?.user_id ?? roster[0]?.user_id ?? currentUserId ?? "";
+
+  const [selectedOwnerId, setSelectedOwnerId] = useState(defaultOwnerId);
   const [anchor, setAnchor] = useState(() => new Date());
   const [selectedKey, setSelectedKey] = useState<string>(() => toDateKey(new Date()));
   const [entries, setEntries] = useState<ScheduleEntry[]>(() => Array.isArray(initialEntries) ? initialEntries : []);
@@ -177,6 +193,25 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
   const wasUpdatePendingRef = useRef(false);
   const [now, setNow] = useState(() => new Date());
 
+  const selectedMember = useMemo(
+    () => roster.find((m) => m.user_id === selectedOwnerId) ?? null,
+    [roster, selectedOwnerId]
+  );
+  const canEditSchedule = selectedMember?.can_edit ?? false;
+  const canDeleteSchedule = canEditSchedule;
+  const selectedPersonLabel = selectedMember?.display_name ?? "Schedule";
+
+  useEffect(() => {
+    if (!selectedOwnerId && defaultOwnerId) {
+      setSelectedOwnerId(defaultOwnerId);
+    }
+  }, [defaultOwnerId, selectedOwnerId]);
+
+  useEffect(() => {
+    setModalOpen(false);
+    setEditingEntry(null);
+  }, [selectedOwnerId]);
+
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 60_000);
     return () => clearInterval(id);
@@ -187,14 +222,18 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
   const weekRange = useMemo(() => getWeekRange(anchor), [anchor]);
 
   const refetchEntries = useCallback(async () => {
+    if (!selectedOwnerId) {
+      setEntries([]);
+      return;
+    }
     try {
-      const result = await fetchScheduleEntries(weekRange.from, weekRange.to);
+      const result = await fetchScheduleEntries(weekRange.from, weekRange.to, selectedOwnerId);
       const next = result?.entries;
       setEntries(Array.isArray(next) ? next : []);
     } catch {
       setEntries((prev) => (Array.isArray(prev) ? prev : []));
     }
-  }, [weekRange.from, weekRange.to]);
+  }, [weekRange.from, weekRange.to, selectedOwnerId]);
 
   const refetchEntriesRef = useRef(refetchEntries);
   refetchEntriesRef.current = refetchEntries;
@@ -263,6 +302,11 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
     }
   }, [anchor, refetchEntries]);
 
+  useEffect(() => {
+    if (!selectedOwnerId) return;
+    void refetchEntries();
+  }, [selectedOwnerId, refetchEntries]);
+
   const entriesForSelectedDay = useMemo(
     () => (Array.isArray(entries) ? entries : []).filter((e) => e.schedule_date === selectedKey),
     [entries, selectedKey]
@@ -310,6 +354,7 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
   }, [now]);
 
   const openModalForSlot = (hour: number, minute: number) => {
+    if (!canEditSchedule) return;
     setSlotStart({ hour, minute });
     setModalOpen(true);
   };
@@ -338,6 +383,42 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
 
   return (
     <div className="space-y-4 md:space-y-3">
+      {roster.length > 0 ? (
+        <div
+          className="flex flex-wrap justify-center gap-2 border-b border-zinc-200 pb-3 dark:border-zinc-700"
+          role="tablist"
+          aria-label="Schedule by person"
+        >
+          {roster.map((member) => {
+            const isSelected = member.user_id === selectedOwnerId;
+            const label = rosterTabLabel(member, currentUserId);
+            return (
+              <button
+                key={member.user_id}
+                type="button"
+                role="tab"
+                aria-selected={isSelected}
+                onClick={() => {
+                  if (member.user_id === selectedOwnerId) return;
+                  setEntries([]);
+                  setSelectedOwnerId(member.user_id);
+                }}
+                className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors sm:px-4 ${
+                  isSelected
+                    ? "bg-teal-600 text-white shadow-sm"
+                    : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                }`}
+              >
+                {label}
+                {member.role === "Aide" && member.user_id !== currentUserId ? (
+                  <span className="ml-1 text-xs opacity-80">(Aide)</span>
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+
       <div className="flex items-center justify-center gap-2 sm:gap-3">
         <button type="button" onClick={goPrevWeek} className={arrowClass} aria-label="Previous week">
           <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -386,10 +467,17 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
 
       <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 md:text-base">
         {selectedLabel}
+        <span className="ml-2 text-base font-normal text-zinc-500 dark:text-zinc-400 md:text-sm">
+          · {selectedPersonLabel}
+        </span>
       </h2>
 
       <p className="text-sm text-zinc-500 dark:text-zinc-400 md:text-xs">
-        Click a time slot to add an entry. Entries are visible to everyone in your organization.
+        {canEditSchedule
+          ? selectedMember?.user_id === currentUserId
+            ? "Click a time slot to add an entry to your schedule."
+            : `Editing ${selectedPersonLabel}'s schedule. Entries are visible to your team.`
+          : `View-only schedule for ${selectedPersonLabel}.`}
       </p>
 
       <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
@@ -397,13 +485,18 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
           <div className="relative w-20 shrink-0 flex flex-col border-r border-zinc-200 bg-zinc-50/80 dark:border-zinc-700 dark:bg-zinc-800/50">
             {timeSlots.map(({ hour, minute, label }, i) => (
               <button
-                key={`${hour}-${minute}`}
+                key={`label-${hour}-${minute}`}
                 type="button"
                 onClick={() => openModalForSlot(hour, minute)}
-                className={`flex min-h-[2.75rem] w-full items-center justify-end border-b border-zinc-100 px-2 py-2 text-right text-xs font-medium tabular-nums text-zinc-600 transition-colors last:border-b-0 hover:bg-teal-50/80 hover:text-teal-700 dark:border-zinc-700/80 dark:text-zinc-400 dark:hover:bg-teal-900/30 dark:hover:text-teal-300 md:hover:bg-zinc-100/90 md:hover:text-zinc-800 dark:md:hover:bg-zinc-800/80 dark:md:hover:text-zinc-200 ${
+                disabled={!canEditSchedule}
+                className={`flex min-h-[2.75rem] w-full items-center justify-end border-b border-zinc-100 px-2 py-2 text-right text-xs font-medium tabular-nums text-zinc-600 transition-colors last:border-b-0 dark:border-zinc-700/80 dark:text-zinc-400 ${
+                  canEditSchedule
+                    ? "hover:bg-teal-50/80 hover:text-teal-700 dark:hover:bg-teal-900/30 dark:hover:text-teal-300 md:hover:bg-zinc-100/90 md:hover:text-zinc-800 dark:md:hover:bg-zinc-800/80 dark:md:hover:text-zinc-200"
+                    : "cursor-default"
+                } ${
                   i % 2 === 0 ? "bg-white dark:bg-zinc-900/80" : "bg-zinc-100/80 dark:bg-zinc-800/80"
                 }`}
-                aria-label={`Add entry at ${label}`}
+                aria-label={canEditSchedule ? `Add entry at ${label}` : label}
               >
                 {label}
               </button>
@@ -450,8 +543,15 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
                     <div className="flex h-full w-full items-stretch gap-0.5 overflow-hidden rounded-md border border-zinc-300 bg-zinc-200 shadow-sm ring-1 ring-zinc-900/5 dark:border-zinc-600 dark:bg-zinc-700 dark:ring-white/10">
                     <button
                       type="button"
-                      onClick={() => setEditingEntry(entry)}
-                      className="flex-1 min-w-0 cursor-pointer px-2 py-0.5 text-center text-xs font-medium text-zinc-800 hover:bg-zinc-300/80 dark:text-zinc-100 dark:hover:bg-zinc-600/80"
+                      onClick={() => {
+                        if (canEditSchedule) setEditingEntry(entry);
+                      }}
+                      disabled={!canEditSchedule && !activity}
+                      className={`flex-1 min-w-0 px-2 py-0.5 text-center text-xs font-medium text-zinc-800 dark:text-zinc-100 ${
+                        canEditSchedule
+                          ? "cursor-pointer hover:bg-zinc-300/80 dark:hover:bg-zinc-600/80"
+                          : "cursor-default"
+                      }`}
                       title={entry.name}
                     >
                       <span className="line-clamp-2 block">{entry.name}</span>
@@ -479,13 +579,18 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
             </div>
             {timeSlots.map(({ hour, minute }, i) => (
               <button
-                key={`${hour}-${minute}`}
+                key={`slot-${hour}-${minute}`}
                 type="button"
                 onClick={() => openModalForSlot(hour, minute)}
-                className={`min-h-[2.75rem] flex-1 border-b border-zinc-100 px-2 py-1 text-left transition-colors last:border-b-0 hover:bg-teal-50/50 dark:border-zinc-700/80 dark:hover:bg-teal-900/20 md:hover:bg-zinc-100/70 dark:md:hover:bg-zinc-800/50 ${
+                disabled={!canEditSchedule}
+                className={`min-h-[2.75rem] flex-1 border-b border-zinc-100 px-2 py-1 text-left transition-colors last:border-b-0 dark:border-zinc-700/80 ${
+                  canEditSchedule
+                    ? "hover:bg-teal-50/50 dark:hover:bg-teal-900/20 md:hover:bg-zinc-100/70 dark:md:hover:bg-zinc-800/50"
+                    : "cursor-default"
+                } ${
                   i % 2 === 0 ? "bg-white dark:bg-zinc-900/80" : "bg-zinc-100/80 dark:bg-zinc-800/80"
                 }`}
-                aria-label={`Add entry at ${formatTimeLabel(hour, minute)}`}
+                aria-label={canEditSchedule ? `Add entry at ${formatTimeLabel(hour, minute)}` : formatTimeLabel(hour, minute)}
               />
             ))}
           </div>
@@ -509,6 +614,7 @@ export default function ScheduleView({ initialEntries, activities, canDeleteSche
               className="mt-4 space-y-4"
             >
               <input type="hidden" name="schedule_date" value={selectedKey} />
+              <input type="hidden" name="owner_user_id" value={selectedOwnerId} />
               {state?.error && (
                 <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-300">
                   {state.error}

@@ -3,8 +3,78 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import {
+  getRepeatScheduleDates,
+  type ScheduleRepeat,
+} from "@/utils/schedule-repeat";
 
 export type CreateActivityState = { error: string | null };
+export type AddActivityToScheduleState = { error: string | null; success: boolean; created: number };
+
+const REPEAT_VALUES: ScheduleRepeat[] = ["none", "daily", "weekdays", "weekly"];
+
+export async function addActivityToSchedule(
+  _prev: AddActivityToScheduleState,
+  formData: FormData
+): Promise<AddActivityToScheduleState> {
+  const activityId = (formData.get("activity_id") as string)?.trim();
+  const name = (formData.get("name") as string)?.trim();
+  const scheduleDate = (formData.get("schedule_date") as string)?.trim();
+  const startTime = (formData.get("start_time") as string)?.trim();
+  const endTime = (formData.get("end_time") as string)?.trim();
+  const ownerUserId = (formData.get("owner_user_id") as string)?.trim() || null;
+  const repeatRaw = (formData.get("repeat") as string)?.trim() ?? "none";
+  const repeat = REPEAT_VALUES.includes(repeatRaw as ScheduleRepeat)
+    ? (repeatRaw as ScheduleRepeat)
+    : "none";
+
+  if (!activityId) return { error: "Activity is required.", success: false, created: 0 };
+  if (!name) return { error: "Name is required.", success: false, created: 0 };
+  if (!scheduleDate) return { error: "Date is required.", success: false, created: 0 };
+  if (!startTime || !endTime) {
+    return { error: "Start and end time are required.", success: false, created: 0 };
+  }
+  if (endTime <= startTime) {
+    return { error: "End time must be after start time.", success: false, created: 0 };
+  }
+
+  const dates = getRepeatScheduleDates(scheduleDate, repeat);
+  if (dates.length === 0) {
+    return { error: "Invalid date.", success: false, created: 0 };
+  }
+
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return { error: "You must be signed in to add to a schedule.", success: false, created: 0 };
+    }
+
+    let created = 0;
+    for (const date of dates) {
+      const { data: id, error } = await supabase.rpc("create_schedule_entry", {
+        p_name: name,
+        p_activity_id: activityId,
+        p_schedule_date: date,
+        p_start_time: startTime,
+        p_end_time: endTime,
+        p_owner_user_id: ownerUserId,
+      });
+      if (error) {
+        return { error: error.message, success: false, created };
+      }
+      if (id != null) created += 1;
+    }
+
+    revalidatePath("/dashboard/schedule");
+    return { error: null, success: true, created };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Something went wrong.";
+    return { error: message, success: false, created: 0 };
+  }
+}
 
 export async function createActivity(
   _prev: CreateActivityState,

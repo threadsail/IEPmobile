@@ -42,14 +42,7 @@ export default async function RootLayout({
   const isComingSoon = pathname.startsWith("/coming-soon");
 
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){var t=localStorage.getItem("theme");var d=t==="dark"||(t!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);if(d)document.documentElement.classList.add("dark");else document.documentElement.classList.remove("dark");})();`,
-          }}
-        />
-      </head>
+    <html lang="en">
       <body className="antialiased">
         {isComingSoon ? children : <AppShell>{children}</AppShell>}
       </body>

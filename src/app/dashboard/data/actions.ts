@@ -3,6 +3,8 @@
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getStudentProgressLogs } from "./get-student-progress-logs";
+import type { StudentProgressLog } from "@/types/student-progress-log";
 
 function getId(formData: FormData): string | null {
   const id = formData.get("id");
@@ -77,6 +79,15 @@ export async function submitStudentProgress(
     }
   }
 
+  const objectiveIndexRaw = formData.get("objective_index");
+  let objectiveIndex: number | null = null;
+  if (goalIndex != null && typeof objectiveIndexRaw === "string" && objectiveIndexRaw.trim() !== "") {
+    const n = Number(objectiveIndexRaw);
+    if (Number.isFinite(n) && n >= 0) {
+      objectiveIndex = Math.floor(n);
+    }
+  }
+
   try {
     const supabase = await createClient();
     const {
@@ -90,6 +101,7 @@ export async function submitStudentProgress(
       p_student_id: studentId,
       p_logged_on: loggedOn,
       p_goal_index: goalIndex,
+      p_objective_index: objectiveIndex,
       p_summary: summary,
     });
 
@@ -115,4 +127,30 @@ export async function submitStudentProgress(
     return { error: null, updated: Date.now() };
   }
   redirect("/dashboard/data");
+}
+
+export async function fetchStudentProgressLogs(
+  studentId: string,
+  goalIndex?: number | null
+): Promise<{ logs: StudentProgressLog[]; error: string | null }> {
+  const id = studentId?.trim();
+  if (!id) {
+    return { logs: [], error: "Student is required." };
+  }
+
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return { logs: [], error: "You must be signed in." };
+    }
+
+    const logs = await getStudentProgressLogs(supabase, id, goalIndex);
+    return { logs, error: null };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Something went wrong.";
+    return { logs: [], error: message };
+  }
 }

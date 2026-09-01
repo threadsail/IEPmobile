@@ -50,6 +50,7 @@ update public.profiles set role = 'Admin' where role = 'admin';
 alter table public.profiles drop constraint if exists profiles_role_check;
 alter table public.profiles add constraint profiles_role_check
   check (role is null or role in ('Teacher', 'Aide', 'Admin'));
+-- Teacher and Admin are both staff with equal org permissions; Admin = school administrator.
 
 do $$
 begin

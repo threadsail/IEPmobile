@@ -1,5 +1,8 @@
 import type { Activity } from "@/types/activity";
 
+/** Default card/popup image for activities without a custom image or YouTube thumbnail. */
+export const ACTIVITY_DEFAULT_IMAGE_URL = "/activity-paintbrush.svg";
+
 /** True when the saved URL is a Shorts link (vertical video). */
 export function isYoutubeShortUrl(url: string | null | undefined): boolean {
   if (!url?.trim()) return false;
@@ -35,12 +38,12 @@ export function getYoutubeVideoId(url: string | null | undefined): string | null
   return null;
 }
 
-/** Card thumbnail: stored image_url, else YouTube hq default (reliable size). */
-export function getActivityThumbnailUrl(activity: Activity): string | null {
+/** Card thumbnail: stored image_url, else YouTube hq default, else paintbrush logo. */
+export function getActivityThumbnailUrl(activity: Activity): string {
   if (activity.image_url?.trim()) return activity.image_url.trim();
   const videoId = getYoutubeVideoId(activity.youtube_url);
   if (videoId) return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-  return null;
+  return ACTIVITY_DEFAULT_IMAGE_URL;
 }
 
 /** Larger images for modals: try maxres first (may 404), then hq, then mq. */
@@ -56,8 +59,10 @@ export function getYoutubePosterUrlCandidates(
   ];
 }
 
-/** Hero image for detail popups: custom image, else YouTube poster fallbacks. */
+/** Hero image for detail popups: custom image, else YouTube poster fallbacks, else paintbrush logo. */
 export function getActivityPopupImageCandidates(activity: Activity): string[] {
   if (activity.image_url?.trim()) return [activity.image_url.trim()];
-  return getYoutubePosterUrlCandidates(activity.youtube_url);
+  const youtube = getYoutubePosterUrlCandidates(activity.youtube_url);
+  if (youtube.length > 0) return youtube;
+  return [ACTIVITY_DEFAULT_IMAGE_URL];
 }

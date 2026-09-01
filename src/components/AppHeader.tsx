@@ -5,13 +5,9 @@ import { signOut } from "@/app/actions/auth";
 import { COPYRIGHT_LINE, PRODUCTION_SITE_URL } from "@/lib/site-config";
 import DesktopSidebarNav from "@/components/DesktopSidebarNav";
 import NavigationDropdown from "@/components/NavigationDropdown";
-import ThemeToggle from "@/components/ThemeToggle";
 
 const linkClass =
   "flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800";
-
-const sidebarToggleClass =
-  "flex h-9 w-full shrink-0 items-center justify-center rounded-md border border-zinc-300 bg-zinc-100 text-zinc-600 transition-colors hover:bg-zinc-200 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700";
 
 export default function AppHeader({ user }: { user: User | null }) {
   return (
@@ -82,7 +78,6 @@ export default function AppHeader({ user }: { user: User | null }) {
           <div className="order-3 flex min-w-0 flex-1 shrink-0 basis-0 items-center justify-end gap-2 md:order-3">
             {user ? (
               <>
-                <ThemeToggle />
                 <Link
                   href="/dashboard/profile"
                   className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-zinc-300 bg-zinc-100 text-zinc-600 transition-colors hover:bg-zinc-200 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
@@ -114,7 +109,6 @@ export default function AppHeader({ user }: { user: User | null }) {
               </>
             ) : (
               <>
-                <ThemeToggle />
                 <Link
                   href="/auth"
                   className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
@@ -162,7 +156,6 @@ export default function AppHeader({ user }: { user: User | null }) {
           </div>
 
           <div className="mt-auto space-y-2 border-t border-zinc-200/90 p-3 dark:border-zinc-800">
-            <ThemeToggle buttonClassName={sidebarToggleClass} />
             <Link
               href="/dashboard/profile"
               className="flex h-9 w-full items-center justify-center gap-2 rounded-md border border-zinc-300 bg-white text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"

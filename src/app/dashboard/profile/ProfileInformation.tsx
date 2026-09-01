@@ -3,6 +3,7 @@
 import FormattedLocalDateTime from "@/components/FormattedLocalDateTime";
 import { accountCreatedIso } from "@/utils/format-local-datetime";
 import { NO_AUTOFILL } from "@/constants/form-autocomplete";
+import { ROLE_LABELS, roleLabel } from "@/utils/profile-roles";
 import { useActionState, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { updateProfile } from "./actions";
@@ -138,9 +139,9 @@ export default function ProfileInformation({
               defaultValue={profile.role ?? ""}
             >
               <option value="">—</option>
-              <option value="Teacher">Teacher</option>
-              <option value="Aide">Aide</option>
-              <option value="Admin">Admin</option>
+              <option value="Teacher">{ROLE_LABELS.Teacher}</option>
+              <option value="Aide">{ROLE_LABELS.Aide}</option>
+              <option value="Admin">{ROLE_LABELS.Admin}</option>
             </select>
           </dd>
         </div>
@@ -212,7 +213,7 @@ export default function ProfileInformation({
           <dd className={ddClass}>
             {profile.role ? (
               <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/40 dark:text-blue-200">
-                {profile.role}
+                {roleLabel(profile.role)}
               </span>
             ) : (
               "Not set"

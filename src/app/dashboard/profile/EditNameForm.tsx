@@ -3,6 +3,7 @@
 import { useActionState, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { NO_AUTOFILL } from "@/constants/form-autocomplete";
+import { ROLE_LABELS, roleLabel } from "@/utils/profile-roles";
 import { updateProfile } from "./actions";
 
 const inputClass =
@@ -104,9 +105,9 @@ export default function EditNameForm({ firstName, lastName, role, organizationNa
           defaultValue={role ?? ""}
         >
           <option value="">—</option>
-          <option value="Teacher">Teacher</option>
-          <option value="Aide">Aide</option>
-          <option value="Admin">Admin</option>
+          <option value="Teacher">{ROLE_LABELS.Teacher}</option>
+          <option value="Aide">{ROLE_LABELS.Aide}</option>
+          <option value="Admin">{ROLE_LABELS.Admin}</option>
         </select>
       </div>
 

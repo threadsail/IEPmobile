@@ -8,9 +8,13 @@ import {
   dashboardSectionCard,
 } from "@/data/dashboard-desktop-section";
 import { createClient } from "@/utils/supabase/server";
+import { getScheduleEntries } from "@/app/dashboard/schedule/get-schedule-entries";
+import { getScheduleRoster } from "@/app/dashboard/schedule/get-schedule-roster";
+import { getWeekRange } from "@/utils/schedule-dates";
 import { getPendingAppliedData } from "./data/get-pending-applied-data";
 import { getProfile } from "./profile/get-profile";
 import { getStudents } from "./students/get-students";
+import TodaySchedulePanel from "./TodaySchedulePanel";
 import { getCurrentUser } from "@/utils/auth";
 import {
   accountDisplayName,
@@ -34,14 +38,25 @@ export default async function DashboardPage() {
 
   let studentCount = 0;
   let toDoReviewCount = 0;
+  let scheduleOwnerId: string | null = null;
+  let scheduleEntries: Awaited<ReturnType<typeof getScheduleEntries>> = [];
   if (user) {
     const supabase = await createClient();
-    const [students, pendingReview] = await Promise.all([
+    const { from, to } = getWeekRange(new Date());
+    const [students, pendingReview, roster] = await Promise.all([
       getStudents(supabase, user.id),
       getPendingAppliedData(supabase, user.id),
+      getScheduleRoster(supabase).catch(() => [] as Awaited<ReturnType<typeof getScheduleRoster>>),
     ]);
     studentCount = students.length;
     toDoReviewCount = pendingReview.length;
+    scheduleOwnerId =
+      roster.find((m) => m.user_id === user.id)?.user_id ?? roster[0]?.user_id ?? user.id;
+    try {
+      scheduleEntries = await getScheduleEntries(supabase, from, to, scheduleOwnerId);
+    } catch {
+      scheduleEntries = [];
+    }
   }
 
   return (
@@ -106,28 +121,7 @@ export default async function DashboardPage() {
             View schedule →
           </Link>
         </div>
-        <div className="mt-2 overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-700 sm:mt-4">
-          {(() => {
-            const slots: string[] = [];
-            for (let h = 7; h <= 16; h++) {
-              slots.push(
-                `${h > 12 ? h - 12 : h}:00 ${h >= 12 ? "PM" : "AM"}`,
-                ...(h < 16 ? [`${h > 12 ? h - 12 : h}:30 ${h >= 12 ? "PM" : "AM"}`] : [])
-              );
-            }
-            return slots.map((time) => (
-              <div
-                key={time}
-                className="flex min-h-[1.75rem] items-stretch border-b border-zinc-100 last:border-b-0 dark:border-zinc-700/80 sm:min-h-[2rem] md:min-h-[2.5rem]"
-              >
-                <div className="w-14 shrink-0 border-r border-zinc-200 bg-zinc-50/80 px-1.5 py-1 text-right text-[10px] font-medium tabular-nums text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-400 sm:w-16 sm:px-2 sm:py-1.5 sm:text-xs md:w-20">
-                  {time}
-                </div>
-                <div className="min-h-[1.75rem] flex-1 px-1.5 py-1 text-[10px] text-zinc-500 dark:text-zinc-400 sm:min-h-[2rem] sm:px-2 sm:py-1.5 sm:text-xs md:min-h-[2.5rem] md:text-sm" />
-              </div>
-            ));
-          })()}
-        </div>
+        <TodaySchedulePanel ownerUserId={scheduleOwnerId} initialEntries={scheduleEntries} />
       </section>
     </div>
   );

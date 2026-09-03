@@ -5,21 +5,10 @@ import {
   dashboardHeroTitleCorporateXl,
   dashboardPageStack,
 } from "@/data/dashboard-desktop-section";
+import { getWeekRange } from "@/utils/schedule-dates";
 import { getScheduleEntries } from "./get-schedule-entries";
 import { getScheduleRoster } from "./get-schedule-roster";
 import ScheduleView from "./ScheduleView";
-
-function getWeekRange(anchor: Date): { from: string; to: string } {
-  const d = new Date(anchor);
-  const day = d.getDay();
-  const start = new Date(d);
-  start.setDate(d.getDate() - day);
-  const end = new Date(start);
-  end.setDate(start.getDate() + 6);
-  const toYMD = (x: Date) =>
-    x.getFullYear() + "-" + String(x.getMonth() + 1).padStart(2, "0") + "-" + String(x.getDate()).padStart(2, "0");
-  return { from: toYMD(start), to: toYMD(end) };
-}
 
 export default async function SchedulePage() {
   const supabase = await createClient();
